@@ -6,8 +6,12 @@ function createRoom() {
 }
 
 function sendResponse() {
+  const response = {};
+
+  response.message = "Chat Room created successfully";
   console.log("[chatRouter][createRoom]-> Send Response");
-  this.res.send("Room is Created!");
+
+  this.res.jsonp(response);
 }
 
 module.exports = async function (req, res) {

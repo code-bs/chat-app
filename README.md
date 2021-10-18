@@ -13,8 +13,6 @@ $ brew link mongodb-community
 
 <br/>
 
----
-
 ## MongoDB 실행
 
 ```
@@ -29,28 +27,7 @@ $ brew services start mongodb-community
 
 ---
 
-## mongoose
-
-```
-$ npm install mongoose
-```
-
-<br/>
-
----
-
-## API 정의
-
-<br/>
-
-## 목차
-
-- ..
-- ..
-
-<br/>
-
----
+# API 정의
 
 ## 채팅방
 
@@ -66,6 +43,10 @@ Request Params:
 
 Response Payload:
 
+- 테스트
+
 ```json
-{}
+{
+  "message": "Chat Room created successfully"
+}
 ```

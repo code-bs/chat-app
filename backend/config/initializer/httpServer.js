@@ -6,8 +6,8 @@ const http = require("http"),
 // bodyParser = require("body-parser");
 
 const app = express();
-const indexRouter = require("../config/routes/indexRoute.js"),
-  chatRouter = require("../config/routes/chatRoute.js");
+const indexRouter = require("../routes/indexRoute.js"),
+  chatRouter = require("../routes/chatRoute.js");
 
 const initiateHttpServer = () => {
   return new Promise((resolve, reject) => {
