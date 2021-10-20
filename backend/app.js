@@ -5,6 +5,7 @@ const runServer = async () => {
   try {
     await httpServer();
     await mongodb();
+    console.log("[CHAT-APP] initialization SUCCESSFULLY!");
   } catch (error) {
     throw new Error(error);
   }

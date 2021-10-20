@@ -1,9 +1,9 @@
 const http = require("http"),
   createError = require("http-errors"),
   port = process.env.PORT || "3000",
-  express = require("express");
-// cookieParser = require("cookie-parser"),
-// bodyParser = require("body-parser");
+  express = require("express"),
+  cookieParser = require("cookie-parser"),
+  bodyParser = require("body-parser");
 
 const app = express();
 const indexRouter = require("../routes/indexRoute.js"),
@@ -11,9 +11,9 @@ const indexRouter = require("../routes/indexRoute.js"),
 
 const initiateHttpServer = () => {
   return new Promise((resolve, reject) => {
-    // app.use(cookieParser());
-    // app.use(bodyParser.json());
-    // app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(cookieParser());
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: false }));
 
     app.use("/", indexRouter);
     app.use("/chat", chatRouter);
