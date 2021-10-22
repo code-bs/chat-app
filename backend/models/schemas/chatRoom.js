@@ -9,7 +9,7 @@ const roomSchema = new mongoose.Schema({
     {
       message: String,
       regDate: Date,
-      sentUserId: String,
+      userId: String,
     },
   ],
 });

@@ -7,15 +7,19 @@ const http = require("http"),
 
 const app = express();
 const indexRouter = require("../routes/indexRoute.js"),
-  chatRouter = require("../routes/chatRoute.js");
+  chatRouter = require("../routes/chatRoute.js"),
+  test = require("../../controller/common/middlewares/test");
 
 const initiateHttpServer = () => {
   return new Promise((resolve, reject) => {
+    app.test = test();
     app.use(cookieParser());
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
 
     app.use("/", indexRouter);
+
+    app.use("/chat", app.test);
     app.use("/chat", chatRouter);
 
     app.use((req, res, next) => {
