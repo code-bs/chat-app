@@ -31,7 +31,7 @@ $ brew services start mongodb-community
 
 ## 채팅방
 
-roomSchema
+MongoDB - roomSchema
 
 ```js
 {
@@ -111,7 +111,7 @@ Response Payload:
 
 URI: `http://{URL}/chat/room` <br/>
 Method: GET <br/>
-Request Params: None
+Request Params: - 없음 - <br/>
 Response Payload:
 
 예시
@@ -146,3 +146,74 @@ Response Payload:
   ]
 }
 ```
+
+<br/>
+
+---
+
+### 채팅방 입장
+
+URI: `http://{URL}/chat/room/enter/:roomId` <br/>
+Method: GET <br/>
+Request Header: - 미정 -
+Request Params: - 미정 -
+Response Payload:
+
+```js
+{
+  message: "OK",
+  roodId,  // 방 고유번호
+  chatHistory: [
+    {
+      message,  // 채팅 메시지
+      regDate,  // 전송일
+      userId,  // 전송자(유저 고유번호)
+      _id,  // db seqno
+    }
+  ]
+}
+```
+
+예시
+
+```json
+{
+  "message": "OK",
+  "roomId": "616fbf554de5ad3d62841be8",
+  "chatHistory": [
+    {
+      "message": "\"Hello I'm Hyunwoo Kim!\"",
+      "regDate": "2021-10-22T08:01:30.043Z",
+      "userId": "hyunwoo045",
+      "_id": "61726fda525c682f1f20a8c1"
+    },
+    {
+      "message": "안녕하세요 :D",
+      "regDate": "2021-10-22T08:26:05.136Z",
+      "userId": "hyunwoo045",
+      "_id": "6172759dd2e87132f426a2a6"
+    }
+  ]
+}
+```
+
+<br/>
+
+---
+
+### 메시지 입력
+
+URI: `http://{URL}/chat/room/enter/:roomId` <br/>
+Method: GET <br/>
+Request Header: - 없음 -
+Request Params:
+
+```js
+{
+  userId,  // 유저 고유번호
+  message,  // 채팅 내용
+  roomId,  // 방 고유번호
+}
+```
+
+Response Payload: - 없음 -

@@ -2,7 +2,6 @@ const aedes = require("aedes")();
 const httpServer = require("http").createServer();
 const ws = require("websocket-stream");
 const port = 8888;
-const chatModel = require("../../models/chatModels");
 
 function websocketServerInit() {
   return new Promise((resolve, reject) => {
