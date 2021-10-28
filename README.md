@@ -53,6 +53,7 @@ MongoDB - roomSchema
 
 URI: `http://{URL}/chat/room` <br/>
 Method: POST <br/>
+Request Header: - 없음 - <br/>
 Request Params:
 
 ```js
@@ -111,6 +112,7 @@ Response Payload:
 
 URI: `http://{URL}/chat/room` <br/>
 Method: GET <br/>
+Request Header: - 없음 - <br/>
 Request Params: - 없음 - <br/>
 Response Payload:
 
@@ -155,8 +157,8 @@ Response Payload:
 
 URI: `http://{URL}/chat/room/enter/:roomId` <br/>
 Method: GET <br/>
-Request Header: - 미정 -
-Request Params: - 미정 -
+Request Header: - 미정 - <br/>
+Request Params: - 미정 - <br/>
 Response Payload:
 
 ```js
@@ -205,7 +207,7 @@ Response Payload:
 
 URI: `http://{URL}/chat/room/enter/:roomId` <br/>
 Method: GET <br/>
-Request Header: - 없음 -
+Request Header: - 없음 - <br/>
 Request Params:
 
 ```js
