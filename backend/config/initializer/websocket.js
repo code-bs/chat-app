@@ -6,14 +6,14 @@ const io = require("socket.io")(http, {
   },
 });
 const port = process.env.PORT || 8888;
+const logger = require("../logger");
 
 const websocketServerInit = () => {
   return new Promise((resolve, reject) => {
     http.listen(port, () => {
-      console.log(
+      logger.info(
         `[RunServer][websocketInit]-> Websocket is opened on port ${port}`
       );
-
       io.on("connection", (socket) => {
         console.log(`${socket.id} Connected`);
 

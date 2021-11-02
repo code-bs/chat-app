@@ -1,33 +1,35 @@
-/**
- * sendMessage
- * Method: POST
- *
- * request params:
- *  - message
- *  - regDate
- *  - sentUserId
- *
- * @Methods:
- * 1.
- *
- * 2.
- *
- * response payload:
- *  -
- */
 function saveHistory() {
   return new Promise((resolve, reject) => {
-    console.log(`[chatRouter][sendMessage]-> saveHistory: ${req.body.message}`);
-    const message = req.body.message,
-      userId = req.body.userId,
-      roomId = req.body.roomId;
+    this.logger.info(
+      `[chatRouter][sendMessage]-> saveHistory: ${req.body.message}`
+    );
+    // const message = req.body.message,
+    //   userId = req.body.userId,
+    //   roomId = req.body.roomId;
+    const { message, userId, roomId } = req.body;
 
     this.roomId = roomId;
     this.userId = userId;
     this.message = message;
 
-    if (!message) reject();
-    else if (!userId) reject();
+    if (!message)
+      reject({
+        statusCode: 400,
+        controller: "sendMessage",
+        message: "Message undefined",
+      });
+    else if (!userId)
+      reject({
+        statusCode: 400,
+        controller: "sendMessage",
+        message: "User undefined",
+      });
+    else if (!roomId)
+      reject({
+        statusCode: 400,
+        controller: "sendMessage",
+        message: "Room undefined",
+      });
     else {
       this.model.createNewChatHistory(roomId, message, userId, (err) => {
         if (err) reject(err);
@@ -39,39 +41,26 @@ function saveHistory() {
   });
 }
 
-function publish() {
-  return new Promise((resolve, reject) => {
-    console.log(`[chatRouter][sendMessage]-> Publish to MQTT`);
-    this.mqttSender(this.roomId, this.message);
-    resolve();
-  });
-}
-
 function sendResponse() {
   const response = {};
   response.message = `You sent ${this.message}`;
 
-  console.log("[chatRouter][sendMessage]-> Send response");
+  this.logger.info("[chatRouter][sendMessage]-> Send response");
   this.res.jsonp(response);
 }
 
 module.exports = async function (req, res) {
-  const chatRoomModel = require("../../models/chatModels"),
-    mongoose = require("mongoose");
+  const errorHandler = require("../common/errorHandler");
+  this.model = require("../../models/chatModels")({});
+  this.logger = require("../../config/logger");
 
-  this.model = chatRoomModel({
-    mongo: mongoose,
-  });
-
-  this.mqttSender = require("../common/functions/mqttSender");
   this.req = req;
   this.res = res;
 
   try {
     await saveHistory();
-    await publish();
     sendResponse();
   } catch (err) {
-    console.error(err);
+    errorHandler(err);
   }
 };

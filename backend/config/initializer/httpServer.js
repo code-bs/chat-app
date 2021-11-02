@@ -3,16 +3,15 @@ const http = require("http"),
   port = process.env.PORT || "3000",
   express = require("express"),
   cookieParser = require("cookie-parser"),
-  bodyParser = require("body-parser");
+  bodyParser = require("body-parser"),
+  logger = require("../logger");
 
 const app = express();
 const indexRouter = require("../routes/indexRoute.js"),
-  chatRouter = require("../routes/chatRoute.js"),
-  test = require("../../controller/common/middlewares/test");
+  chatRouter = require("../routes/chatRoute.js");
 
 const initiateHttpServer = () => {
   return new Promise((resolve, reject) => {
-    app.test = test();
     app.use(cookieParser());
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
@@ -28,9 +27,8 @@ const initiateHttpServer = () => {
 
     http.createServer(app).listen(port);
 
-    console.log(
-      "[RunServer][InitiateHttpServer]-> HTTP Server listening on",
-      port
+    logger.info(
+      `[RunServer][InitiateHttpServer]-> HTTP Server listening on ${port}`
     );
     resolve();
   });
