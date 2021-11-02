@@ -4,7 +4,8 @@ const http = require("http"),
   express = require("express"),
   cookieParser = require("cookie-parser"),
   bodyParser = require("body-parser"),
-  logger = require("../logger");
+  logger = require("../logger"),
+  { swaggerUi, specs } = require("../swagger");
 
 const app = express();
 const indexRouter = require("../routes/indexRoute.js"),
@@ -15,6 +16,8 @@ const initiateHttpServer = () => {
     app.use(cookieParser());
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
+
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
     app.use("/", indexRouter);
 
