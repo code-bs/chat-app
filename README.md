@@ -29,6 +29,19 @@ $ brew services start mongodb-community
 
 # API 정의
 
+<br/>
+
+## 목차
+
+- [채팅방 생성](#채팅방-생성)
+- [채팅방 목록 조회](#채팅방-목록-조회)
+- [채팅방 입장](#채팅방-입장)
+- [메시지 입력](#메시지-입력)
+
+<br/>
+
+---
+
 ## 채팅방
 
 MongoDB - roomSchema
@@ -49,7 +62,11 @@ MongoDB - roomSchema
 }
 ```
 
-### - 채팅방 생성
+<br/>
+
+---
+
+### 채팅방 생성
 
 URI: `http://{URL}/chat/room` <br/>
 Method: POST <br/>
@@ -108,7 +125,7 @@ Response Payload:
 
 ---
 
-### - 채팅방 목록 조회
+### 채팅방 목록 조회
 
 URI: `http://{URL}/chat/room` <br/>
 Method: GET <br/>
@@ -199,14 +216,51 @@ Response Payload:
 }
 ```
 
+채팅창 입장 API 호출 후 "OK" 메시지를 받았다면 웹 소켓으로 연결 필요. 로컬 테스트의 경우 `http://localhost:8888`. 웹 소켓은 socket.io 라이브러리로 구현됨.
+
+1. 방 입장 시 `enterRoom` 이라는 Namespace 로 emit 해야함. 함께 보낼 데이터 객체의 포맷은 아래와 같음. <br/> (\* 입장할 방과 관련된 데이터가 늘어나면 추가하기 용이하도록 JSON 형태로 우선 설정함. 필요없다면 문자열로 수정 가능)
+
+```js
+// 예시 (json 보내는 방식이 아래와 같은지 확실치 않음 ^오^)
+socket.emit(
+  "enterRoom",
+  JSON.stringify({
+    roomId: "616fbf554de5ad3d62841be8",
+  })
+);
+```
+
+2. 이 후 채팅 메시지는 직전에 보낸 방 고유번호 Namespace 로 emit 및 on 한다.
+
+```js
+const roomId = "616fbf554de5ad3d62841be8";
+
+/* 메시지 보내기 */
+socket.emit(roomId, "안녕하세요!");
+
+/* 메시지 받기 */
+socket.on(roomId, (message) => {
+  console.log(message);
+});
+```
+
+이해를 위한 예시이며, 클라이언트에서 어떻게 할 지는 알아보셔야 함. 아래 참고했던 자료 나열해드림. <br/> 서버 동작 테스트는 [SocketIO Client Tool](https://amritb.github.io/socketio-client-tool/) 에서 해봤고, 큰 문제 없어보였음.
+
+참고 자료:
+
+- [Node.js Socket.IO 사용 방법](https://jsikim1.tistory.com/165)
+- [[프로젝트]채팅앱기본 React에서 Socket.io를 사용해보자(node.js)](https://coding-hwije.tistory.com/24)
+- [Node.js 와 Socket.io 를 이용한 채팅 구현 (1)](https://berkbach.com/node-js%EC%99%80-socket-io%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-%EC%B1%84%ED%8C%85-%EA%B5%AC%ED%98%84-1-cb215954847b)
+- [Socket.io 를 사용한 실시간 채팅 애플리케이션](https://poiemaweb.com/nodejs-socketio)
+
 <br/>
 
 ---
 
 ### 메시지 입력
 
-URI: `http://{URL}/chat/room/enter/:roomId` <br/>
-Method: GET <br/>
+URI: `http://{URL}/chat/message` <br/>
+Method: POST <br/>
 Request Header: - 없음 - <br/>
 Request Params:
 

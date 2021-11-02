@@ -1,13 +1,4 @@
 const RoomSchema = require("./schemas/chatRoom");
-
-// function generateRoomId(roomName, userId) {
-//   /*
-//    * 채팅방의 고유 번호 생성 규칙
-//    *  - 규칙 설정 필요
-//    */
-//   return roomName + userId;
-// }
-
 let Model = function (config) {
   /* config variable init */
   let _mongo = null;
@@ -51,10 +42,18 @@ let Model = function (config) {
         roomId,
         "chatHistory"
       ).exec();
-
       callback(null, chatHistory);
     } catch (err) {
-      callback(err, null);
+      if (err.path && err.path === "_id") {
+        callback(
+          {
+            statusCode: 400,
+            controller: "enterRoom",
+            message: "Not valid roomId",
+          },
+          null
+        );
+      } else callback(err, null);
     }
   };
 
@@ -69,10 +68,18 @@ let Model = function (config) {
         { _id: roomId },
         { $push: { chatHistory: newMessage } }
       );
-      console.log(`[chatRouter][sendMessage]-> Update New History`);
       callback(null, result);
     } catch (err) {
-      callback(err, null);
+      if (err.path && err.path === "_id") {
+        callback(
+          {
+            statusCode: 400,
+            controller: "sendMessage",
+            message: "Not valid roomId",
+          },
+          null
+        );
+      } else callback(err, null);
     }
   };
 };

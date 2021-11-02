@@ -1,24 +1,24 @@
 function getRoom() {
   return new Promise((resolve, reject) => {
     const roomId = this.req.params.roomId;
-    console.log(`[chatRouter][enterRoom]-> Enter to ${roomId}`);
-    console.log(`[chatRouter][enterRoom]-> Searching...`);
+    this.logger.info(`[chatRouter][enterRoom]-> Enter to ${roomId}`);
 
-    this.model.getChatHistory(roomId, (err, result) => {
-      if (err) reject(err);
-      else {
-        this.room = result;
-        resolve();
-      }
-    });
-  });
-}
-
-function addNewUsertoChatRoom() {
-  return new Promise((resolve, reject) => {
-    console.log(`[chatRouter][enterRoom]-> Request Subscribe to mqtt`);
-
-    resolve();
+    if (!roomId) {
+      reject({
+        statusCode: 400,
+        controller: "enterRoom",
+        message: "roomId undefined",
+      });
+    } else {
+      this.model.getChatHistory(roomId, (err, result) => {
+        if (err) reject(err);
+        else {
+          this.logger.info(`[chatRouter][enterRoom]-> getChatHistory OK`);
+          this.room = result;
+          resolve();
+        }
+      });
+    }
   });
 }
 
@@ -29,22 +29,23 @@ function sendResponse() {
   response.roomId = this.room._id;
   response.chatHistory = this.room.chatHistory;
 
-  console.log("[chatRouter][enterRoom]-> Send response");
+  this.logger.info(`[chatRouter][enterRoom]-> Send Response`);
 
   this.res.jsonp(response);
 }
 
 module.exports = async function (req, res) {
+  const errorHandler = require("../common/errorHandler");
+  this.model = require("../../models/chatModels")({});
+  this.logger = require("../../config/logger");
+
   this.req = req;
   this.res = res;
-  const chatRoomModel = require("../../models/chatModels");
-  this.model = chatRoomModel({});
 
   try {
     await getRoom();
-    await addNewUsertoChatRoom();
     sendResponse();
   } catch (err) {
-    console.error(err);
+    errorHandler(err);
   }
 };
