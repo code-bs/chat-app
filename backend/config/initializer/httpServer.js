@@ -19,7 +19,7 @@ const initiateHttpServer = () => {
 
     app.use("/", indexRouter);
 
-    app.use("/chat", app.test);
+    // app.use("/chat", app.test);
     app.use("/chat", chatRouter);
 
     app.use((req, res, next) => {
