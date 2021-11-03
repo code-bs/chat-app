@@ -30,7 +30,24 @@ router.get("/", (req, res) => {
 });
 
 /**
- *
+ * @swagger
+ * /chat/room:
+ *  post:
+ *    summary: 새로운 방 생성
+ *    tags: [Chat]
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              roomName:
+ *                type: string
+ *                description: 사용자가 입력한 방 이름
+ *              userId:
+ *                type: string
+ *                description: 요청한 유저의 고유 번호
  */
 router.post("/room", ChatController.createRoom);
 
@@ -83,6 +100,29 @@ router.get("/room", ChatController.roomList);
  */
 router.get("/room/enter/:roomId", ChatController.enter);
 
+/**
+ * @swagger
+ * /chat/message:
+ *  post:
+ *    summary: 채팅 메시지 전송
+ *    tags: [Chat]
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              userId:
+ *                type: string
+ *                description: 메시지를 보낸 유저 고유 번호
+ *              message:
+ *                type: string
+ *                description: 메시지 내용
+ *              roomId:
+ *                type: string
+ *                description: 방 고유 번호
+ */
 router.post("/message", ChatController.message);
 
 module.exports = router;
