@@ -2,16 +2,20 @@ const swaggerUi = require("swagger-ui-express");
 const swaggereJsdoc = require("swagger-jsdoc");
 
 const options = {
-  swaggerDefinition: {
+  definition: {
+    openapi: "3.0.0",
     info: {
-      title: "Test API",
+      title: "Chat-app API",
       version: "1.0.0",
-      description: "Test API with express",
+      description: "A simple chatting application API",
     },
-    host: "localhost:3000",
-    basePath: "/",
+    servers: [
+      {
+        url: "http://localhost:3000",
+      },
+    ],
   },
-  apis: ["./config/routes/*.js", "./config/swagger/*"],
+  apis: ["./config/routes/*.js"],
 };
 
 const specs = swaggereJsdoc(options);
