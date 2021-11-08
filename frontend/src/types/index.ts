@@ -1,3 +1,7 @@
+type AllChatRoomResponse = {
+  rooms: ChatRoomInfo[];
+};
+
 type ChatRoomInfo = {
   roomId: string;
   roomName: string;
@@ -12,4 +16,4 @@ type ChatLog = {
   userId: String;
 };
 
-export type { ChatRoomInfo, ChatLog };
+export type { ChatRoomInfo, ChatLog, AllChatRoomResponse };
