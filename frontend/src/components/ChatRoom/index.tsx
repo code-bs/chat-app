@@ -1,21 +1,18 @@
 import react, { useState } from 'react';
 import { Layout, Button, Input } from 'antd';
+import { SpeechBubble } from '..';
+import { ChatLog } from '../../types';
 import style from './index.module.scss';
-
-type Message = {
-  text: string;
-  from: number;
-};
 
 const { Header, Content } = Layout;
 
 const ChatRoom = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatLog[]>([]);
   const [text, setText] = useState<string>('');
 
   const submitMessage = () => {
     if (text.length === 0) return;
-    setMessages([...messages, { text, from: 0 }]);
+    setMessages([...messages, { message: text, userId: 'me', regDate: new Date().toString() }]);
     setText('');
   };
 
@@ -26,8 +23,8 @@ const ChatRoom = () => {
       </Header>
       <Content className={style.content}>
         <ul className={style.messages}>
-          {messages.map(msg => {
-            return <li>{msg.text}</li>;
+          {messages.map(chatLog => {
+            return <SpeechBubble chatLog={chatLog} key={`${chatLog.regDate}`} />;
           })}
         </ul>
         <div className={style.userInput}>
