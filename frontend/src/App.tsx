@@ -1,6 +1,6 @@
 import React from 'react';
-import { ChatRoom, ChatList } from './components';
-import { ChatProvider } from './contexts';
+import { ChatRoom, ChatList, Header as HeaderComponet } from './components';
+import { ChatProvider, AuthProvider } from './contexts';
 import { Layout } from 'antd';
 import './App.scss';
 
@@ -8,19 +8,23 @@ const { Header, Sider, Content } = Layout;
 
 function App() {
   return (
-    <ChatProvider>
-      <Layout className="App">
-        <Header style={{ color: '#ffffff' }}>header</Header>
-        <Layout>
-          <Sider>
-            <ChatList />
-          </Sider>
-          <Content>
-            <ChatRoom />
-          </Content>
+    <AuthProvider>
+      <ChatProvider>
+        <Layout className="App">
+          <Header style={{ color: '#ffffff' }}>
+            <HeaderComponet />
+          </Header>
+          <Layout>
+            <Sider>
+              <ChatList />
+            </Sider>
+            <Content>
+              <ChatRoom />
+            </Content>
+          </Layout>
         </Layout>
-      </Layout>
-    </ChatProvider>
+      </ChatProvider>
+    </AuthProvider>
   );
 }
 
