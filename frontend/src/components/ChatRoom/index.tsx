@@ -1,4 +1,4 @@
-import react, { useState } from 'react';
+import React, { useState } from 'react';
 import { Layout, Button, Input } from 'antd';
 import { SpeechBubble } from '..';
 import { ChatLog } from '../../types';
