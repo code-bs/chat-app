@@ -2,7 +2,7 @@
 
 서버 실행 후 알맞는 환경의 주소로 접속
 
-- local: `http://localhost:3000/api-docs`
+- local: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
 - dev: `-`
 - prod: `-`
 
