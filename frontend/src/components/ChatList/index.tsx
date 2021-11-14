@@ -10,6 +10,13 @@ const ChatList = () => {
   const { userId } = useAuthState();
   const [confirmVisible, setConfirmVisible] = useState<boolean>(false);
   const chatDispatch = useChatDispatch();
+  const onCreateButton = () => {
+    if (!userId) {
+      alert('로그인이 필요합니다');
+      return;
+    }
+    setConfirmVisible(true);
+  };
   useEffect(() => {
     getChatRoomList(chatDispatch);
   }, [chatDispatch]);
@@ -30,7 +37,7 @@ const ChatList = () => {
         shape="circle"
         icon={<PlusOutlined />}
         size="large"
-        onClick={() => setConfirmVisible(true)}
+        onClick={onCreateButton}
       />
       <Confirm
         onCancel={() => {
