@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Menu, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Confirm } from '..';
-import { useChatState, useChatDispatch, getChatRoomList } from '../../contexts';
+import { useChatState, useChatDispatch, useAuthState, getChatRoomList, createChatRoom } from '../../contexts';
 import style from './index.module.scss';
 
 const ChatList = () => {
   const { rooms } = useChatState();
+  const { userId } = useAuthState();
   const [confirmVisible, setConfirmVisible] = useState<boolean>(false);
   const chatDispatch = useChatDispatch();
   useEffect(() => {
@@ -35,7 +36,8 @@ const ChatList = () => {
         onCancel={() => {
           setConfirmVisible(false);
         }}
-        onSubmit={() => {
+        onSubmit={value => {
+          createChatRoom(chatDispatch, { roomName: value, userId: userId });
           setConfirmVisible(false);
         }}
         title="채팅방 생성"

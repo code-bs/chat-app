@@ -4,7 +4,7 @@ import { Modal, Input } from 'antd';
 type ConfirmProps = {
   title: string;
   message: string;
-  onSubmit: (value?: string) => void;
+  onSubmit: (value: string) => void;
   onCancel: () => void;
   withInput: boolean;
   isModalVisible: boolean;

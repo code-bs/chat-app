@@ -67,7 +67,7 @@ export const getChatRoomList = async (dispatch: ChatDispatch) => {
   }
 };
 
-export const makeChatRoom = async (dispatch: ChatDispatch, { roomName, userId }: CreateChatRoomParams) => {
+export const createChatRoom = async (dispatch: ChatDispatch, { roomName, userId }: CreateChatRoomParams) => {
   try {
     const { room } = await API.createChatRoom({ roomName, userId });
     dispatch({ type: ChatActionTypes.CREATE_ROOM, room });

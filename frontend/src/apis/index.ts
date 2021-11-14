@@ -9,7 +9,8 @@ const getChatRoomList = async () => {
 
 const createChatRoom = async ({ roomName, userId }: CreateChatRoomParams) => {
   const response: CreateChatRoomResponse = await endpoint.post('/chat/room', { roomName, userId });
-  return response;
+  const { data } = response;
+  return data;
 };
 
 export { getChatRoomList, createChatRoom };

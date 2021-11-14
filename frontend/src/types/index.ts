@@ -5,8 +5,10 @@ type AllChatRoomResponse = {
 };
 
 type CreateChatRoomResponse = {
-  message: string;
-  room: ChatRoomInfo;
+  data: {
+    message: string;
+    room: ChatRoomInfo;
+  };
 };
 
 type CreateChatRoomParams = {
