@@ -9,7 +9,7 @@ const ChatController = require("../../controller/chat/index");
  *    Room:
  *      type: object
  *      properties:
- *        roomId:
+ *        _id:
  *          type: string
  *          description: 자동 생성된 방 고유 번호
  *        roomName:
@@ -91,7 +91,7 @@ router.get("/room", ChatController.roomList);
  *                message:
  *                  type: string
  *                  description: OK 고정
- *                roomId:
+ *                _id:
  *                  type: string
  *                  description: 방 고유 번호
  *                chatHistory:

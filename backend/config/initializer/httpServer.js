@@ -9,7 +9,8 @@ const http = require("http"),
 
 const app = express();
 const indexRouter = require("../routes/indexRoute.js"),
-  chatRouter = require("../routes/chatRoute.js");
+  chatRouter = require("../routes/chatRoute.js"),
+  cors = require("cors");
 
 const cors = require("cors");
 
@@ -18,7 +19,11 @@ const initiateHttpServer = () => {
     app.use(cookieParser());
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
-
+    app.use(
+      cors({
+        "Access-Control-Allow-Origin": "http://localhost:8000/",
+      })
+    );
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
     app.use(cors());
     app.use("/", indexRouter);
