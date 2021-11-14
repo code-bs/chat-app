@@ -11,6 +11,8 @@ const app = express();
 const indexRouter = require("../routes/indexRoute.js"),
   chatRouter = require("../routes/chatRoute.js");
 
+const cors = require("cors");
+
 const initiateHttpServer = () => {
   return new Promise((resolve, reject) => {
     app.use(cookieParser());
@@ -18,7 +20,7 @@ const initiateHttpServer = () => {
     app.use(bodyParser.urlencoded({ extended: false }));
 
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
-
+    app.use(cors());
     app.use("/", indexRouter);
 
     // app.use("/chat", app.test);
