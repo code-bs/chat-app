@@ -12,8 +12,6 @@ const indexRouter = require("../routes/indexRoute.js"),
   chatRouter = require("../routes/chatRoute.js"),
   cors = require("cors");
 
-const cors = require("cors");
-
 const initiateHttpServer = () => {
   return new Promise((resolve, reject) => {
     app.use(cookieParser());
@@ -21,11 +19,11 @@ const initiateHttpServer = () => {
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(
       cors({
-        "Access-Control-Allow-Origin": "http://localhost:8000/",
+        origin: ["http://localhost:8000/"],
       })
     );
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
-    app.use(cors());
+
     app.use("/", indexRouter);
 
     // app.use("/chat", app.test);
