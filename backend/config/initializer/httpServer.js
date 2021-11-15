@@ -19,7 +19,7 @@ const initiateHttpServer = () => {
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(
       cors({
-        origin: ["http://localhost:8000/"],
+        origin: ["http://localhost:8000"],
       })
     );
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
