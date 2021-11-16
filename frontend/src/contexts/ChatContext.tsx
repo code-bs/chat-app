@@ -4,21 +4,25 @@ import * as API from '../apis';
 
 type State = {
   rooms: ChatRoomInfo[];
+  selectedRoomId: string;
 };
 
 export enum ChatActionTypes {
   GET_ROOM_LIST,
   CREATE_ROOM,
+  SELECT_ROOM,
 }
 
 type Action =
   | { type: ChatActionTypes.GET_ROOM_LIST; rooms: ChatRoomInfo[] }
-  | { type: ChatActionTypes.CREATE_ROOM; room: ChatRoomInfo };
+  | { type: ChatActionTypes.CREATE_ROOM; room: ChatRoomInfo }
+  | { type: ChatActionTypes.SELECT_ROOM; id: string };
 
 type ChatDispatch = Dispatch<Action>;
 
 const initialState: State = {
   rooms: [],
+  selectedRoomId: '',
 };
 
 const ChatStateContext = createContext<State>(initialState);
@@ -35,6 +39,11 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         rooms: [...state.rooms, action.room],
+      };
+    case ChatActionTypes.SELECT_ROOM:
+      return {
+        ...state,
+        selectedRoomId: action.id,
       };
   }
 };
@@ -74,4 +83,8 @@ export const createChatRoom = async (dispatch: ChatDispatch, { roomName, userId 
   } catch (e: any) {
     console.log(e.message);
   }
+};
+
+export const selectRoom = (dispatch: ChatDispatch, id: string) => {
+  dispatch({ type: ChatActionTypes.SELECT_ROOM, id });
 };
