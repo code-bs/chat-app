@@ -10,6 +10,7 @@ const http = require("http"),
 const app = express();
 const indexRouter = require("../routes/indexRoute.js"),
   chatRouter = require("../routes/chatRoute.js"),
+  userRouter = require("../routes/userRoute"),
   cors = require("cors");
 
 const initiateHttpServer = () => {
@@ -28,6 +29,7 @@ const initiateHttpServer = () => {
 
     // app.use("/chat", app.test);
     app.use("/chat", chatRouter);
+    app.use("/user", userRouter);
 
     app.use((req, res, next) => {
       next(createError(404));
