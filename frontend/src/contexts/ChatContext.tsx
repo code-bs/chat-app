@@ -1,4 +1,5 @@
-import React, { useReducer, useContext, createContext, Dispatch, ReactNode } from 'react';
+import React, { useReducer, useContext, useEffect, createContext, Dispatch, ReactNode } from 'react';
+import { io } from 'socket.io-client';
 import { ChatRoomInfo, CreateChatRoomParams } from '../types';
 import * as API from '../apis';
 
@@ -27,6 +28,7 @@ const initialState: State = {
 
 const ChatStateContext = createContext<State>(initialState);
 const ChatDispatchContext = createContext<ChatDispatch>(() => null);
+const socket = io(`ws://${process.env.REACT_APP_SOCKET_END_POINT}`);
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -48,8 +50,38 @@ const reducer = (state: State, action: Action): State => {
   }
 };
 
+const initSocketEvent = () => {
+  socket.on('connect', () => {
+    console.log('connect');
+  });
+  socket.on('disconnect', () => {
+    console.log('disconnect');
+  });
+};
+
+const addMessageEvent = (dispatch: ChatDispatch, roomId: string) => {
+  socket.on(roomId, (message: any) => {
+    console.log(message);
+  });
+};
+
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const { rooms } = await API.getChatRoomList();
+        dispatch({ type: ChatActionTypes.GET_ROOM_LIST, rooms });
+        initSocketEvent();
+        rooms.forEach(room => {
+          addMessageEvent(dispatch, room._id);
+        });
+      } catch (e: any) {
+        console.log(e.message);
+      }
+    };
+    init();
+  }, []);
   return (
     <ChatStateContext.Provider value={state}>
       <ChatDispatchContext.Provider value={dispatch}>{children}</ChatDispatchContext.Provider>
@@ -67,15 +99,6 @@ export const useChatDispatch = () => {
   return dispatch;
 };
 
-export const getChatRoomList = async (dispatch: ChatDispatch) => {
-  try {
-    const { rooms } = await API.getChatRoomList();
-    dispatch({ type: ChatActionTypes.GET_ROOM_LIST, rooms });
-  } catch (e: any) {
-    console.log(e.message);
-  }
-};
-
 export const createChatRoom = async (dispatch: ChatDispatch, { roomName, userId }: CreateChatRoomParams) => {
   try {
     const { room } = await API.createChatRoom({ roomName, userId });
@@ -87,4 +110,14 @@ export const createChatRoom = async (dispatch: ChatDispatch, { roomName, userId 
 
 export const selectRoom = (dispatch: ChatDispatch, id: string) => {
   dispatch({ type: ChatActionTypes.SELECT_ROOM, id });
+  socket.emit(
+    'enterRoom',
+    JSON.stringify({
+      roomId: id,
+    }),
+  );
+};
+
+export const sendMessage = (dispatch: ChatDispatch, id: string, message: string) => {
+  socket.emit(id, message);
 };

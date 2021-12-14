@@ -17,6 +17,7 @@ type CreateChatRoomParams = {
 };
 
 type ChatRoomInfo = {
+  _id: string;
   roomId: string;
   roomName: string;
   regDate: string;
