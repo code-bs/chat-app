@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Menu, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Confirm } from '..';
-import { useChatState, useChatDispatch, useAuthState, getChatRoomList, createChatRoom } from '../../contexts';
+import { useChatState, useChatDispatch, useAuthState, createChatRoom, selectRoom } from '../../contexts';
 import style from './index.module.scss';
 
 const ChatList = () => {
@@ -17,15 +17,16 @@ const ChatList = () => {
     }
     setConfirmVisible(true);
   };
-  useEffect(() => {
-    getChatRoomList(chatDispatch);
-  }, [chatDispatch]);
   return (
     <div className={style.container}>
-      <Menu theme="dark">
+      <Menu
+        theme="dark"
+        onClick={({ key }) => {
+          selectRoom(chatDispatch, key);
+        }}>
         {rooms.map(room => {
           return (
-            <Menu.Item key={room.roomName} className={style.item}>
+            <Menu.Item key={room._id} className={style.item}>
               {room.roomName}
             </Menu.Item>
           );
