@@ -1,51 +1,39 @@
-function getRoom() {
-  return new Promise((resolve, reject) => {
-    const roomId = this.req.params.roomId;
-    this.logger.info(`[chatRouter][enterRoom]-> Enter to ${roomId}`);
+const runner = require("../common/runner");
 
-    if (!roomId) {
-      reject({
-        statusCode: 400,
-        controller: "enterRoom",
-        message: "roomId undefined",
-      });
-    } else {
-      this.model.getChatHistory(roomId, (err, result) => {
-        if (err) reject(err);
-        else {
-          this.logger.info(`[chatRouter][enterRoom]-> getChatHistory OK`);
-          this.room = result;
-          resolve();
-        }
-      });
-    }
-  });
+function getRoom(done) {
+  const roomId = this.req.params.roomId;
+  this.logger.info(`[chatRouter][enterRoom]-> Enter to ${roomId}`);
+  if (!roomId) {
+    console.error("방을 지정하지 않았습니다.");
+  } else {
+    this.model.getChatHistory(roomId, (err, result) => {
+      if (err) console.error(err);
+      else {
+        this.logger.info(`[chatRouter][enterRoom]-> getChatHistory OK`);
+        this.room = result;
+        done();
+      }
+    });
+  }
 }
 
 function sendResponse() {
   const response = {};
-
   response.message = `OK`;
   response.roomId = this.room._id;
   response.chatHistory = this.room.chatHistory;
-
   this.logger.info(`[chatRouter][enterRoom]-> Send Response`);
-
   this.res.jsonp(response);
 }
 
-module.exports = async function (req, res) {
-  const errorHandler = require("../common/errorHandler");
-  this.model = require("../../models/chatModels")({});
-  this.logger = require("../../config/logger");
-
-  this.req = req;
+function Controller(config, req, res, next) {
   this.res = res;
+  this.req = req;
+  this.config = config;
+  this.logger = require("../../config/logger");
+  this.model = config.model;
 
-  try {
-    await getRoom();
-    sendResponse();
-  } catch (err) {
-    errorHandler(err);
-  }
-};
+  runner([getRoom, sendResponse], this, next);
+}
+
+module.exports = Controller;

@@ -9,7 +9,7 @@ const initializeMongoDB = () => {
         reject(err);
       } else {
         logger.info(
-          `[RunServer][InitiateMongoDB]-> MongoDB Connected Successfully`
+          `[RunServer][InitiateMongoDB]-> MongoDB Connected Successfully - ${url}`
         );
         resolve();
       }

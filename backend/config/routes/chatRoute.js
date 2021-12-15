@@ -1,6 +1,8 @@
-const express = require("express");
-const router = express.Router();
-const ChatController = require("../../controller/chat/index");
+const app = require("express");
+const router = app.Router();
+const chatController = require("../../controller/chat/index.js");
+
+app.chatApi = chatController(require("../../models/chatModels")({}));
 
 /**
  * @swagger
@@ -49,7 +51,7 @@ router.get("/", (req, res) => {
  *                type: string
  *                description: 요청한 유저의 고유 번호
  */
-router.post("/room", ChatController.createRoom);
+router.post("/room", app.chatApi.createRoom());
 
 /**
  * @swagger
@@ -65,7 +67,7 @@ router.post("/room", ChatController.createRoom);
  *       schema:
  *        $ref: '#/components/schemas/Room'
  */
-router.get("/room", ChatController.roomList);
+router.get("/room", app.chatApi.roomList());
 
 /**
  * @swagger
@@ -98,7 +100,7 @@ router.get("/room", ChatController.roomList);
  *                  type: array
  *                  description: 채팅 기록
  */
-router.get("/room/enter/:roomId", ChatController.enter);
+router.get("/room/enter/:roomId", app.chatApi.enterRoom());
 
 /**
  * @swagger
@@ -123,6 +125,6 @@ router.get("/room/enter/:roomId", ChatController.enter);
  *                type: string
  *                description: 방 고유 번호
  */
-router.post("/message", ChatController.message);
+router.post("/message", app.chatApi.sendMessage());
 
 module.exports = router;

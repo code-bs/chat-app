@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node app.js"
+    "start": "pm2 start app.js",
+    "test": "artillery run --output report.json ./cpu-test.yaml",
+    "report": "artillery report ./report.json",
+    "report:show": "open ./report.json.html"
   },
   "dependencies": {
     "aedes": "^0.46.1",
@@ -22,6 +25,7 @@
     "winston-daily-rotate-file": "^4.5.5"
   },
   "devDependencies": {
+    "artillery": "^2.0.0-7",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.1.6"
   }

@@ -10,6 +10,7 @@ const http = require("http"),
 const app = express();
 const indexRouter = require("../routes/indexRoute.js"),
   chatRouter = require("../routes/chatRoute.js"),
+  userRouter = require("../routes/userRoute"),
   cors = require("cors");
 
 const initiateHttpServer = () => {
@@ -23,18 +24,15 @@ const initiateHttpServer = () => {
       })
     );
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
-
     app.use("/", indexRouter);
-
     // app.use("/chat", app.test);
     app.use("/chat", chatRouter);
-
+    app.use("/user", userRouter);
     app.use((req, res, next) => {
       next(createError(404));
     });
 
     http.createServer(app).listen(port);
-
     logger.info(
       `[RunServer][InitiateHttpServer]-> HTTP Server listening on ${port}`
     );
