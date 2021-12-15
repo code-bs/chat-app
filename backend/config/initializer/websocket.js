@@ -5,7 +5,7 @@ const io = require("socket.io")(http, {
     origin: "*",
   },
 });
-const port = process.env.PORT || 8888;
+const port = process.env.SOCKET_PORT || 8888;
 const logger = require("../logger");
 
 const websocketServerInit = () => {
@@ -19,14 +19,11 @@ const websocketServerInit = () => {
 
         socket.on("enterRoom", (info) => {
           console.log(`[Websocket][enterRoom]-> ${info}`);
-          const roomInfo = new Object();
-          roomInfo.id = info.roomId;
-          socket.on(roomInfo.id, function (message) {
-            console.log(
-              `[Websocket][sendMessage]-> ${roomInfo.id}: ${message}`
-            );
+          const { roomId } = info;
+          socket.on(roomId, function (message) {
+            console.log(`[Websocket][sendMessage]-> ${roomId}: ${message}`);
 
-            socket.emit(roomInfo.id, message);
+            socket.emit(roomId, message);
           });
         });
       });
