@@ -3,18 +3,39 @@ const enterRoom = require("./enterRoom");
 const sendMessage = require("./sendMessage");
 const roomList = require("./roomList");
 
-exports.createRoom = function (req, res) {
-  createRoom(req, res);
+function ChatController(model) {
+  if (!(this instanceof ChatController)) {
+    return new ChatController(model);
+  }
+  this.model = model;
+}
+
+ChatController.prototype.createRoom = function () {
+  var self = this;
+  return (req, res, next) => {
+    new createRoom(self, req, res, next);
+  };
 };
 
-exports.roomList = function (req, res) {
-  roomList(req, res);
+ChatController.prototype.roomList = function () {
+  var self = this;
+  return (req, res, next) => {
+    new roomList(self, req, res, next);
+  };
 };
 
-exports.enter = function (req, res) {
-  enterRoom(req, res);
+ChatController.prototype.sendMessage = function (req, res) {
+  var self = this;
+  return (req, res, next) => {
+    new sendMessage(self, req, res, next);
+  };
 };
 
-exports.message = function (req, res) {
-  sendMessage(req, res);
+ChatController.prototype.enterRoom = function () {
+  var self = this;
+  return (req, res, next) => {
+    new enterRoom(self, req, res, next);
+  };
 };
+
+module.exports = ChatController;
