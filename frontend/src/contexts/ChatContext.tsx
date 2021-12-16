@@ -110,12 +110,9 @@ export const createChatRoom = async (dispatch: ChatDispatch, { roomName, userId 
 
 export const selectRoom = (dispatch: ChatDispatch, id: string) => {
   dispatch({ type: ChatActionTypes.SELECT_ROOM, id });
-  socket.emit(
-    'enterRoom',
-    JSON.stringify({
-      roomId: id,
-    }),
-  );
+  socket.emit('enterRoom', {
+    roomId: id,
+  });
 };
 
 export const sendMessage = (dispatch: ChatDispatch, id: string, message: string) => {
