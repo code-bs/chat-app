@@ -31,7 +31,6 @@ const websocketServerInit = () => {
           const { roomId } = info;
           socket.on(roomId, function (message) {
             console.log(`[Websocket][sendMessage]-> ${roomId}: ${message}`);
-
             socket.emit(roomId, message);
           });
         });

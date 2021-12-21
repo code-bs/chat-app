@@ -1,6 +1,6 @@
 import React, { useReducer, useContext, useEffect, createContext, Dispatch, ReactNode } from 'react';
 import { io } from 'socket.io-client';
-import { ChatRoomInfo, CreateChatRoomParams } from '../types';
+import { ChatLog, ChatRoomInfo, CreateChatRoomParams } from '../types';
 import * as API from '../apis';
 
 type State = {
@@ -12,12 +12,14 @@ export enum ChatActionTypes {
   GET_ROOM_LIST,
   CREATE_ROOM,
   SELECT_ROOM,
+  RECIEVE_MESSAGE,
 }
 
 type Action =
   | { type: ChatActionTypes.GET_ROOM_LIST; rooms: ChatRoomInfo[] }
   | { type: ChatActionTypes.CREATE_ROOM; room: ChatRoomInfo }
-  | { type: ChatActionTypes.SELECT_ROOM; id: string };
+  | { type: ChatActionTypes.SELECT_ROOM; id: string }
+  | { type: ChatActionTypes.RECIEVE_MESSAGE; id: string; chatLog: ChatLog };
 
 type ChatDispatch = Dispatch<Action>;
 
@@ -47,6 +49,14 @@ const reducer = (state: State, action: Action): State => {
         ...state,
         selectedRoomId: action.id,
       };
+    case ChatActionTypes.RECIEVE_MESSAGE:
+      const nextRooms = [...state.rooms];
+      const idx = nextRooms.findIndex(room => room._id === action.id);
+      nextRooms[idx].chatHistory.push(action.chatLog);
+      return {
+        ...state,
+        rooms: nextRooms,
+      };
   }
 };
 
@@ -60,8 +70,9 @@ const initSocketEvent = () => {
 };
 
 const addMessageEvent = (dispatch: ChatDispatch, roomId: string) => {
-  socket.on(roomId, (message: any) => {
-    console.log(message);
+  socket.on(roomId, (message: string) => {
+    const chatLog = { message, userId: 'me', regDate: new Date().toString() };
+    dispatch({ type: ChatActionTypes.RECIEVE_MESSAGE, id: roomId, chatLog });
   });
 };
 
@@ -110,12 +121,9 @@ export const createChatRoom = async (dispatch: ChatDispatch, { roomName, userId 
 
 export const selectRoom = (dispatch: ChatDispatch, id: string) => {
   dispatch({ type: ChatActionTypes.SELECT_ROOM, id });
-  socket.emit(
-    'enterRoom',
-    JSON.stringify({
-      roomId: id,
-    }),
-  );
+  socket.emit('enterRoom', {
+    roomId: id,
+  });
 };
 
 export const sendMessage = (dispatch: ChatDispatch, id: string, message: string) => {

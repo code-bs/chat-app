@@ -28,7 +28,7 @@ type ChatRoomInfo = {
 type ChatLog = {
   message: string;
   regDate: string;
-  userId: String;
+  userId: string;
 };
 
 export type { ChatRoomInfo, ChatLog, AllChatRoomResponse, CreateChatRoomResponse, CreateChatRoomParams };
