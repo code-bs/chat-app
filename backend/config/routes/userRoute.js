@@ -1,7 +1,6 @@
-const UserController = require("../../controller/user/index");
-const express = require("express");
-const router = express.Router();
+const app = require("express");
+const router = app.Router();
+const controller = require("../../controller/user/index");
 
-router.post("/", UserController.createUser);
-
+router.post("/", controller.registUser);
 module.exports = router;
