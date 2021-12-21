@@ -8,8 +8,6 @@
 
 <br/>
 
----
-
 # MongoDB 설치 (macOS)
 
 ```
@@ -37,39 +35,7 @@ $ brew services start mongodb-community
 
 <br/>
 
----
-
 # Websocket (socket.io)
-
-채팅창 입장 API 호출 후 "OK" 메시지를 받았다면 웹 소켓으로 연결 필요. 로컬 테스트의 경우 `http://localhost:8888`. 웹 소켓은 socket.io 라이브러리로 구현됨.
-
-1. 방 입장 시 `enterRoom` 이라는 Namespace 로 emit 해야함. 함께 보낼 데이터 객체의 포맷은 아래와 같음. <br/> (\* 입장할 방과 관련된 데이터가 늘어나면 추가하기 용이하도록 JSON 형태로 우선 설정함. 필요없다면 문자열로 수정 가능)
-
-```js
-// 예시 (json 보내는 방식이 아래와 같은지 확실치 않음 ^오^)
-socket.emit(
-  "enterRoom",
-  JSON.stringify({
-    roomId: "616fbf554de5ad3d62841be8",
-  })
-);
-```
-
-2. 이 후 채팅 메시지는 직전에 보낸 방 고유번호 Namespace 로 emit 및 on 한다.
-
-```js
-const roomId = "616fbf554de5ad3d62841be8";
-
-/* 메시지 보내기 */
-socket.emit(roomId, "안녕하세요!");
-
-/* 메시지 받기 */
-socket.on(roomId, (message) => {
-  console.log(message);
-});
-```
-
-이해를 위한 예시이며, 클라이언트에서 어떻게 할 지는 알아보셔야 함. 아래 참고했던 자료 나열해드림. <br/> 서버 동작 테스트는 [SocketIO Client Tool](https://amritb.github.io/socketio-client-tool/) 에서 해봤고, 큰 문제 없어보였음.
 
 참고 자료:
 
@@ -77,3 +43,111 @@ socket.on(roomId, (message) => {
 - [[프로젝트]채팅앱기본 React에서 Socket.io를 사용해보자(node.js)](https://coding-hwije.tistory.com/24)
 - [Node.js 와 Socket.io 를 이용한 채팅 구현 (1)](https://berkbach.com/node-js%EC%99%80-socket-io%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-%EC%B1%84%ED%8C%85-%EA%B5%AC%ED%98%84-1-cb215954847b)
 - [Socket.io 를 사용한 실시간 채팅 애플리케이션](https://poiemaweb.com/nodejs-socketio)
+
+<br/>
+
+# MySQL 설치
+
+macOS 의 경우 homebrew 로 설치.
+
+```bash
+$ brew install mysql
+```
+
+현재 설치된 mysql 의 버전.
+
+```bash
+mysql: stable 8.0.27 (bottled)
+```
+
+user 설정 후 `/env/local.env` 에 새로운 환경 변수 추가
+
+```
+## MySQL Configuration ##
+MYSQL_HOST=
+MYSQL_PORT=
+MYSQL_USER=
+MYSQL_PASSWORD=
+MYSQL_DB="bs_auth"
+```
+
+MYSQL_DB 는 "bs_auth" 로 고정.
+
+기초 구조는 `/setup/schema.sql` 의 SQL문을 차례로 실행.
+
+```sql
+CREATE DATABASE bs_auth;
+
+USE bs_auth;
+
+DROP TABLE IF EXISTS tbl_member;
+CREATE TABLE `tbl_member` (
+  userSeqno int(11) NOT NULL AUTO_INCREMENT,
+  userId varchar(20) NOT NULL,
+  password varchar(255) NOT NULL,
+  nickName varchar(10) NOT NULL,
+  register_dt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  update_dt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (userSeqno)
+) CHARSET=UTF8MB4;
+
+DROP TABLE IF EXISTS tbl_map_friend;
+CREATE TABLE tbl_map_friend (
+  seqno int(11) NOT NULL AUTO_INCREMENT,
+  userSeqno int(11) NOT NULL,
+  friendSeqno int(11) NOT NULL,
+  PRIMARY KEY (seqno),
+  FOREIGN KEY (userSeqno)
+  REFERENCES tbl_member (userSeqno)
+  ON DELETE CASCADE
+) CHARSET=UTF8MB4;
+
+DROP TABLE IF EXISTS tbl_map_room;
+CREATE TABLE tbl_map_room (
+  seqno int(11) NOT NULL AUTO_INCREMENT,
+  userSeqno int(11) NOT NULL,
+  roomSeqno varchar(255) NOT NULL,
+  PRIMARY KEY (seqno),
+  FOREIGN KEY (userSeqno)
+  REFERENCES tbl_member (userSeqno)
+  ON DELETE CASCADE
+) CHARSET=UTF8MB4;
+```
+
+회원 정보 스키마는 현재 아래와 같은 상태임
+
+```ts
+{
+  ("userSeqno"); // int
+  ("userId"); // string
+  ("password"); // string - DB에는 암호화되어 저장됨
+  ("nickName"); // string
+}
+```
+
+# 비밀번호 암호화
+
+비밀번호 암호화 로직이 들어가있는 상태이며, 동작 환경에 SECRET_KEY 가 있어야 함. 본인이 마음에 드는 키로 아무렇게나 정해서 쓰면 됨. `/env/local.env` 에 환경 변수 추가 필요.
+
+```
+## General Configuration ##
+SECRET_KEY=
+```
+
+# 환경 변수 정리
+
+```
+## General Configuration ##
+SECRET_KEY=
+
+## HTTP Server Configuration ##
+PORT=3000
+SOCKET_PORT=8888
+
+## MySQL Configuration ##
+MYSQL_HOST=
+MYSQL_PORT=
+MYSQL_USER=
+MYSQL_PASSWORD=
+MYSQL_DB='bs_auth"
+```
