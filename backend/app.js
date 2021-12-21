@@ -1,3 +1,6 @@
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, "../env/local.env") });
+
 const httpServer = require("./config/initializer/httpServer.js");
 const mongodb = require("./config/initializer/mongodb");
 const websocket = require("./config/initializer/websocket");
