@@ -1,5 +1,5 @@
-const createUser = require("./createUser");
+const registUser = require("./registUser");
 
-exports.createUser = function (req, res) {
-  createUser(req, res);
+module.exports = {
+  registUser,
 };
