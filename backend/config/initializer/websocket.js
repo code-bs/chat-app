@@ -1,49 +1,41 @@
-const app = require("express")();
-const http = require("http").createServer(app);
-const io = require("socket.io")(http, {
-  cors: {
-    origin: "*",
-  },
+const chatModel = require("../../models/chatModels")({});
+const { Server } = require("socket.io");
+const { createServer } = require("http");
+const httpServer = createServer();
+const io = new Server(httpServer, {
+  cors: "*",
 });
-const port = process.env.SOCKET_PORT || 8888;
-const logger = require("../logger");
-const mongoModel = require("../../models/chatModels")({});
 
-const websocketServerInit = () => {
-  return new Promise((resolve, reject) => {
-    http.listen(port, () => {
-      logger.info(
-        `[RunServer][websocketInit]-> Websocket is opened on port ${port}`
+module.exports = function () {
+  io.on("connection", (socket) => {
+    // socket.on("enterRoom", (info) => {
+    //   const { roomId } = info;
+    //   console.log("ENTERING ROOM", roomId);
+    //   socket.join(roomId);
+    // });
+
+    // socket.on("sendMessage", (payload) => {
+    //   const { roomId, message } = payload;
+    //   console.log("SENDING MESSAGE", roomId, message);
+    //   socket.to(roomId).emit(message);
+    // });
+
+    socket.on("sendMessage", (info) => {
+      const { roomId, nickName, message } = info;
+      chatModel.createNewChatHistory(
+        roomId,
+        message,
+        nickName,
+        (err, result) => {
+          if (err) console.error(err);
+          else {
+            console.log("SET NEW CHAT LOG:", result);
+          }
+        }
       );
-      io.on("connection", (socket) => {
-        console.log(`${socket.id} Connected`);
-
-        mongoModel.findAllChatRoom((err, result) => {
-          result.forEach((room) => {
-            _id = JSON.stringify(room._id);
-            socket.on(_id, (message) => {
-              console.log(`[Websocket][sendMessage]-> ${_id}: ${message}`);
-            });
-          });
-        });
-        socket.on("enterRoom", (info) => {
-          console.log(`[Websocket][enterRoom]-> ${info}`);
-          const { roomId } = info;
-          socket.on(roomId, function (message) {
-            console.log(`[Websocket][sendMessage]-> ${roomId}: ${message}`);
-            socket.emit(roomId, message);
-          });
-        });
-        socket.on("createRoom", (_id) => {
-          socket.on(_id, (message) => {
-            console.log(`[Websocket][sendMessage]-> ${roomId}: ${message}`);
-          });
-        });
-      });
+      io.emit(roomId, message);
     });
-
-    resolve();
   });
-};
 
-module.exports = websocketServerInit;
+  io.listen(process.env.SOCKET_PORT | 8888);
+};

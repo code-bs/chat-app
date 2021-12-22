@@ -8,10 +8,10 @@ const http = require("http"),
   { swaggerUi, specs } = require("../swagger");
 
 const app = express();
-const indexRouter = require("../routes/indexRoute.js"),
-  chatRouter = require("../routes/chatRoute.js"),
+const indexRouter = require("../routes/indexRoute"),
+  chatRouter = require("../routes/chatRoute"),
   userRouter = require("../routes/userRoute"),
-  authRouter = require("../routes/authRoute.js"),
+  authRouter = require("../routes/authRoute"),
   cors = require("cors");
 
 const initiateHttpServer = () => {
