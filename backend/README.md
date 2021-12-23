@@ -114,31 +114,20 @@ CREATE TABLE tbl_map_room (
 ) CHARSET=UTF8MB4;
 ```
 
-회원 정보 스키마는 현재 아래와 같은 상태임
+# 비밀번호 암호화 알고리즘
 
-```ts
-{
-  ("userSeqno"); // int
-  ("userId"); // string
-  ("password"); // string - DB에는 암호화되어 저장됨
-  ("nickName"); // string
-}
-```
-
-# 비밀번호 암호화
-
-비밀번호 암호화 로직이 들어가있는 상태이며, 동작 환경에 SECRET_KEY 가 있어야 함. 본인이 마음에 드는 키로 아무렇게나 정해서 쓰면 됨. `/env/local.env` 에 환경 변수 추가 필요.
+비밀번호 암호화 로직이 들어가있는 상태이며, 알고리즘 코드를 추가해줘야 함. "sha512" 를 쓰는 것을 권장하나, 원하는 것을 넣어도 됨
 
 ```
 ## General Configuration ##
-SECRET_KEY=
+HASH_ALGORITHM="sha512"
 ```
 
 # 환경 변수 정리
 
 ```
 ## General Configuration ##
-SECRET_KEY=
+HASH_ALGORITHM="sha512"
 
 ## HTTP Server Configuration ##
 PORT=3000
