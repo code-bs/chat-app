@@ -24,7 +24,6 @@ let Model = function () {
       const roomList = await RoomSchema.find({});
       callback(null, roomList);
     } catch (err) {
-      console.error(err);
       callback(err, null);
     }
   };
@@ -40,9 +39,8 @@ let Model = function () {
       if (err.path && err.path === "_id") {
         callback(
           {
-            statusCode: 400,
-            controller: "enterRoom",
-            message: "Not valid roomId",
+            status: 400,
+            message: "방이 존재하지 않습니다.",
           },
           null
         );
@@ -66,9 +64,8 @@ let Model = function () {
       if (err.path && err.path === "_id") {
         callback(
           {
-            statusCode: 400,
-            controller: "sendMessage",
-            message: "Not valid roomId",
+            status: 400,
+            message: "방이 존재하지 않습니다.",
           },
           null
         );

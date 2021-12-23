@@ -17,8 +17,7 @@ ${JSON.stringify(context)}`);
       chatModel.createRoom(roomName, userId, (error, result) => {
         if (error) reject(error);
         else {
-          const { _id } = result;
-          resolve(_id);
+          resolve(result);
         }
       });
     }
@@ -31,11 +30,11 @@ async function createRoom(context, callback) {
 [Chat][createRoom]-> creating room
 ${JSON.stringify(context)}`);
   try {
-    const _id = await insertRoom(context);
+    const room = await insertRoom(context);
     logger.info(`
 [Chat][createRoom]-> creating room completed
 ${JSON.stringify(context)}`);
-    callback(null, { _id, message: "방 생성 완료" });
+    callback(null, { room, message: "방 생성 완료" });
   } catch (error) {
     if (!error.status)
       callback(
@@ -46,7 +45,7 @@ ${JSON.stringify(context)}`);
         },
         null
       );
-    else callback(err, null);
+    else callback(error, null);
   }
 }
 
