@@ -46,7 +46,7 @@ ${JSON.stringify(context)}`);
         },
         null
       );
-    else callback(err, null);
+    else callback(error, null);
   }
 }
 
