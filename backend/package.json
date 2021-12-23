@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "start": "pm2 start app.js",
-    "test": "artillery run --output report.json ./cpu-test.yaml",
-    "report": "artillery report ./report.json",
-    "report:show": "open ./report.json.html"
+    "test": "artillery run --output ./test/report.json ./test/cpu-test.yaml",
+    "report": "artillery report ./test/report.json",
+    "report:show": "open ./test/report.json.html"
   },
   "dependencies": {
     "aedes": "^0.46.1",

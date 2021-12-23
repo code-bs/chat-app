@@ -1,45 +1,41 @@
+/* IMPORTS */
 const crypto = require("crypto");
+const authModel = require("../../models/authModels")();
+const logger = require("../../config/logger");
 
 /* METHODS */
-function getUserById(userId) {
-  // DB로 부터 ID에 해당하는 유저 정보를 가져옴
-  // 1. 있으면 넘어감.
-  // 2. 없으면 종료
+function getUserById(context) {
+  const { userId } = context;
   return new Promise((resolve, reject) => {
-    console.log(`[Auth][getUserById]->${userId}`);
-    this.model.getUser(userId, (err, result) => {
-      console.log(`[Auth][getUserById]->Result: ${result}`);
-      if (err) {
-        console.log("ERROR: 500");
-        reject({ status: 500, message: "알 수 없는 오류가 발생 하였습니다." });
+    logger.info(`[Auth][Login][${userId}]-> checking id validation`);
+    authModel.getUser(userId, (error, result) => {
+      if (error) {
+        reject(error);
       } else {
         if (result.length < 1) {
-          console.log("ERROR: 400");
           reject({ status: 400, message: "존재하지 않는 아이디 입니다." });
         } else {
-          const { userId, password, hashCode } = result[0];
-          this.userId = userId;
-          this.password = password;
-          this.hashCode = hashCode;
-          console.log();
-          resolve();
+          resolve(result[0]);
         }
       }
     });
   });
 }
 
-function validatePassword(password) {
+function validatePassword(context, dbUserInfo) {
+  const { userId, password } = context;
   return new Promise((resolve, reject) => {
+    logger.info(`[Auth][Login][${userId}]-> checking password validation`);
     crypto.pbkdf2(
       password,
-      this.hashCode,
+      dbUserInfo.hashCode,
       100000,
       64,
       process.env.HASH_ALGORITHM,
       (err, key) => {
-        if (key.toString("base64") === this.password) resolve();
-        else {
+        if (key.toString("base64") === dbUserInfo.password) {
+          resolve();
+        } else {
           reject({ status: 400, message: "비밀번호가 틀렸습니다." });
         }
       }
@@ -50,29 +46,44 @@ function validatePassword(password) {
 /* JSON WEB TOKEN METHODS 추가 필요 */
 
 /* EXPORTS */
-async function login(context, done) {
-  const { userId, password } = context;
-  this.model = require("../../models/authModels")();
+async function login(context, callback) {
+  logger.info(`[Auth][Login][${context.userId}]-> loggin in`);
 
   try {
-    await getUserById(userId);
-    await validatePassword(password);
+    const dbUserInfo = await getUserById(context);
+    await validatePassword(context, dbUserInfo);
 
-    done(null, {
+    logger.info(`[Auth][Login][${context.userId}]-> login success`);
+    callback(null, {
       accessToken: "abcd",
       refreshToken: "efgh",
     });
-  } catch (err) {
-    done(err, null);
+  } catch (error) {
+    if (!error.status)
+      callback(
+        {
+          status: 500,
+          error,
+          message: "알 수 없는 오류가 발생하였습니다.",
+        },
+        null
+      );
+    else callback(error, null);
   }
 }
 
 module.exports = function (req, res) {
   const context = req.body;
-  login(context, (err, payload) => {
-    if (err) {
-      console.log("??????:", err);
-      res.status(err.status).send(err.message);
+  login(context, (error, payload) => {
+    if (error) {
+      if (error.status >= 500) {
+        logger.error(error.error);
+      } else {
+        logger.info(`
+[Auth][Login][${context.userId}]-> STATUS: ${error.status}
+${error.message}`);
+      }
+      res.status(error.status).send(error.message);
     } else {
       res.send(payload);
     }

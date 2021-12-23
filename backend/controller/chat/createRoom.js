@@ -1,41 +1,70 @@
-const runner = require("../common/runner");
+/* IMPORTS */
+const chatModel = require("../../models/chatModels")();
+const logger = require("../../config/logger");
 
-function createRoom(done) {
-  const { roomName, userId } = this.req.body;
-  this.logger.info(`[chatRouter][createRoom]-> Start : ${roomName} ${userId}`);
-  if (!roomName) {
-    console.error("방 이름이 필요합니다.");
-  } else if (!userId) {
-    console.error("유저 아이디가 필요합니다.");
-  } else {
-    this.model.createRoom(roomName, userId, (err, result) => {
-      if (err) {
-        console.error(err);
-      }
-      this.logger.info(`[chatRouter][createRoom]-> DB insertion OK`);
-      this.room = result;
-      done();
-    });
+/* METHODS */
+function insertRoom(context) {
+  return new Promise((resolve, reject) => {
+    const { roomName, userId } = context;
+    if (!roomName)
+      reject({ status: 400, message: "방 이름은 필수 입력 항목입니다." });
+    else if (!userId)
+      reject({ status: 400, message: "방장이 설정되지 않았습니다." });
+    else {
+      logger.info(`
+[Chat][createRoom]-> insert into mongodb
+${JSON.stringify(context)}`);
+      chatModel.createRoom(roomName, userId, (error, result) => {
+        if (error) reject(error);
+        else {
+          const { _id } = result;
+          resolve(_id);
+        }
+      });
+    }
+  });
+}
+
+/* EXPORTS */
+async function createRoom(context, callback) {
+  logger.info(`
+[Chat][createRoom]-> creating room
+${JSON.stringify(context)}`);
+  try {
+    const _id = await insertRoom(context);
+    logger.info(`
+[Chat][createRoom]-> creating room completed
+${JSON.stringify(context)}`);
+    callback(null, { _id, message: "방 생성 완료" });
+  } catch (error) {
+    if (!error.status)
+      callback(
+        {
+          status: 500,
+          error,
+          message: "알 수 없는 오류가 발생하였습니다.",
+        },
+        null
+      );
+    else callback(err, null);
   }
 }
 
-function sendResponse() {
-  this.res.status(200);
-  const response = {};
-  response.message = "Chat Room created successfully";
-  response._id = this.room._id.toString();
-  this.logger.info(`[chatRouter][createRoom]-> Send Response`);
-  this.res.jsonp(response);
-}
-
-function Controller(config, req, res, next) {
-  this.res = res;
-  this.req = req;
-  this.config = config;
-  this.logger = require("../../config/logger");
-  this.model = config.model;
-
-  runner([createRoom, sendResponse], this, next);
-}
-
-module.exports = Controller;
+module.exports = function (req, res) {
+  const { userId, roomName } = req.body;
+  createRoom({ userId, roomName }, (error, payload) => {
+    if (error) {
+      if (error.status >= 500) {
+        logger.error(error.error);
+      } else {
+        logger.info(`
+[Chat][createRoom]-> ${error.status}
+${JSON.stringify({ userId, roomName })}
+${error.message}`);
+      }
+      res.status(error.status).send(error.message);
+    } else {
+      res.send(payload);
+    }
+  });
+};

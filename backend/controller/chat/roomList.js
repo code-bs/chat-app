@@ -1,33 +1,55 @@
-const runner = require("../common/runner");
+/* IMPORTS */
+const chatModel = require("../../models/chatModels")();
+const logger = require("../../config/logger");
 
-function getRooms(done) {
-  this.logger.info(`[chatRouter][roomList]-> Getting Room List...`);
-  this.model.findAllChatRoom((err, result) => {
-    if (err) reject(err);
-    else {
-      this.logger.info(`[chatRouter][roomList]-> Got Room List`);
-      this.rooms = result;
-      done();
-    }
+/* METHODS */
+function getRooms() {
+  logger.info(`[Chat][roomList]-> getting room list`);
+  return new Promise((resolve, reject) => {
+    chatModel.findAllChatRoom((error, result) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
   });
 }
 
-function sendResponse() {
-  const response = {};
-  response.rooms = this.rooms;
-  this.logger.info(`[chatRouter][roomList]-> Send response`);
-  this.res.jsonp(response);
+/* EXPORTS */
+async function roomList(callback) {
+  logger.info(`[Chat][roomList]-> start to get room list`);
+  try {
+    const rooms = await getRooms();
+
+    logger.info(`[Chat][roomList]-> completed to get room list`);
+    callback(null, {
+      rooms,
+    });
+  } catch (error) {
+    if (!error.status)
+      callback(
+        {
+          status: 500,
+          error,
+          message: "알 수 없는 오류가 발생하였습니다.",
+        },
+        null
+      );
+    else callback(error, null);
+  }
 }
 
-function Controller(config, req, res, next) {
-  this.res = res;
-  this.req = req;
-  this.config = config;
-  this.logger = require("../../config/logger");
-  this.model = config.model;
-
-  console.log("MODEL", this.model);
-  runner([getRooms, sendResponse], this, next);
-}
-
-module.exports = Controller;
+module.exports = function (req, res) {
+  roomList((error, payload) => {
+    if (error) {
+      if (error.status >= 500) {
+        logger.error(error.error);
+      } else {
+        logger.info(`
+[Chat][roomList]-> ${error.status}
+${error.message}`);
+      }
+      res.status(error.status).send(error.message);
+    } else {
+      res.jsonp(payload);
+    }
+  });
+};

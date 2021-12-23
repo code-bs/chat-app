@@ -2,13 +2,12 @@ let Model = function () {
   const _mysql = require("../config/initializer/mysqldb");
 
   this.getUser = (id, done) => {
-    console.log("[AuthModel][getUser]", id);
     _mysql((conn) => {
       conn.query(
         "SELECT * FROM tbl_member WHERE userId=?",
         [id],
-        (err, result) => {
-          if (err) done(err, null);
+        (error, result) => {
+          if (error) done(error, null);
           else done(null, result);
         }
       );

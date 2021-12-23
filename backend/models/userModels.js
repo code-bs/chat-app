@@ -2,7 +2,6 @@ let Model = function () {
   const _mysql = require("../config/initializer/mysqldb");
 
   this.searchId = (id, done) => {
-    console.log(`[MODEL][SearchID] -> ${id}`);
     _mysql((conn) => {
       conn.query(
         "SELECT * FROM tbl_member where userId=?",
@@ -19,7 +18,6 @@ let Model = function () {
   };
 
   this.searchNickname = (nickName, done) => {
-    console.log(`[MODEL][SearchNickname]->${nickName}`);
     _mysql((conn) => {
       conn.query(
         "SELECT * FROM tbl_member where nickName=?",
@@ -37,8 +35,6 @@ let Model = function () {
 
   this.insertUser = (context, done) => {
     const { userId, password, nickName, hashCode } = context;
-    console.log(`[MODEL][InsertUser] -> ID:${userId} / nickname:${nickName}`);
-
     _mysql((conn) => {
       conn.query(
         "INSERT INTO tbl_member (userId, password, nickName, hashCode) VALUES (?, ?, ?, ?)",

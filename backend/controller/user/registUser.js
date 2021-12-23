@@ -1,25 +1,41 @@
+/* IMPORTS */
 const crypto = require("crypto");
+const logger = require("../../config/logger");
+const userModel = require("../../models/userModels")();
 
-/**
- * METHODS
- */
+/* METHODS */
+function checkIdDuplication(context) {
+  const { userId } = context;
 
-function checkIdDuplication(userId) {
+  logger.info(`
+[User][registUser]-> check ID duplicaiton
+${JSON.stringify(context)}`);
+
   return new Promise((resolve, reject) => {
-    this.model.searchId(userId, (err, res) => {
-      if (err) reject(err);
-
+    userModel.searchId(userId, (err, res) => {
+      if (err)
+        reject({
+          status: 500,
+          error: err,
+          message: "알 수 없는 에러가 발생하였습니다.",
+        });
       if (res.length > 0)
         reject({ status: 400, message: "중복된 아이디 입니다." });
       else {
-        console.log("NEW ID :D");
         resolve();
       }
     });
   });
 }
 
-function encryptPassword(password) {
+function encryptPassword(context) {
+  const { password } = context;
+
+  logger.info(`
+[User][registUser]-> encrypt password
+${JSON.stringify({ ...context, password: "secret :)" })}
+`);
+
   return new Promise((resolve, reject) => {
     crypto.randomBytes(64, (err, buf) => {
       crypto.pbkdf2(
@@ -29,7 +45,12 @@ function encryptPassword(password) {
         64,
         process.env.HASH_ALGORITHM,
         (err, key) => {
-          if (err) reject(err);
+          if (err)
+            reject({
+              status: 500,
+              error: err,
+              message: "알 수 없는 에러가 발생하였습니다.",
+            });
           resolve({
             hashCode: buf.toString("base64"),
             ePassword: key.toString("base64"),
@@ -40,13 +61,21 @@ function encryptPassword(password) {
   });
 }
 
-function checkNickNameDuplication(nickName) {
+function checkNickNameDuplication(context) {
+  const { nickName } = context;
+
+  logger.info(`
+[User][registUser]-> check nickname duplication
+${JSON.stringify(context)}`);
+
   return new Promise((resolve, reject) => {
-    console.log(`[User][CheckNicknameDup]->${nickName}`);
-    this.model.searchNickname(nickName, (err, res) => {
-      console.log("중복닉네임검사:", res.length);
+    userModel.searchNickname(nickName, (err, res) => {
       if (err)
-        reject({ status: 500, message: "알 수 없는 에러가 발생하였습니다." });
+        reject({
+          status: 500,
+          error: err,
+          message: "알 수 없는 에러가 발생하였습니다.",
+        });
       else {
         if (res.length > 0)
           reject({ status: 400, message: "중복된 닉네임 입니다." });
@@ -57,45 +86,71 @@ function checkNickNameDuplication(nickName) {
 }
 
 function insertNewUser(context) {
+  logger.info(`
+[User][registUser]-> insert new user
+${JSON.stringify({ ...context, password: "secret :)", hashCode: "code :)" })}`);
   return new Promise((resolve, reject) => {
-    console.log("새로운 유저를 등록합니다.");
-    this.model.insertUser(context, (err) => {
+    userModel.insertUser(context, (err) => {
       if (err) reject(err);
       else resolve();
     });
   });
 }
 
-/**
- * EXPORTS
- */
-async function register(context, done) {
-  const { userId, password, nickName } = context;
-  this.model = require("../../models/userModels")();
+/* EXPORTS */
+async function register({ userId, password, nickName }, callback) {
+  logger.info(`
+[User][registUser]-> start
+${{ userId, nickName }}`);
+
   try {
-    await checkIdDuplication(userId);
-    const { hashCode, ePassword } = await encryptPassword(password);
-    await checkNickNameDuplication(nickName);
+    await checkIdDuplication({ userId, nickName });
+    const { hashCode, ePassword } = await encryptPassword({
+      userId,
+      password,
+      nickName,
+    });
+    await checkNickNameDuplication({ userId, nickName });
     await insertNewUser({ userId, password: ePassword, nickName, hashCode });
 
-    done(null, {
+    logger.info(`
+[User][registUser]-> done
+${JSON.stringify({ userId, nickName })}`);
+
+    callback(null, {
       userId,
       message: "ok",
     });
   } catch (error) {
-    done(error, null);
+    if (!error.status)
+      callback(
+        {
+          status: 500,
+          error,
+          message: "알 수 없는 오류가 발생하였습니다.",
+        },
+        null
+      );
+    else callback(error, null);
   }
 }
 
 module.exports = function (req, res) {
-  const context = req.body;
+  const { userId, password, nickName } = req.body;
 
-  register(context, (err, context) => {
-    if (err) {
-      console.error(err);
-      res.status(err.status).send(err.message);
+  register({ userId, password, nickName }, (error, payload) => {
+    if (error) {
+      if (error.status >= 500) {
+        logger.error(error.error);
+      } else {
+        logger.info(`
+[User][registUser]-> ${error.status}
+${error.message}
+${context}`);
+      }
+      res.status(error.status).send(error.message);
     } else {
-      res.send(context);
+      res.send(payload);
     }
   });
 };
