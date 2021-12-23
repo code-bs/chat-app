@@ -1,14 +1,6 @@
-const RoomSchema = require("./schemas/chatRoom");
-let Model = function (config) {
-  /* config variable init */
-  let _mongo = null;
+let Model = function () {
+  const RoomSchema = require("./schemas/chatRoom");
 
-  /* set config variable */
-  (() => {
-    _mongo = config.mongo;
-  })();
-
-  /* models */
   this.createRoom = async (roomName, userId, callback) => {
     const payload = {
       roomName,
@@ -32,6 +24,7 @@ let Model = function (config) {
       const roomList = await RoomSchema.find({});
       callback(null, roomList);
     } catch (err) {
+      console.error(err);
       callback(err, null);
     }
   };
@@ -84,6 +77,6 @@ let Model = function (config) {
   };
 };
 
-module.exports = function (config) {
-  return new Model(config);
+module.exports = function () {
+  return new Model();
 };
