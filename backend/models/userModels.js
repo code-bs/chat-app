@@ -47,6 +47,47 @@ let Model = function () {
       conn.release();
     });
   };
+
+  this.searchIdBySubstr = (substr, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT userSeqno, userId, nickName FROM tbl_member WHERE userId LIKE ?; ",
+        [substr],
+        (error, result) => {
+          if (error) done(error, null);
+          else {
+            done(null, result);
+          }
+        }
+      );
+    });
+  };
+
+  this.addFriend = (userSeqno, friendSeqno, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "INSERT INTO tbl_map_friend (userSeqno, friendSeqno) VALUES(?, ?)",
+        [userSeqno, friendSeqno],
+        (error) => {
+          if (error) done(error);
+          else done(null);
+        }
+      );
+    });
+  };
+
+  this.getFriendList = (userSeqno, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT m.userSeqno, m.userId, m.nickName FROM tbl_map_friend as f INNER JOIN tbl_member as m ON m.userSeqno=f.friendSeqno WHERE f.userSeqno=?",
+        [userSeqno],
+        (error, result) => {
+          if (error) done(error, null);
+          else done(null, result);
+        }
+      );
+    });
+  };
 };
 
 module.exports = function () {

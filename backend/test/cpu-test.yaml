@@ -1,0 +1,60 @@
+# config:
+#   target: "http://localhost:3000"
+#   phases:
+#     - duration: 60
+#       arrivalRate: 4
+#       name: Warm up
+# scenarios:
+#   - name: "just test"
+#     flow:
+#       - get:
+#           url: "/chat/room"
+#   - name: "create room"
+#     flow:
+#       - get:
+#           url: "/chat/room"
+#       - post:
+#           url: "/chat/room"
+#           json: { "roomName": "Test1", "userId": "hyunwoo045" }
+
+# config:
+#   target: http://localhost:3000
+#   tls:
+#     rejectUnauthorized: false
+#   phases:
+#     - duration: 300
+#       arrivalRate: 100
+# scenarios:
+#   - name: "방 조회, 생성, 입장"
+#     flow:
+#       - get:
+#           url: "/chat/room"
+#       - post:
+#           url: "/chat/room"
+#           json:
+#             roomName: "현우의 채팅방"
+#             userId: "hyunwoo045"
+#           capture:
+#             json: "$._id"
+#             as: "_id"
+#       - get:
+#           url: "/chat/room/enter/{{ _id }}"
+
+config:
+  target: http://localhost:3000
+  phases:
+    - duration: 10
+      arrivalRate: 3
+  payload:
+    path: "keywords.csv"
+    fields:
+      - "userId"
+      - "password"
+scenarios:
+  - name: "방 조회"
+    flow:
+      - post:
+          url: "/auth/login"
+          json:
+            userId: "{{ userId }}"
+            password: "{{ password }}"
