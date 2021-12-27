@@ -5,6 +5,7 @@
   "scripts": {
     "start": "pm2 start app.js",
     "test": "artillery run --output ./test/report.json ./test/cpu-test.yaml",
+    "test:unit": "jest",
     "report": "artillery report ./test/report.json",
     "report:show": "open ./test/report.json.html"
   },
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "artillery": "^2.0.0-7",
+    "jest": "^27.4.5",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.1.6"
   }
