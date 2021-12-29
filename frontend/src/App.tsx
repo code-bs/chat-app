@@ -1,30 +1,31 @@
 import React from 'react';
-import { ChatRoom, ChatList, Header as HeaderComponet } from './components';
-import { ChatProvider, AuthProvider } from './contexts';
-import { Layout } from 'antd';
-import './App.scss';
-
-const { Header, Sider, Content } = Layout;
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Signup, Signin, Main } from './pages';
+import { Centered } from './layouts';
 
 function App() {
   return (
-    <AuthProvider>
-      <ChatProvider>
-        <Layout className="App">
-          <Header style={{ color: '#ffffff' }}>
-            <HeaderComponet />
-          </Header>
-          <Layout>
-            <Sider>
-              <ChatList />
-            </Sider>
-            <Content>
-              <ChatRoom />
-            </Content>
-          </Layout>
-        </Layout>
-      </ChatProvider>
-    </AuthProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<Main />} />
+        <Route
+          path="signup"
+          element={
+            <Centered>
+              <Signup />
+            </Centered>
+          }
+        />
+        <Route
+          path="signin"
+          element={
+            <Centered>
+              <Signin />
+            </Centered>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
