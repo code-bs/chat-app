@@ -4,8 +4,14 @@ const http = require("http"),
   express = require("express"),
   cookieParser = require("cookie-parser"),
   bodyParser = require("body-parser"),
-  logger = require("../logger"),
-  { swaggerUi, specs } = require("../swagger");
+  logger = require("../logger");
+
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yamljs");
+const path = require("path");
+const swaggerDocument = YAML.load(
+  path.join(__dirname, "../../swagger/swagger.yaml")
+);
 
 const app = express();
 const indexRouter = require("../routes/indexRoute"),
@@ -24,9 +30,8 @@ const initiateHttpServer = () => {
         origin: ["http://localhost:8000"],
       })
     );
-    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
     app.use("/", indexRouter);
-    // app.use("/chat", app.test);
     app.use("/chat", chatRouter);
     app.use("/user", userRouter);
     app.use("/auth", authRouter);
