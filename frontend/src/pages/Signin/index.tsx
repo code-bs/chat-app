@@ -1,9 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, Form, Input, Divider, Button, Space } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import style from './index.module.scss';
 
 const Signin = () => {
+  const navigate = useNavigate();
+  const onClickSignup = () => {
+    navigate('/signup');
+  };
   return (
     <Card className={style.container}>
       <p>Welcome To Chat App</p>
@@ -21,7 +26,9 @@ const Signin = () => {
             <Button type="primary" htmlType="submit" size="large">
               로그인
             </Button>
-            <Button size="large">회원가입</Button>
+            <Button size="large" onClick={onClickSignup}>
+              회원가입
+            </Button>
           </Space>
         </Form.Item>
       </Form>

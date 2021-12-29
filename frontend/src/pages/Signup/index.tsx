@@ -1,14 +1,33 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, Form, Input, Divider, Button, Space } from 'antd';
 import { UserOutlined, LockOutlined, SmileOutlined } from '@ant-design/icons';
+import { useAuthDispatch, signin } from '../../contexts';
 import style from './index.module.scss';
+
+type FormValues = {
+  userId: string;
+  nickname: string;
+  password: string;
+  confirm: string;
+};
+
 const Signup = () => {
+  const navigate = useNavigate();
+  const onClickCancel = () => {
+    navigate(-1);
+  };
+  const dispatch = useAuthDispatch();
+  const onClickSubmit = (values: FormValues) => {
+    const { userId, password } = values;
+    signin(dispatch, { userId, password });
+  };
   return (
     <Card className={style.container}>
       <p>회원 가입</p>
       <Divider />
-      <Form name="signup" labelCol={{ span: 6 }}>
-        <Form.Item label="Id" name="id" rules={[{ required: true, message: '아이디를 입력해주세요!' }]}>
+      <Form name="signup" labelCol={{ span: 6 }} onFinish={onClickSubmit}>
+        <Form.Item label="Id" name="userId" rules={[{ required: true, message: '아이디를 입력해주세요!' }]}>
           <Input prefix={<UserOutlined />} />
         </Form.Item>
         <Form.Item label="Nickname" name="nickname" rules={[{ required: true, message: '닉네임을 입력해주세요!' }]}>
@@ -29,7 +48,9 @@ const Signup = () => {
             <Button type="primary" htmlType="submit" size="large">
               가입완료
             </Button>
-            <Button size="large">취소</Button>
+            <Button size="large" onClick={onClickCancel}>
+              취소
+            </Button>
           </Space>
         </Form.Item>
       </Form>
