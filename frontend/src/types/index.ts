@@ -31,4 +31,11 @@ type ChatLog = {
   userId: string;
 };
 
+type User = {
+  userId: string;
+  nickName: string;
+  avatarUrl: string;
+  statusMessage: string;
+};
+
 export type { ChatRoomInfo, ChatLog, AllChatRoomResponse, CreateChatRoomResponse, CreateChatRoomParams };
