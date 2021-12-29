@@ -1,4 +1,6 @@
 import React, { useReducer, useContext, createContext, Dispatch, ReactNode } from 'react';
+import { UserApi } from '../apis';
+import { SigninParams } from '../types';
 
 type State = {
   userId: string;
@@ -48,6 +50,6 @@ export const useAuthDispatch = () => {
   return dispatch;
 };
 
-export const signIn = (dispatch: AuthDispatch, userId: string) => {
-  dispatch({ type: AuthActionTypes.SIGN_IN, userId });
+export const signin = async (dispatch: AuthDispatch, { userId, password }: SigninParams) => {
+  await UserApi.signin({ userId, password });
 };

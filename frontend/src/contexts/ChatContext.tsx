@@ -1,7 +1,7 @@
 import React, { useReducer, useContext, useEffect, createContext, Dispatch, ReactNode } from 'react';
 import { io } from 'socket.io-client';
 import { ChatLog, ChatRoomInfo, CreateChatRoomParams } from '../types';
-import * as API from '../apis';
+import { ChatApi } from '../apis';
 
 type State = {
   rooms: ChatRoomInfo[];
@@ -81,7 +81,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const init = async () => {
       try {
-        const { rooms } = await API.getChatRoomList();
+        const { rooms } = await ChatApi.getChatRoomList();
         dispatch({ type: ChatActionTypes.GET_ROOM_LIST, rooms });
         initSocketEvent();
         rooms.forEach(room => {
@@ -112,7 +112,7 @@ export const useChatDispatch = () => {
 
 export const createChatRoom = async (dispatch: ChatDispatch, { roomName, userId }: CreateChatRoomParams) => {
   try {
-    const { room } = await API.createChatRoom({ roomName, userId });
+    const { room } = await ChatApi.createChatRoom({ roomName, userId });
     dispatch({ type: ChatActionTypes.CREATE_ROOM, room });
   } catch (e: any) {
     console.log(e.message);
@@ -127,5 +127,5 @@ export const selectRoom = (dispatch: ChatDispatch, id: string) => {
 };
 
 export const sendMessage = (dispatch: ChatDispatch, id: string, message: string) => {
-  socket.emit("sendMessage", { roomId: id, nickName: "브아앙", message });
+  socket.emit('sendMessage', { roomId: id, nickName: '브아앙', message });
 };
