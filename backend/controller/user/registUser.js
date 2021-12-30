@@ -62,14 +62,14 @@ ${JSON.stringify({ ...context, password: "secret :)" })}
 }
 
 function checkNickNameDuplication(context) {
-  const { nickName } = context;
+  const { nickname } = context;
 
   logger.info(`
 [User][registUser]-> check nickname duplication
 ${JSON.stringify(context)}`);
 
   return new Promise((resolve, reject) => {
-    userModel.searchNickname(nickName, (err, res) => {
+    userModel.searchNickname(nickname, (err, res) => {
       if (err)
         reject({
           status: 500,
@@ -98,24 +98,24 @@ ${JSON.stringify({ ...context, password: "secret :)", hashCode: "code :)" })}`);
 }
 
 /* EXPORTS */
-async function register({ userId, password, nickName }, callback) {
+async function register({ userId, password, nickname }, callback) {
   logger.info(`
 [User][registUser]-> start
-${{ userId, nickName }}`);
+${{ userId, nickname }}`);
 
   try {
-    await checkIdDuplication({ userId, nickName });
+    await checkIdDuplication({ userId, nickname });
     const { hashCode, ePassword } = await encryptPassword({
       userId,
       password,
-      nickName,
+      nickname,
     });
-    await checkNickNameDuplication({ userId, nickName });
-    await insertNewUser({ userId, password: ePassword, nickName, hashCode });
+    await checkNickNameDuplication({ userId, nickname });
+    await insertNewUser({ userId, password: ePassword, nickname, hashCode });
 
     logger.info(`
 [User][registUser]-> done
-${JSON.stringify({ userId, nickName })}`);
+${JSON.stringify({ userId, nickname })}`);
 
     callback(null, {
       userId,
@@ -136,9 +136,8 @@ ${JSON.stringify({ userId, nickName })}`);
 }
 
 module.exports = function (req, res) {
-  const { userId, password, nickName } = req.body;
-
-  register({ userId, password, nickName }, (error, payload) => {
+  const { userId, password, nickname } = req.body;
+  register({ userId, password, nickname }, (error, payload) => {
     if (error) {
       if (error.status >= 500) {
         logger.error(error.error);

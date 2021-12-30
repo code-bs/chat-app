@@ -17,11 +17,11 @@ let Model = function () {
     });
   };
 
-  this.searchNickname = (nickName, done) => {
+  this.searchNickname = (nickname, done) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT * FROM tbl_member where nickName=?",
-        [nickName],
+        "SELECT * FROM tbl_member where nickname=?",
+        [nickname],
         (err, result) => {
           if (err) done(err, null);
           else {
@@ -34,11 +34,11 @@ let Model = function () {
   };
 
   this.insertUser = (context, done) => {
-    const { userId, password, nickName, hashCode } = context;
+    const { userId, password, nickname, hashCode } = context;
     _mysql((conn) => {
       conn.query(
-        "INSERT INTO tbl_member (userId, password, nickName, hashCode) VALUES (?, ?, ?, ?)",
-        [userId, password, nickName, hashCode],
+        "INSERT INTO tbl_member (userId, password, nickname, hashCode) VALUES (?, ?, ?, ?)",
+        [userId, password, nickname, hashCode],
         (err) => {
           if (err) done(err);
           else done(null);
@@ -51,7 +51,7 @@ let Model = function () {
   this.searchIdBySubstr = (substr, done) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT userSeqno, userId, nickName FROM tbl_member WHERE userId LIKE ?; ",
+        "SELECT userSeqno, userId, nickname FROM tbl_member WHERE userId LIKE ?; ",
         [substr],
         (error, result) => {
           if (error) done(error, null);
@@ -79,7 +79,7 @@ let Model = function () {
   this.getFriendList = (userSeqno, done) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT m.userSeqno, m.userId, m.nickName FROM tbl_map_friend as f INNER JOIN tbl_member as m ON m.userSeqno=f.friendSeqno WHERE f.userSeqno=?",
+        "SELECT m.userSeqno, m.userId, m.nickname FROM tbl_map_friend as f INNER JOIN tbl_member as m ON m.userSeqno=f.friendSeqno WHERE f.userSeqno=?",
         [userSeqno],
         (error, result) => {
           if (error) done(error, null);

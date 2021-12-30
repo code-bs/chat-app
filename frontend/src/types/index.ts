@@ -33,7 +33,7 @@ export type ChatLog = {
 
 export type User = {
   userId: string;
-  nickName: string;
+  nickname: string;
   avatarUrl: string;
   statusMessage: string;
 };
@@ -46,4 +46,5 @@ export type SigninParams = {
 export type SignupParams = {
   userId: string;
   password: string;
+  nickname: string;
 };

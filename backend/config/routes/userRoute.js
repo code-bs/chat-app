@@ -51,7 +51,7 @@ router.post("/", controller.registUser);
  *           userId:
  *             type: string
  *             description: 각 친구의 id
- *           nickName:
+ *           nickname:
  *             type: string
  *             description: 각 친구의 닉네임
  */
