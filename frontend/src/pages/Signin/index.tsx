@@ -2,19 +2,30 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Form, Input, Divider, Button, Space } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { useAuthDispatch, signin } from '../../contexts';
 import style from './index.module.scss';
+
+type FormValues = {
+  userId: string;
+  password: string;
+};
 
 const Signin = () => {
   const navigate = useNavigate();
   const onClickSignup = () => {
     navigate('/signup');
   };
+  const dispatch = useAuthDispatch();
+  const onClickSubmit = async (values: FormValues) => {
+    const { userId, password } = values;
+    await signin(dispatch, { userId, password });
+  };
   return (
     <Card className={style.container}>
       <p>Welcome To Chat App</p>
       <Divider />
-      <Form name="login" labelCol={{ span: 4 }}>
-        <Form.Item label="Id" name="id" rules={[{ required: true, message: '아이디를 입력해주세요!' }]}>
+      <Form name="login" labelCol={{ span: 4 }} onFinish={onClickSubmit}>
+        <Form.Item label="Id" name="userId" rules={[{ required: true, message: '아이디를 입력해주세요!' }]}>
           <Input prefix={<UserOutlined />} />
         </Form.Item>
         <Form.Item label="Password" name="password" rules={[{ required: true, message: '비밀번호를 입력해주세요!' }]}>

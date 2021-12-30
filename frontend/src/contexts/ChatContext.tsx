@@ -127,5 +127,5 @@ export const selectRoom = (dispatch: ChatDispatch, id: string) => {
 };
 
 export const sendMessage = (dispatch: ChatDispatch, id: string, message: string) => {
-  socket.emit('sendMessage', { roomId: id, nickName: '브아앙', message });
+  socket.emit('sendMessage', { roomId: id, nickname: '브아앙', message });
 };

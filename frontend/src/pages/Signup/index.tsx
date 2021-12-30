@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Form, Input, Divider, Button, Space } from 'antd';
 import { UserOutlined, LockOutlined, SmileOutlined } from '@ant-design/icons';
-import { useAuthDispatch, signin } from '../../contexts';
+import { useAuthDispatch, signup } from '../../contexts';
 import style from './index.module.scss';
 
 type FormValues = {
@@ -18,9 +18,9 @@ const Signup = () => {
     navigate(-1);
   };
   const dispatch = useAuthDispatch();
-  const onClickSubmit = (values: FormValues) => {
-    const { userId, password } = values;
-    signin(dispatch, { userId, password });
+  const onClickSubmit = async (values: FormValues) => {
+    const { userId, password, nickname } = values;
+    await signup(dispatch, { userId, password, nickname });
   };
   return (
     <Card className={style.container}>
