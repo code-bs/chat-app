@@ -39,7 +39,17 @@ const Signup = () => {
         <Form.Item
           label="Confirm Password"
           name="confirm"
-          rules={[{ required: true, message: '비밀번호 확인을 입력해주세요!' }]}>
+          rules={[
+            { required: true, message: '비밀번호 확인을 입력해주세요!' },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('password') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('비밀번호가 일치하지 않습니다.'));
+              },
+            }),
+          ]}>
           <Input.Password prefix={<LockOutlined />} />
         </Form.Item>
         <Divider />
