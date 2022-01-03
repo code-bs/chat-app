@@ -60,6 +60,7 @@ let Model = function () {
           }
         }
       );
+      conn.release();
     });
   };
 
@@ -81,6 +82,20 @@ let Model = function () {
       conn.query(
         "SELECT m.userSeqno, m.userId, m.nickName FROM tbl_map_friend as f INNER JOIN tbl_member as m ON m.userSeqno=f.friendSeqno WHERE f.userSeqno=?",
         [userSeqno],
+        (error, result) => {
+          if (error) done(error, null);
+          else done(null, result);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.isFriend = (userSeqno, friendSeqno, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT * FROM tbl_map_friend WHERE userSeqno=? AND friendSeqno=?",
+        [userSeqno, friendSeqno],
         (error, result) => {
           if (error) done(error, null);
           else done(null, result);
