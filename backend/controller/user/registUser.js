@@ -119,7 +119,6 @@ ${JSON.stringify({ userId, nickName })}`);
 
     callback(null, {
       userId,
-      message: "ok",
     });
   } catch (error) {
     if (!error.status)
@@ -145,8 +144,7 @@ module.exports = function (req, res) {
       } else {
         logger.info(`
 [User][registUser]-> ${error.status}
-${error.message}
-${context}`);
+${error.message}`);
       }
       res.status(error.status).send(error.message);
     } else {

@@ -23,7 +23,6 @@ paths:
     post:
       summary: 새로운 방 생성
       tags: [Chat]
-
       requestBody:
         description: Request Body 정의
         required: true
@@ -63,7 +62,113 @@ paths:
                   chatHistory:
                     type: array
                     description: 채팅 기록
-
+  /auth/login:
+    post:
+      summary: 로그인
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: 로그인 아이디
+                password:
+                  type: string
+                  description: 패스워드
+      responses:
+        200:
+          description: 로그인 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToekn:
+                    type: string
+  /user:
+    post:
+      summary: 회원가입
+      tags: [User]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newuser"
+      responses:
+        200:
+          description: 회원 가입 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+        400:
+          description: "중복된 아이디"
+  /user/{userId}:
+    get:
+      summary: 유저 검색
+      tags: [User]
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: 검색하는 유저 아이디
+      responses:
+        200:
+          description: 유저 검색 결과
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+  /user/friend:
+    post:
+      summary: 친구 추가
+      tags: [User]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userSeqno:
+                  type: number
+                  description: 본인 고유 번호
+                friendId:
+                  type: string
+                  description: 추가하고자 하는 유저 로그인 아이디
+      responses:
+        200:
+          description: 친구 추가 성공
+  /user/friend/{userSeqno}:
+    get:
+      summary: 친구 검색
+      tags: [User]
+      parameters:
+        - in: path
+          name: userSeqno
+          schema:
+            type: number
+          required: true
+          description: 유저 고유 번호
+      responses:
+        200:
+          description: 친구 목록
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/friendList"
 components:
   schemas:
     room:
@@ -79,6 +184,15 @@ components:
           type: string
         chatHistory:
           $ref: "#/components/schemas/chatHistory"
+    user:
+      type: object
+      properties:
+        userSeqno:
+          type: number
+        userId:
+          type: string
+        nickName:
+          type: string
     createroom:
       type: object
       properties:
@@ -105,3 +219,19 @@ components:
           userId:
             type: string
             description: 유저 아이디
+    newuser:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: 로그인 아이디
+        password:
+          type: string
+          description: 로그인 패스워드
+        nickName:
+          type: string
+          description: 닉네임
+    friendList:
+      type: array
+      items:
+        $ref: "#/components/schemas/user"
