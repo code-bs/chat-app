@@ -85,7 +85,7 @@ CREATE TABLE `tbl_member` (
   userSeqno int(11) NOT NULL AUTO_INCREMENT,
   userId varchar(20) NOT NULL,
   password varchar(255) NOT NULL,
-  nickName varchar(10) NOT NULL,
+  nickname varchar(10) NOT NULL,
   register_dt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   update_dt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (userSeqno)

@@ -1,14 +1,14 @@
 import React from 'react';
 import { Button } from 'antd';
-import { useAuthState, useAuthDispatch, signIn } from '../../contexts';
+import { useAuthState } from '../../contexts';
+import { useNavigate } from 'react-router-dom';
 import style from './index.module.scss';
 
 const Header = () => {
   const { userId } = useAuthState();
-  const authDispatch = useAuthDispatch();
+  const navigate = useNavigate();
   const onClickSignin = () => {
-    const id = prompt('아이디를 입력하세요');
-    signIn(authDispatch, id as string);
+    navigate('/signin');
   };
   return (
     <div className={style.container}>
