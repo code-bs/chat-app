@@ -26,12 +26,12 @@
     "socket.io": "^4.3.1",
     "websocket-stream": "^5.5.2",
     "winston": "^3.3.3",
-    "winston-daily-rotate-file": "^4.5.5"
+    "winston-daily-rotate-file": "^4.5.5",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "artillery": "^2.0.0-7",
     "jest": "^27.4.5",
-    "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.1.6"
   }
 }
