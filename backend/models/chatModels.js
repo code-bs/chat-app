@@ -90,10 +90,24 @@ let Model = function () {
     });
   };
 
-  this.getRoomInfos = async (userId, callback) => {
+  this.getRoomIds = (userId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT roomId from tbl_map_room WHERE userId=?",
+        [userId],
+        (err, result) => {
+          if (err) callback(err, null);
+          else callback(null, result);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.getRoomInfo = async (roomId, callback) => {
     try {
-      const room = await RoomSchema.find({ masterUserId: userId }).exec();
-      callback(null, room);
+      const info = await RoomSchema.findById(roomId).exec();
+      callback(null, info);
     } catch (error) {
       callback(error, null);
     }

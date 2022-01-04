@@ -3,15 +3,23 @@ const chatModel = require("../../models/chatModels")();
 const logger = require("../../config/logger");
 
 /* METHODS */
-function getRoomInfos(userId) {
-  logger.info(`[Chat][roomList]-> get rooms info from mongo`);
+function getRoomIds(userId) {
+  logger.info(`[Chat][roomList]-> get rooms info from mysql`);
   return new Promise((resolve, reject) => {
-    chatModel.getRoomInfos(userId, (err, result) => {
+    chatModel.getRoomIds(userId, (err, result) => {
       if (err) reject(err);
       else {
-        console.log(result);
         resolve(result);
       }
+    });
+  });
+}
+
+function getRoomInfo(roomId) {
+  return new Promise((resolve, reject) => {
+    chatModel.getRoomInfo(roomId, (err, result) => {
+      if (err) reject(err);
+      else resolve(result);
     });
   });
 }
@@ -20,7 +28,12 @@ function getRoomInfos(userId) {
 module.exports = async function (req, res) {
   const { userId } = req.params;
   try {
-    const roomInfos = await getRoomInfos(userId);
+    const roomIds = await getRoomIds(userId);
+    let roomInfos = [];
+    for (let i = 0; i < roomIds.length; i++) {
+      let roomInfo = await getRoomInfo(roomIds[i].roomId);
+      roomInfos.push(roomInfo);
+    }
 
     logger.info(`[Chat][roomList]-> get room list done`);
     res.send(roomInfos);
