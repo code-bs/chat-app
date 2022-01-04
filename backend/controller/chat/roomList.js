@@ -3,53 +3,33 @@ const chatModel = require("../../models/chatModels")();
 const logger = require("../../config/logger");
 
 /* METHODS */
-function getRooms() {
-  logger.info(`[Chat][roomList]-> getting room list`);
+function getRoomInfos(userId) {
+  logger.info(`[Chat][roomList]-> get rooms info from mongo`);
   return new Promise((resolve, reject) => {
-    chatModel.findAllChatRoom((error, result) => {
-      if (error) reject(error);
-      else resolve(result);
+    chatModel.getRoomInfos(userId, (err, result) => {
+      if (err) reject(err);
+      else {
+        console.log(result);
+        resolve(result);
+      }
     });
   });
 }
 
 /* EXPORTS */
-async function roomList(callback) {
-  logger.info(`[Chat][roomList]-> start to get room list`);
+module.exports = async function (req, res) {
+  const { userId } = req.params;
   try {
-    const rooms = await getRooms();
+    const roomInfos = await getRoomInfos(userId);
 
-    logger.info(`[Chat][roomList]-> completed to get room list`);
-    callback(null, {
-      rooms,
-    });
+    logger.info(`[Chat][roomList]-> get room list done`);
+    res.send(roomInfos);
   } catch (error) {
-    if (!error.status)
-      callback(
-        {
-          status: 500,
-          error,
-          message: "알 수 없는 오류가 발생하였습니다.",
-        },
-        null
-      );
-    else callback(error, null);
-  }
-}
-
-module.exports = function (req, res) {
-  roomList((error, payload) => {
-    if (error) {
-      if (error.status >= 500) {
-        logger.error(error.error);
-      } else {
-        logger.info(`
-[Chat][roomList]-> ${error.status}
-${error.message}`);
-      }
-      res.status(error.status).send(error.message);
+    if (!error.status) {
+      console.error(error);
+      res.status(500).send("알 수 없는 오류가 발생하였습니다.");
     } else {
-      res.jsonp(payload);
+      res.status(error.status).send(error.message);
     }
-  });
+  }
 };
