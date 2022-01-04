@@ -1,5 +1,6 @@
 let Model = function () {
   const RoomSchema = require("./schemas/chatRoom");
+  const _mysql = require("../config/initializer/mysqldb");
 
   this.createRoom = async (roomName, userId, callback) => {
     const payload = {
@@ -71,6 +72,47 @@ let Model = function () {
         );
       } else callback(err, null);
     }
+  };
+
+  this.mapRoomList = ({ userId, roomId }, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "INSERT INTO tbl_map_room (userId, roomId) VALUES(?, ?)",
+        [userId, roomId],
+        (err) => {
+          if (err) callback(err);
+          else {
+            callback(null);
+          }
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.getRoomInfos = async (userId, callback) => {
+    try {
+      const room = await RoomSchema.find({ masterUserId: userId }).exec();
+      callback(null, room);
+    } catch (error) {
+      callback(error, null);
+    }
+  };
+
+  this.getUsers = (roomId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT m.userId, m.nickname, m.avatarUrl, m.statusMessage FROM tbl_map_room as r INNER JOIN tbl_member as m ON m.userId=r.userId WHERE roomId=?",
+        [roomId],
+        (err, result) => {
+          if (err) callback(err, null);
+          else {
+            callback(null, result);
+          }
+        }
+      );
+      conn.release();
+    });
   };
 };
 
