@@ -11,9 +11,7 @@ function insertRoom(context) {
     else if (!userId)
       reject({ status: 400, message: "방장이 설정되지 않았습니다." });
     else {
-      logger.info(`
-[Chat][createRoom]-> insert into mongodb
-${JSON.stringify(context)}`);
+      logger.info(`[Chat][createRoom]-> insert into mongodb`);
       chatModel.createRoom(roomName, userId, (error, result) => {
         if (error) reject(error);
         else {
@@ -24,46 +22,33 @@ ${JSON.stringify(context)}`);
   });
 }
 
-/* EXPORTS */
-async function createRoom(context, callback) {
-  logger.info(`
-[Chat][createRoom]-> creating room
-${JSON.stringify(context)}`);
-  try {
-    const room = await insertRoom(context);
-    logger.info(`
-[Chat][createRoom]-> creating room completed
-${JSON.stringify(context)}`);
-    callback(null, { room, message: "방 생성 완료" });
-  } catch (error) {
-    if (!error.status)
-      callback(
-        {
-          status: 500,
-          error,
-          message: "알 수 없는 오류가 발생하였습니다.",
-        },
-        null
-      );
-    else callback(error, null);
-  }
+function mapRoomList(context) {
+  logger.info(`[Chat][createRoom]-> mapping (mysql)`);
+  return new Promise((resolve, reject) => {
+    chatModel.mapRoomList(context, (error) => {
+      if (error) reject(error);
+      else resolve();
+    });
+  });
 }
 
-module.exports = function (req, res) {
+/* EXPORTS */
+module.exports = async function (req, res) {
   const { userId, roomName } = req.body;
-  createRoom({ userId, roomName }, (error, payload) => {
-    if (error) {
-      if (error.status >= 500) {
-        logger.error(error.error);
-      } else {
-        logger.info(`
-[Chat][createRoom]-> ${error.status}
-${JSON.stringify({ userId, roomName })}
-${error.message}`);
-      }
+
+  try {
+    const room = await insertRoom({ userId, roomName });
+    const roomId = Object(room._id).toString();
+    await mapRoomList({ userId, roomId });
+
+    logger.info(`[Chat][createRoom]-> create room done`);
+    res.send(room);
+  } catch (error) {
+    logger.error(`[Chat][createRoom]-> ${error}`);
+    if (!error.status)
+      res.status(500).send("알 수 없는 오류가 발생하였습니다.");
+    else {
       res.status(error.status).send(error.message);
-    } else {
-      res.send(payload);
     }
-  });
+  }
 };
