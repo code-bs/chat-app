@@ -4,7 +4,7 @@ const controller = require("../../controller/chat");
 
 router.post("/room", controller.createRoom);
 
-router.get("/room", controller.roomList);
+router.get("/room/:userId", controller.roomList);
 
 router.get("/room/enter/:roomId", controller.enterRoom);
 

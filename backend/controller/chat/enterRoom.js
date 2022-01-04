@@ -3,7 +3,7 @@ const chatModel = require("../../models/chatModels")();
 const logger = require("../../config/logger");
 
 /* METHODS */
-function getRoom(roomId) {
+function getChatHistory(roomId) {
   logger.info(`[Chat][enterRoom][${roomId}]-> getting room info`);
   return new Promise((resolve, reject) => {
     if (!roomId) reject({ status: 400, message: "방이 선택되지 않았습니다." });
@@ -18,18 +18,28 @@ function getRoom(roomId) {
   });
 }
 
+function getUsers(roomId) {
+  logger.info(`[Chat][enterRoom][${roomId}]-> getting users`);
+  return new Promise((resolve, reject) => {
+    chatModel.getUsers(roomId, (err, result) => {
+      if (err) reject(err);
+      else resolve(result);
+    });
+  });
+}
+
 /* EXPORTS */
 async function enterRoom(params, callback) {
   const { roomId } = params;
   logger.info(`[Chat][enterRoom][${roomId}]-> entering room`);
   try {
-    const roomInfo = await getRoom(roomId);
+    const { chatHistory } = await getChatHistory(roomId);
+    const users = await getUsers(roomId);
 
     logger.info(`[Chat][enterRoom][${roomId}]-> entering room completed`);
     callback(null, {
-      message: "OK",
-      roomId: roomInfo._id,
-      chatHistory: roomInfo.chatHistory,
+      users,
+      chatHistory,
     });
   } catch (error) {
     if (!error.status)
