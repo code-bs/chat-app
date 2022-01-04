@@ -1,22 +1,22 @@
-type AllChatRoomResponse = {
+export type AllChatRoomResponse = {
   data: {
     rooms: ChatRoomInfo[];
   };
 };
 
-type CreateChatRoomResponse = {
+export type CreateChatRoomResponse = {
   data: {
     message: string;
     room: ChatRoomInfo;
   };
 };
 
-type CreateChatRoomParams = {
+export type CreateChatRoomParams = {
   roomName: string;
   userId: string;
 };
 
-type ChatRoomInfo = {
+export type ChatRoomInfo = {
   _id: string;
   roomId: string;
   roomName: string;
@@ -25,10 +25,26 @@ type ChatRoomInfo = {
   chatHistory: ChatLog[];
 };
 
-type ChatLog = {
+export type ChatLog = {
   message: string;
   regDate: string;
   userId: string;
 };
 
-export type { ChatRoomInfo, ChatLog, AllChatRoomResponse, CreateChatRoomResponse, CreateChatRoomParams };
+export type User = {
+  userId: string;
+  nickname: string;
+  avatarUrl: string;
+  statusMessage: string;
+};
+
+export type SigninParams = {
+  userId: string;
+  password: string;
+};
+
+export type SignupParams = {
+  userId: string;
+  password: string;
+  nickname: string;
+};

@@ -1,13 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import { ChatProvider, AuthProvider } from './contexts';
+
 import reportWebVitals from './reportWebVitals';
 import './styles/base.scss';
 import 'antd/dist/antd.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <AuthProvider>
+      <ChatProvider>
+        <App />
+      </ChatProvider>
+    </AuthProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 );
