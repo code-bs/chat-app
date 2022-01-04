@@ -17,11 +17,11 @@ let Model = function () {
     });
   };
 
-  this.searchNickname = (nickName, done) => {
+  this.searchNickname = (nickname, done) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT * FROM tbl_member where nickName=?",
-        [nickName],
+        "SELECT * FROM tbl_member where nickname=?",
+        [nickname],
         (err, result) => {
           if (err) done(err, null);
           else {
@@ -34,11 +34,12 @@ let Model = function () {
   };
 
   this.insertUser = (context, done) => {
-    const { userId, password, nickName, hashCode } = context;
+    const { userId, password, nickname, hashCode, avatarUrl, statusMessage } =
+      context;
     _mysql((conn) => {
       conn.query(
-        "INSERT INTO tbl_member (userId, password, nickName, hashCode) VALUES (?, ?, ?, ?)",
-        [userId, password, nickName, hashCode],
+        "INSERT INTO tbl_member (userId, password, nickname, hashCode, avatarUrl, statusMessage) VALUES (?, ?, ?, ?, ?, ?)",
+        [userId, password, nickname, hashCode, avatarUrl, statusMessage],
         (err) => {
           if (err) done(err);
           else done(null);
@@ -51,7 +52,7 @@ let Model = function () {
   this.searchIdBySubstr = (substr, done) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT userSeqno, userId, nickName FROM tbl_member WHERE userId LIKE ?; ",
+        "SELECT userId, nickname, avatarUrl, statusMessage FROM tbl_member WHERE userId LIKE ?; ",
         [substr],
         (error, result) => {
           if (error) done(error, null);
@@ -64,11 +65,11 @@ let Model = function () {
     });
   };
 
-  this.addFriend = (userSeqno, friendSeqno, done) => {
+  this.addFriend = (userId, friendId, done) => {
     _mysql((conn) => {
       conn.query(
-        "INSERT INTO tbl_map_friend (userSeqno, friendSeqno) VALUES(?, ?)",
-        [userSeqno, friendSeqno],
+        "INSERT INTO tbl_map_friend (userId, friendId) VALUES(?, ?)",
+        [userId, friendId],
         (error) => {
           if (error) done(error);
           else done(null);
@@ -77,11 +78,11 @@ let Model = function () {
     });
   };
 
-  this.getFriendList = (userSeqno, done) => {
+  this.getFriendList = (userId, done) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT m.userSeqno, m.userId, m.nickName FROM tbl_map_friend as f INNER JOIN tbl_member as m ON m.userSeqno=f.friendSeqno WHERE f.userSeqno=?",
-        [userSeqno],
+        "SELECT m.userId, m.nickname, m.avatarUrl, m.statusMessage FROM tbl_map_friend as f INNER JOIN tbl_member as m ON m.userId=f.friendId WHERE f.userId=?",
+        [userId],
         (error, result) => {
           if (error) done(error, null);
           else done(null, result);
@@ -91,11 +92,11 @@ let Model = function () {
     });
   };
 
-  this.isFriend = (userSeqno, friendSeqno, done) => {
+  this.isFriend = (userId, friendId, done) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT * FROM tbl_map_friend WHERE userSeqno=? AND friendSeqno=?",
-        [userSeqno, friendSeqno],
+        "SELECT _id FROM tbl_map_friend WHERE userId=? AND friendId=?",
+        [userId, friendId],
         (error, result) => {
           if (error) done(error, null);
           else done(null, result);

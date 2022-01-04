@@ -4,10 +4,8 @@ const logger = require("../../config/logger");
 
 /* METHODS */
 function findUser(context) {
-  const { userSeqno, friendId } = context;
-  logger.info(
-    `[User][addFriend][${userSeqno}/${friendId}]-> check friend exists`
-  );
+  const { userId, friendId } = context;
+  logger.info(`[User][addFriend][${userId}/${friendId}]-> check friend exists`);
   return new Promise((resolve, reject) => {
     userModel.searchId(friendId, (error, result) => {
       if (error) reject(error);
@@ -15,18 +13,18 @@ function findUser(context) {
       if (result.length < 1)
         reject({ status: 400, message: "존재하지 않는 사용자 입니다." });
       else {
-        resolve(result[0]);
+        resolve();
       }
     });
   });
 }
 
 function isFriend(context) {
-  const { userSeqno, friendSeqno, friendId } = context;
-  logger.info(`[User][addFriend][${userSeqno}/${friendId}]-> isFriend`);
+  const { userId, friendId } = context;
+  logger.info(`[User][addFriend][${userId}/${friendId}]-> isFriend`);
 
   return new Promise((resolve, reject) => {
-    userModel.isFriend(userSeqno, friendSeqno, (error, result) => {
+    userModel.isFriend(userId, friendId, (error, result) => {
       if (error) reject(error);
 
       if (result.length > 0)
@@ -39,13 +37,13 @@ function isFriend(context) {
 }
 
 function insertFriend(context) {
-  const { userSeqno, friendSeqno, friendId } = context;
-  logger.info(`[User][addFriend][${userSeqno}/${friendId}]-> adding friend`);
+  const { userId, friendId } = context;
+  logger.info(`[User][addFriend][${userId}/${friendId}]-> adding friend`);
   return new Promise((resolve, reject) => {
-    userModel.addFriend(userSeqno, friendSeqno, (error) => {
+    userModel.addFriend(userId, friendId, (error) => {
       if (error) reject(error);
 
-      userModel.addFriend(friendSeqno, userSeqno, (error) => {
+      userModel.addFriend(friendId, userId, (error) => {
         if (error) reject(error);
         else resolve();
       });
@@ -54,30 +52,25 @@ function insertFriend(context) {
 }
 
 module.exports = async function (req, res) {
-  const { userSeqno, friendId } = req.body;
+  const { userId, friendId } = req.body;
 
-  logger.info(`[User][addFriend][${userSeqno}/${friendId}]-> new friend`);
+  logger.info(`[User][addFriend][${userId}/${friendId}]-> new friend`);
 
   try {
-    const result = await findUser({ userSeqno, friendId });
-    const friendSeqno = result.userSeqno;
-    await isFriend({ userSeqno, friendSeqno, friendId });
-    await insertFriend({ userSeqno, friendSeqno, friendId });
+    await findUser({ userId, friendId });
+    await isFriend({ userId, friendId });
+    await insertFriend({ userId, friendId });
 
-    logger.info(
-      `[User][addFriend][${userSeqno}/${friendId}]-> add friend done`
-    );
+    logger.info(`[User][addFriend][${userId}/${friendId}]-> add friend done`);
     res.send();
   } catch (error) {
     if (!error.status) {
-      logger.error(`
-[User][addFriend][${userSeqno}/${friendId}]
+      logger.error(`[User][addFriend][${userId}/${friendId}]
 ${error}
 `);
       res.status(500).send("알 수 없는 오류가 발생하였습니다.");
     } else {
-      logger.info(`
-[User][addFriend][${userSeqno}/${friendId}]-> STATUS: ${error.status}
+      logger.info(`[User][addFriend][${userId}/${friendId}]-> STATUS: ${error.status}
 ${error.message}`);
       res.status(error.status).send(error.message);
     }

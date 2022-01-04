@@ -15,8 +15,8 @@ module.exports = function () {
       });
 
       socket.on("sendMessage", (info) => {
-        const { roomId, nickName, message } = info;
-        chatModel.createNewChatHistory(roomId, message, nickName, (err) => {
+        const { roomId, nickname, message } = info;
+        chatModel.createNewChatHistory(roomId, message, nickname, (err) => {
           if (err) reject(err);
         });
         io.emit(roomId, message);
