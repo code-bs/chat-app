@@ -102,6 +102,63 @@ let Model = function () {
           else done(null, result);
         }
       );
+      conn.release();
+    });
+  };
+
+  /* 친구 요청 관련 */
+  this.invite = (userId, targetId, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "INSERT INTO tbl_invite_friend (userId, targetId) VALUES(?, ?)",
+        [targetId, userId],
+        (err) => {
+          if (err) done(err);
+          else done(null);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.checkInvite = (userId, friendId, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT * FROM tbl_invite_friend WHERE userId=? AND targetId=?",
+        [userId, friendId],
+        (err, result) => {
+          if (err) done(err, null);
+          else done(null, result);
+        }
+      );
+    });
+  };
+
+  this.getFriendReqs = (userId, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT m.userId, m.nickName, m.avatarUrl, m.statusMessage FROM tbl_invite_friend as f INNER JOIN tbl_member as m ON f.targetId=m.userId WHERE f.userId=?",
+        [userId],
+        (err, result) => {
+          if (err) done(err, null);
+          else done(null, result);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.deleteInvite = (userId, friendId, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "DELETE FROM tbl_invite_friend WHERE userId=? AND targetId=?",
+        [userId, friendId],
+        (err) => {
+          if (err) done(err);
+          else done(null);
+        }
+      );
+      conn.release();
     });
   };
 };

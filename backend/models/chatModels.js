@@ -128,6 +128,63 @@ let Model = function () {
       conn.release();
     });
   };
+
+  this.inviteRoom = (userId, roomId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "INSERT INTO tbl_invite_room (userId, roomId) VALUES(?, ?)",
+        [userId, roomId],
+        (err) => {
+          if (err) callback(err);
+          else callback(null);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.checkInvite = (userId, roomId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT _id FROM tbl_invite_room WHERE userId=? AND roomId=?",
+        [userId, roomId],
+        (err, result) => {
+          if (err) callback(err, null);
+          else callback(null, result);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.getRoomInvites = (userId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT roomId FROM tbl_invite_room WHERE userId=?",
+        [userId],
+        (err, result) => {
+          if (err) callback(err, null);
+          else {
+            callback(null, result);
+          }
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.deleteInvite = (userId, roomId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "DELETE FROM tbl_invite_room WHERE userId=? AND roomId=?",
+        [userId, roomId],
+        (err) => {
+          if (err) callback(err);
+          else callback(null);
+        }
+      );
+    });
+  };
 };
 
 module.exports = function () {

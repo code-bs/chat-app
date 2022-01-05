@@ -8,4 +8,6 @@ router.post("/friend", controller.addFriend);
 
 router.get("/:userId", controller.findUser);
 
+router.get("/friend_req/:userId", controller.checkRequest);
+
 module.exports = router;
