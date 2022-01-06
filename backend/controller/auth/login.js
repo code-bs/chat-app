@@ -2,6 +2,7 @@
 const crypto = require("crypto");
 const authModel = require("../../models/authModels")();
 const logger = require("../../config/logger");
+const jwt = require("../common/jwt");
 
 /* METHODS */
 function getUserById(context) {
@@ -43,7 +44,33 @@ function validatePassword(context, dbUserInfo) {
   });
 }
 
-/* JSON WEB TOKEN METHODS 추가 필요 */
+function getAccessToken(context) {
+  logger.info(`[Auth][Login][${context.userId}]-> generating token`);
+  return new Promise((resolve, reject) => {
+    jwt
+      .generate(context)
+      .then((token) => {
+        resolve(token);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+function getRefreshToken(context) {
+  logger.info(`[Auth][Login][${context.userId}]-> generating refresh token`);
+  return new Promise((resolve, reject) => {
+    jwt
+      .generate_refresh(context)
+      .then((token) => {
+        resolve(token);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
 
 /* EXPORTS */
 async function login(context, callback) {
@@ -54,9 +81,30 @@ async function login(context, callback) {
     await validatePassword(context, dbUserInfo);
 
     logger.info(`[Auth][Login][${context.userId}]-> login success`);
+
+    const { userId, nickname, avatarUrl, statusMessage } = dbUserInfo;
+    const token = await getAccessToken({
+      userId,
+      nickname,
+      avatarUrl,
+      statusMessage,
+    });
+    const refreshToken = await getRefreshToken({
+      userId,
+      nickname,
+      avatarUrl,
+      statusMessage,
+    });
+
     callback(null, {
-      accessToken: "abcd",
-      refreshToken: "efgh",
+      user: {
+        userId,
+        nickname,
+        avatarUrl,
+        statusMessage,
+      },
+      accessToken: token,
+      refreshToken,
     });
   } catch (error) {
     if (!error.status)
@@ -85,7 +133,8 @@ ${error.message}`);
       }
       res.status(error.status).send(error.message);
     } else {
-      res.send(payload);
+      const { user, accessToken, refreshToken } = payload;
+      res.cookie("refreshToken", refreshToken).send({ user, accessToken });
     }
   });
 };

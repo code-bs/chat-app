@@ -75,45 +75,6 @@ MYSQL_DB 는 "bs_auth" 로 고정.
 
 기초 구조는 `/setup/schema.sql` 의 SQL문을 차례로 실행.
 
-```sql
-CREATE DATABASE bs_auth;
-
-USE bs_auth;
-
-DROP TABLE IF EXISTS tbl_member;
-CREATE TABLE `tbl_member` (
-  userSeqno int(11) NOT NULL AUTO_INCREMENT,
-  userId varchar(20) NOT NULL,
-  password varchar(255) NOT NULL,
-  nickname varchar(10) NOT NULL,
-  register_dt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  update_dt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (userSeqno)
-) CHARSET=UTF8MB4;
-
-DROP TABLE IF EXISTS tbl_map_friend;
-CREATE TABLE tbl_map_friend (
-  seqno int(11) NOT NULL AUTO_INCREMENT,
-  userSeqno int(11) NOT NULL,
-  friendSeqno int(11) NOT NULL,
-  PRIMARY KEY (seqno),
-  FOREIGN KEY (userSeqno)
-  REFERENCES tbl_member (userSeqno)
-  ON DELETE CASCADE
-) CHARSET=UTF8MB4;
-
-DROP TABLE IF EXISTS tbl_map_room;
-CREATE TABLE tbl_map_room (
-  seqno int(11) NOT NULL AUTO_INCREMENT,
-  userSeqno int(11) NOT NULL,
-  roomSeqno varchar(255) NOT NULL,
-  PRIMARY KEY (seqno),
-  FOREIGN KEY (userSeqno)
-  REFERENCES tbl_member (userSeqno)
-  ON DELETE CASCADE
-) CHARSET=UTF8MB4;
-```
-
 # 비밀번호 암호화 알고리즘
 
 비밀번호 암호화 로직이 들어가있는 상태이며, 알고리즘 코드를 추가해줘야 함. "sha512" 를 쓰는 것을 권장하나, 원하는 것을 넣어도 됨
@@ -129,14 +90,17 @@ HASH_ALGORITHM="sha512"
 ## General Configuration ##
 HASH_ALGORITHM="sha512"
 
+## JWT Configuration ##
+JWT_SECRET="HELLO"
+
 ## HTTP Server Configuration ##
 PORT=3000
 SOCKET_PORT=8888
 
 ## MySQL Configuration ##
-MYSQL_HOST=
-MYSQL_PORT=
-MYSQL_USER=
-MYSQL_PASSWORD=
-MYSQL_DB='bs_auth"
+MYSQL_HOST="127.0.0.1"
+MYSQL_PORT=3306
+MYSQL_USER=""
+MYSQL_PASSWORD=""
+MYSQL_DB="bs_auth"
 ```

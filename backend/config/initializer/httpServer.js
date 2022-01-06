@@ -20,6 +20,8 @@ const indexRouter = require("../routes/indexRoute"),
   authRouter = require("../routes/authRoute"),
   cors = require("cors");
 
+const jwt = require("../../controller/common/jwt");
+
 const initiateHttpServer = () => {
   return new Promise((resolve, reject) => {
     app.use(cookieParser());
@@ -32,8 +34,8 @@ const initiateHttpServer = () => {
     );
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
     app.use("/", indexRouter);
-    app.use("/chat", chatRouter);
-    app.use("/user", userRouter);
+    app.use("/chat", jwt.validate, chatRouter);
+    app.use("/user", jwt.validate, userRouter);
     app.use("/auth", authRouter);
     app.use((req, res, next) => {
       next(createError(404));

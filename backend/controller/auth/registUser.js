@@ -4,13 +4,8 @@ const logger = require("../../config/logger");
 const userModel = require("../../models/userModels")();
 
 /* METHODS */
-function checkIdDuplication(context) {
-  const { userId } = context;
-
-  logger.info(`
-[User][registUser]-> check ID duplicaiton
-${JSON.stringify(context)}`);
-
+function checkIdDuplication(userId) {
+  logger.info(`[User][registUser]-> check ID duplicaiton`);
   return new Promise((resolve, reject) => {
     userModel.searchId(userId, (err, res) => {
       if (err)
@@ -28,14 +23,8 @@ ${JSON.stringify(context)}`);
   });
 }
 
-function encryptPassword(context) {
-  const { password } = context;
-
-  logger.info(`
-[User][registUser]-> encrypt password
-${JSON.stringify({ ...context, password: "secret :)" })}
-`);
-
+function encryptPassword(password) {
+  logger.info(`[User][registUser]-> encrypt password`);
   return new Promise((resolve, reject) => {
     crypto.randomBytes(64, (err, buf) => {
       crypto.pbkdf2(
@@ -61,13 +50,8 @@ ${JSON.stringify({ ...context, password: "secret :)" })}
   });
 }
 
-function checkNickNameDuplication(context) {
-  const { nickname } = context;
-
-  logger.info(`
-[User][registUser]-> check nickname duplication
-${JSON.stringify(context)}`);
-
+function checkNickNameDuplication(nickname) {
+  logger.info(`[User][registUser]-> check nickname duplication`);
   return new Promise((resolve, reject) => {
     userModel.searchNickname(nickname, (err, res) => {
       if (err)
@@ -86,9 +70,7 @@ ${JSON.stringify(context)}`);
 }
 
 function insertNewUser(context) {
-  logger.info(`
-[User][registUser]-> insert new user
-${JSON.stringify({ ...context, password: "secret :)", hashCode: "code :)" })}`);
+  logger.info(`[User][registUser]-> insert new user`);
   return new Promise((resolve, reject) => {
     userModel.insertUser(context, (err) => {
       if (err) reject(err);
@@ -98,27 +80,20 @@ ${JSON.stringify({ ...context, password: "secret :)", hashCode: "code :)" })}`);
 }
 
 /* EXPORTS */
-async function register({ userId, password, nickname }, callback) {
-  logger.info(`
-[User][registUser]-> start
-${{ userId, nickname }}`);
-
+async function register(context, callback) {
+  logger.info(`[User][registUser]-> start`);
+  const { userId, password, nickname, avatarUrl, statusMessage } = context;
   try {
-    await checkIdDuplication({ userId, nickname });
-    const { hashCode, ePassword } = await encryptPassword({
-      userId,
-      password,
-      nickname,
-    });
-    await checkNickNameDuplication({ userId, nickname });
-    await insertNewUser({ userId, password: ePassword, nickname, hashCode });
-
-    logger.info(`
-[User][registUser]-> done
-${JSON.stringify({ userId, nickname })}`);
-
+    await checkIdDuplication(userId);
+    const { hashCode, ePassword } = await encryptPassword(password);
+    await checkNickNameDuplication(nickname);
+    await insertNewUser({ ...context, password: ePassword, hashCode });
+    logger.info(`[User][registUser]-> done`);
     callback(null, {
       userId,
+      nickname,
+      avatarUrl,
+      statusMessage,
     });
   } catch (error) {
     if (!error.status)
@@ -135,19 +110,22 @@ ${JSON.stringify({ userId, nickname })}`);
 }
 
 module.exports = function (req, res) {
-  const { userId, password, nickname } = req.body;
-  register({ userId, password, nickname }, (error, payload) => {
-    if (error) {
-      if (error.status >= 500) {
-        logger.error(error.error);
-      } else {
-        logger.info(`
-[User][registUser]-> ${error.status}
+  const { userId, password, nickname, avatarUrl, statusMessage } = req.body;
+
+  register(
+    { userId, password, nickname, avatarUrl, statusMessage },
+    (error, payload) => {
+      if (error) {
+        if (error.status >= 500) {
+          logger.error(error.error);
+        } else {
+          logger.info(`[User][registUser]-> ${error.status}
 ${error.message}`);
+        }
+        res.status(error.status).send(error.message);
+      } else {
+        res.send(payload);
       }
-      res.status(error.status).send(error.message);
-    } else {
-      res.send(payload);
     }
-  });
+  );
 };

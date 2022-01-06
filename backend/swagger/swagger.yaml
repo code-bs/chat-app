@@ -191,7 +191,7 @@ components:
           type: number
         userId:
           type: string
-        nickName:
+        nickname:
           type: string
     createroom:
       type: object
@@ -228,7 +228,7 @@ components:
         password:
           type: string
           description: 로그인 패스워드
-        nickName:
+        nickname:
           type: string
           description: 닉네임
     friendList:

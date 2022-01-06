@@ -1,5 +1,6 @@
 let Model = function () {
   const RoomSchema = require("./schemas/chatRoom");
+  const _mysql = require("../config/initializer/mysqldb");
 
   this.createRoom = async (roomName, userId, callback) => {
     const payload = {
@@ -71,6 +72,118 @@ let Model = function () {
         );
       } else callback(err, null);
     }
+  };
+
+  this.mapRoomList = ({ userId, roomId }, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "INSERT INTO tbl_map_room (userId, roomId) VALUES(?, ?)",
+        [userId, roomId],
+        (err) => {
+          if (err) callback(err);
+          else {
+            callback(null);
+          }
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.getRoomIds = (userId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT roomId from tbl_map_room WHERE userId=?",
+        [userId],
+        (err, result) => {
+          if (err) callback(err, null);
+          else callback(null, result);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.getRoomInfo = async (roomId, callback) => {
+    try {
+      const info = await RoomSchema.findById(roomId).exec();
+      callback(null, info);
+    } catch (error) {
+      callback(error, null);
+    }
+  };
+
+  this.getUsers = (roomId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT m.userId, m.nickname, m.avatarUrl, m.statusMessage FROM tbl_map_room as r INNER JOIN tbl_member as m ON m.userId=r.userId WHERE roomId=?",
+        [roomId],
+        (err, result) => {
+          if (err) callback(err, null);
+          else {
+            callback(null, result);
+          }
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.inviteRoom = (userId, roomId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "INSERT INTO tbl_invite_room (userId, roomId) VALUES(?, ?)",
+        [userId, roomId],
+        (err) => {
+          if (err) callback(err);
+          else callback(null);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.checkInvite = (userId, roomId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT _id FROM tbl_invite_room WHERE userId=? AND roomId=?",
+        [userId, roomId],
+        (err, result) => {
+          if (err) callback(err, null);
+          else callback(null, result);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.getRoomInvites = (userId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT roomId FROM tbl_invite_room WHERE userId=?",
+        [userId],
+        (err, result) => {
+          if (err) callback(err, null);
+          else {
+            callback(null, result);
+          }
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.deleteInvite = (userId, roomId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "DELETE FROM tbl_invite_room WHERE userId=? AND roomId=?",
+        [userId, roomId],
+        (err) => {
+          if (err) callback(err);
+          else callback(null);
+        }
+      );
+    });
   };
 };
 
