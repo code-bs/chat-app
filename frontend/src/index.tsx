@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { unstable_HistoryRouter as HistoryRouter } from 'react-router-dom';
 import App from './App';
 import { ChatProvider, AuthProvider } from './contexts';
+import { history } from './router/history';
 
 import reportWebVitals from './reportWebVitals';
 import './styles/base.scss';
@@ -9,11 +11,13 @@ import 'antd/dist/antd.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <AuthProvider>
-      <ChatProvider>
-        <App />
-      </ChatProvider>
-    </AuthProvider>
+    <HistoryRouter history={history}>
+      <AuthProvider>
+        <ChatProvider>
+          <App />
+        </ChatProvider>
+      </AuthProvider>
+    </HistoryRouter>
   </React.StrictMode>,
   document.getElementById('root'),
 );
