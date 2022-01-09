@@ -43,6 +43,11 @@ export type SigninParams = {
   password: string;
 };
 
+export type SigninResponse = {
+  user: User;
+  accessToken: string;
+};
+
 export type SignupParams = {
   userId: string;
   password: string;
