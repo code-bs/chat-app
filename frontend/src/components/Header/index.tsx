@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import style from './index.module.scss';
 
 const Header = () => {
-  const { userId } = useAuthState();
+  const { auth } = useAuthState();
   const navigate = useNavigate();
   const onClickSignin = () => {
     navigate('/signin');
@@ -14,8 +14,8 @@ const Header = () => {
     <div className={style.container}>
       <h1 className={style.logo}>Chat App</h1>
       <div className={style.wrap_btn}>
-        {userId ? (
-          <span className={style.username}>{userId} 님</span>
+        {auth.data ? (
+          <span className={style.username}>{auth.data.user.nickname} 님</span>
         ) : (
           <Button type="primary" onClick={onClickSignin}>
             Sign in

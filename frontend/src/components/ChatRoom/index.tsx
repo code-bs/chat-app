@@ -11,7 +11,7 @@ const ChatRoom = () => {
   const [messages, setMessages] = useState<ChatLog[]>([]);
   const [text, setText] = useState<string>('');
   const { rooms, selectedRoomId } = useChatState();
-  const { userId } = useAuthState();
+  const { auth } = useAuthState();
   const chatDispatch = useChatDispatch();
   const selectedRoom = rooms.find(room => room._id === selectedRoomId);
   const submitMessage = () => {

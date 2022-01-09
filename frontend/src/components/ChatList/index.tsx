@@ -7,11 +7,11 @@ import style from './index.module.scss';
 
 const ChatList = () => {
   const { rooms } = useChatState();
-  const { userId } = useAuthState();
+  const { auth } = useAuthState();
   const [confirmVisible, setConfirmVisible] = useState<boolean>(false);
   const chatDispatch = useChatDispatch();
   const onCreateButton = () => {
-    if (!userId) {
+    if (!auth.data) {
       alert('로그인이 필요합니다');
       return;
     }
@@ -45,7 +45,7 @@ const ChatList = () => {
           setConfirmVisible(false);
         }}
         onSubmit={value => {
-          createChatRoom(chatDispatch, { roomName: value, userId: userId });
+          createChatRoom(chatDispatch, { roomName: value, userId: auth.data?.user.userId || '' });
           setConfirmVisible(false);
         }}
         title="채팅방 생성"
