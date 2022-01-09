@@ -30,6 +30,7 @@ const initiateHttpServer = () => {
     app.use(
       cors({
         origin: ["http://localhost:8000"],
+        credentials: true,
       })
     );
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
