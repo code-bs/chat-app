@@ -1,14 +1,9 @@
 export type AllChatRoomResponse = {
-  data: {
-    rooms: ChatRoomInfo[];
-  };
+  data: ChatRoomInfo[];
 };
 
 export type CreateChatRoomResponse = {
-  data: {
-    message: string;
-    room: ChatRoomInfo;
-  };
+  data: ChatRoomInfo;
 };
 
 export type CreateChatRoomParams = {
@@ -52,4 +47,8 @@ export type SignupParams = {
   userId: string;
   password: string;
   nickname: string;
+};
+
+export type GetChatRoomListParams = {
+  userId: string;
 };
