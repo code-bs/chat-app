@@ -1,10 +1,17 @@
 import React from 'react';
-import { Button } from 'antd';
+import { Button, Space } from 'antd';
 import { useAuthState } from '../../contexts';
 import { useNavigate } from 'react-router-dom';
+import { UserOutlined } from '@ant-design/icons';
+
 import style from './index.module.scss';
 
-const Header = () => {
+type HeaderProps = {
+  friendListVisible: boolean;
+  setFriendListVisible: (visible: boolean) => void;
+};
+
+const Header = ({ friendListVisible, setFriendListVisible }: HeaderProps) => {
   const { auth } = useAuthState();
   const navigate = useNavigate();
   const onClickSignin = () => {
@@ -13,7 +20,7 @@ const Header = () => {
   return (
     <div className={style.container}>
       <h1 className={style.logo}>Chat App</h1>
-      <div className={style.wrap_btn}>
+      <Space className={style.wrap_btn}>
         {auth.data ? (
           <span className={style.username}>{auth.data.user.nickname} 님</span>
         ) : (
@@ -21,7 +28,14 @@ const Header = () => {
             Sign in
           </Button>
         )}
-      </div>
+        <Button
+          shape="circle"
+          icon={<UserOutlined />}
+          size="large"
+          onClick={() => setFriendListVisible(!friendListVisible)}
+          type={friendListVisible ? 'primary' : 'default'}
+        />
+      </Space>
     </div>
   );
 };
