@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Form, Input, Divider, Button, Space } from 'antd';
+import { Card, Form, Input, Divider, Button, Space, message } from 'antd';
 import { UserOutlined, LockOutlined, SmileOutlined } from '@ant-design/icons';
-import { useAuthDispatch, signup } from '../../contexts';
+import { useAuthDispatch, signup, useAuthState } from '../../contexts';
 import style from './index.module.scss';
 
 type FormValues = {
@@ -14,9 +14,16 @@ type FormValues = {
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { signupProcess } = useAuthState();
+  const { error } = signupProcess;
   const onClickCancel = () => {
     navigate(-1);
   };
+  useEffect(() => {
+    if (error) {
+      message.error(error);
+    }
+  }, [error]);
   const dispatch = useAuthDispatch();
   const onClickSubmit = async (values: FormValues) => {
     const { userId, password, nickname } = values;

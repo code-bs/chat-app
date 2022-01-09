@@ -10,24 +10,41 @@ type State = {
     error: string;
     loading: boolean;
   };
+  signupProcess: {
+    error: string;
+    loading: boolean;
+    success: boolean;
+  };
 };
 
 export enum AuthActionTypes {
   SIGNIN_REQUEST,
   SIGNIN_SUCCESS,
   SIGNIN_FAILURE,
+  SIGNUP_REQUEST,
+  SIGNUP_SUCCESS,
+  SIGNUP_FAILURE,
 }
 
 type Action =
   | { type: AuthActionTypes.SIGNIN_REQUEST }
   | { type: AuthActionTypes.SIGNIN_SUCCESS; payload: SigninResponse }
-  | { type: AuthActionTypes.SIGNIN_FAILURE; error: string };
+  | { type: AuthActionTypes.SIGNIN_FAILURE; error: string }
+  | { type: AuthActionTypes.SIGNUP_REQUEST }
+  | { type: AuthActionTypes.SIGNUP_SUCCESS }
+  | { type: AuthActionTypes.SIGNUP_FAILURE; error: string };
+
 type AuthDispatch = Dispatch<Action>;
 
 const initialState: State = {
   auth: {
     loading: false,
     error: '',
+  },
+  signupProcess: {
+    loading: false,
+    error: '',
+    success: false,
   },
 };
 
@@ -50,6 +67,21 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         auth: { ...state.auth, error: action.error, loading: false },
+      };
+    case AuthActionTypes.SIGNUP_REQUEST:
+      return {
+        ...state,
+        signupProcess: { ...state.signupProcess, loading: true, error: '' },
+      };
+    case AuthActionTypes.SIGNUP_SUCCESS:
+      return {
+        ...state,
+        signupProcess: { ...state.signupProcess, loading: false, error: '', success: true },
+      };
+    case AuthActionTypes.SIGNUP_FAILURE:
+      return {
+        ...state,
+        signupProcess: { ...state.signupProcess, error: action.error, loading: false },
       };
   }
 };
@@ -81,12 +113,21 @@ export const signin = async (dispatch: AuthDispatch, { userId, password }: Signi
     history.push('/');
   } catch (e) {
     if (axios.isAxiosError(e) && e.response) {
-      console.log(e.response);
       if (e.response.status < 500) dispatch({ type: AuthActionTypes.SIGNIN_FAILURE, error: e.response.data });
     }
   }
 };
 
 export const signup = async (dispatch: AuthDispatch, { userId, password, nickname }: SignupParams) => {
-  await UserApi.signup({ userId, password, nickname });
+  dispatch({ type: AuthActionTypes.SIGNUP_REQUEST });
+  try {
+    await UserApi.signup({ userId, password, nickname });
+    dispatch({ type: AuthActionTypes.SIGNUP_SUCCESS });
+    history.push('/signin');
+  } catch (e) {
+    if (axios.isAxiosError(e) && e.response) {
+      console.log(e.response);
+      if (e.response.status < 500) dispatch({ type: AuthActionTypes.SIGNUP_FAILURE, error: e.response.data });
+    }
+  }
 };

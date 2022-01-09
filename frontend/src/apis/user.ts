@@ -9,12 +9,7 @@ const signin = async ({ userId, password }: SigninParams) => {
 };
 
 const signup = async ({ userId, password, nickname }: SignupParams) => {
-  try {
-    const response: any = await endpoint.post('/auth', { userId, password, nickname });
-    console.log(response);
-  } catch (e: any) {
-    console.log(e.message);
-  }
+  await endpoint.post('/auth', { userId, password, nickname });
 };
 
 export { signin, signup };
