@@ -13,9 +13,7 @@ ReactDOM.render(
   <React.StrictMode>
     <HistoryRouter history={history}>
       <AuthProvider>
-        <ChatProvider>
-          <App />
-        </ChatProvider>
+        <App />
       </AuthProvider>
     </HistoryRouter>
   </React.StrictMode>,
