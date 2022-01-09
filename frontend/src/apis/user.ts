@@ -2,12 +2,8 @@ import endpoint from './endpoint';
 import { SigninParams, SignupParams } from '../types';
 
 const signin = async ({ userId, password }: SigninParams) => {
-  try {
-    const response: any = await endpoint.post('/auth/login', { userId, password });
-    console.log(response);
-  } catch (e: any) {
-    console.log(e.message);
-  }
+  const { data } = await endpoint.post('/auth/login', { userId, password });
+  return data;
 };
 
 const signup = async ({ userId, password, nickname }: SignupParams) => {
