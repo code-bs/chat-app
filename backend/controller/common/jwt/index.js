@@ -1,6 +1,7 @@
 /* IMPORTS */
 const jwt = require("jsonwebtoken");
 const path = require("path");
+const logger = require("../../../config/logger");
 require("dotenv").config({
   path: path.join(__dirname, "../env/local.env"),
 });
@@ -35,28 +36,21 @@ function generate_refresh(context) {
   });
 }
 
+function validate_refresh(refreshToken) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(refreshToken, JWT_SECRET, (error, decoded) => {
+      if (error) reject({ status: 404, message: "세션 만료" });
+      else resolve(decoded);
+    });
+  });
+}
+
 function validate(req, res, next) {
   const { access_token } = req.headers;
   jwt.verify(access_token, JWT_SECRET, (error, decoded) => {
     if (error) {
-      const { refreshToken } = req.cookies;
-      jwt.verify(refreshToken, JWT_SECRET, (error, decoded) => {
-        if (error) {
-          res.status(404).send("세션이 만료되었습니다.");
-          return;
-        } else {
-          const { userSeqno, userId, nickname } = decoded;
-          generate({ userSeqno, userId, nickname })
-            .then((token) => {
-              res.header("access_token", token);
-              next();
-            })
-            .catch((error) => {
-              res.status(500).send("알 수 없는 오류가 발생하였습니다.");
-              return;
-            });
-        }
-      });
+      logger.info(`[JWT][validate]-> access token 만료`);
+      res.status(404).send("access token 만료");
     } else next();
   });
 }
@@ -66,4 +60,5 @@ module.exports = {
   generate,
   generate_refresh,
   validate,
+  validate_refresh,
 };
