@@ -1,15 +1,26 @@
 import endpoint from './endpoint';
-import { SigninParams, SignupParams } from '../types';
+import { FindUserParams, GetFriendListParams, CheckRequestParams, AddFriendParams } from '../types';
 
-const signin = async ({ userId, password }: SigninParams) => {
-  const { data } = await endpoint.post('/auth/login', { userId, password });
-  const { accessToken } = data;
-  endpoint.defaults.headers.common['access_token'] = accessToken;
+const findUser = async ({ userId }: FindUserParams) => {
+  const { data } = await endpoint.get(`/user/${userId}`);
+  console.log(data);
   return data;
 };
 
-const signup = async ({ userId, password, nickname }: SignupParams) => {
-  await endpoint.post('/auth', { userId, password, nickname });
+const getFriendList = async ({ userId }: GetFriendListParams) => {
+  const { data } = await endpoint.get(`/user/friend/${userId}`);
+  console.log(data);
+  return data;
 };
 
-export { signin, signup };
+const checkRequest = async ({ userId }: CheckRequestParams) => {
+  const { data } = await endpoint.get(`/user/friend_req/${userId}`);
+  console.log(data);
+  return data;
+};
+
+const addFriend = async ({ userId, friendId }: AddFriendParams) => {
+  await endpoint.post('/auth', { userId, friendId });
+};
+
+export { findUser, getFriendList, checkRequest, addFriend };
