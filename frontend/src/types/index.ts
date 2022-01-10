@@ -52,3 +52,20 @@ export type SignupParams = {
 export type GetChatRoomListParams = {
   userId: string;
 };
+
+export type FindUserParams = {
+  userId: string;
+};
+
+export type GetFriendListParams = {
+  userId: string;
+};
+
+export type CheckRequestParams = {
+  userId: string;
+};
+
+export type AddFriendParams = {
+  userId: string;
+  friendId: string;
+};
