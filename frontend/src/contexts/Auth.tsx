@@ -1,5 +1,5 @@
 import React, { useReducer, useContext, createContext, Dispatch, ReactNode } from 'react';
-import { UserApi } from '../apis';
+import { AuthApi } from '../apis';
 import { SigninParams, SignupParams, SigninResponse } from '../types';
 import { history } from '../router/history';
 import axios from 'axios';
@@ -108,7 +108,7 @@ export const useAuthDispatch = () => {
 export const signin = async (dispatch: AuthDispatch, { userId, password }: SigninParams) => {
   dispatch({ type: AuthActionTypes.SIGNIN_REQUEST });
   try {
-    const payload = await UserApi.signin({ userId, password });
+    const payload = await AuthApi.signin({ userId, password });
     dispatch({ type: AuthActionTypes.SIGNIN_SUCCESS, payload });
     history.push('/');
   } catch (e) {
@@ -121,7 +121,7 @@ export const signin = async (dispatch: AuthDispatch, { userId, password }: Signi
 export const signup = async (dispatch: AuthDispatch, { userId, password, nickname }: SignupParams) => {
   dispatch({ type: AuthActionTypes.SIGNUP_REQUEST });
   try {
-    await UserApi.signup({ userId, password, nickname });
+    await AuthApi.signup({ userId, password, nickname });
     dispatch({ type: AuthActionTypes.SIGNUP_SUCCESS });
     history.push('/signin');
   } catch (e) {
