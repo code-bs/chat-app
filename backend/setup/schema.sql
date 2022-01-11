@@ -4,7 +4,6 @@ USE bs_auth;
 
 DROP TABLE IF EXISTS tbl_member;
 CREATE TABLE `tbl_member` (
-  _id int(11) NOT NULL AUTO_INCREMENT,
   userId varchar(20) NOT NULL,
   password varchar(255) NOT NULL,
   nickname varchar(10) NOT NULL,
@@ -13,7 +12,7 @@ CREATE TABLE `tbl_member` (
   register_dt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   update_dt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   hashCode varchar(255) NOT NULL,
-  PRIMARY KEY (_id)
+  PRIMARY KEY (userId)
 ) CHARSET=UTF8MB4;
 
 DROP TABLE IF EXISTS tbl_map_friend;
