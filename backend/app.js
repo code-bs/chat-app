@@ -6,7 +6,10 @@ const path = require("path");
 
 const runServer = async () => {
   require("dotenv").config({
-    path: path.join(__dirname, `./config/env/${process.env.MODE}.env`),
+    path: path.join(
+      __dirname,
+      `./config/env/${process.env.MODE ? process.env.MODE : "local"}.env`
+    ),
   });
   try {
     await httpServer(process.env.PORT);

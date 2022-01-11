@@ -49,6 +49,7 @@ module.exports = async function (req, res) {
       res.status(500).send("알 수 없는 오류가 발생하였습니다.");
     } else {
       logger.info(`[auth][refreshToken]-> ${error.status}:${error.message}`);
+      res.status(error.status).send(error.message);
     }
   }
 };
