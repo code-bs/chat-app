@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "serve": "node app.js",
     "start": "pm2 start app.js",
     "test": "artillery run --output ./test/report.json ./test/cpu-test.yaml",
     "test:unit": "jest",

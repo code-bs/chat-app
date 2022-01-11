@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const path = require("path");
 const logger = require("../../../config/logger");
 require("dotenv").config({
-  path: path.join(__dirname, "../env/local.env"),
+  path: path.join(__dirname, `../env/${process.env.MODE}.env`),
 });
 const JWT_SECRET = process.env.JWT_SECRET;
 

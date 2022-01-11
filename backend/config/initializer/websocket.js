@@ -8,7 +8,7 @@ const io = new Server(httpServer, {
   cors: "*",
 });
 
-module.exports = function () {
+module.exports = function (socket_port) {
   return new Promise((resolve, reject) => {
     io.on("connection", (socket) => {
       socket.on("whisper", (info) => {
@@ -54,7 +54,7 @@ module.exports = function () {
       });
     });
 
-    io.listen(process.env.SOCKET_PORT | 8888);
+    io.listen(socket_port | 8888);
     resolve();
   });
 };
