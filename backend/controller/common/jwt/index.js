@@ -43,7 +43,9 @@ function validate_refresh(refreshToken) {
   return new Promise((resolve, reject) => {
     jwt.verify(refreshToken, JWT_SECRET, (error, decoded) => {
       if (error) reject({ status: 404, message: "세션 만료" });
-      else resolve(decoded);
+      else {
+        resolve(decoded);
+      }
     });
   });
 }
