@@ -161,6 +161,34 @@ let Model = function () {
       conn.release();
     });
   };
+
+  this.updateAvatar = (userId, url, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "UPDATE tbl_member SET avatarUrl=? WHERE userId=?",
+        [url, userId],
+        (err, result) => {
+          if (err) done(err, null);
+          else done(null, result);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.updateStatusMessage = (userId, message, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "UPDATE tbl_member SET statusMessage=? WHERE userID=?",
+        [message, userId],
+        (err) => {
+          if (err) done(err);
+          else done(null);
+        }
+      );
+      conn.release();
+    });
+  };
 };
 
 module.exports = function () {
