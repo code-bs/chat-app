@@ -2,7 +2,9 @@ const mongoose = require("mongoose");
 const url = "mongodb://127.0.0.1:27017";
 const logger = require("../logger");
 
-const initializeMongoDB = () => {
+const initializeMongoDB = (context) => {
+  const { host, port } = context;
+  const url = `mongodb://${host}:${port}`;
   return new Promise((resolve, reject) => {
     mongoose.connect(url, { useNewUrlParser: true }, (err) => {
       if (err) {

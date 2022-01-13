@@ -4,7 +4,10 @@
  */
 const path = require("path");
 require("dotenv").config({
-  path: path.join(__dirname, "../env/local.env"),
+  path: path.join(
+    __dirname,
+    `../env/${process.env.MODE ? process.env.MODE : "local"}.env`
+  ),
 });
 
 const mysql = require("mysql");

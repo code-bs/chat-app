@@ -3,7 +3,10 @@ const jwt = require("jsonwebtoken");
 const path = require("path");
 const logger = require("../../../config/logger");
 require("dotenv").config({
-  path: path.join(__dirname, "../env/local.env"),
+  path: path.join(
+    __dirname,
+    `../env/${process.env.MODE ? process.env.MODE : "local"}.env`
+  ),
 });
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -40,7 +43,9 @@ function validate_refresh(refreshToken) {
   return new Promise((resolve, reject) => {
     jwt.verify(refreshToken, JWT_SECRET, (error, decoded) => {
       if (error) reject({ status: 404, message: "세션 만료" });
-      else resolve(decoded);
+      else {
+        resolve(decoded);
+      }
     });
   });
 }

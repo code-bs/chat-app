@@ -1,6 +1,5 @@
 const http = require("http"),
   createError = require("http-errors"),
-  port = process.env.PORT || "3000",
   express = require("express"),
   cookieParser = require("cookie-parser"),
   bodyParser = require("body-parser"),
@@ -22,7 +21,7 @@ const indexRouter = require("../routes/indexRoute"),
 
 const jwt = require("../../controller/common/jwt");
 
-const initiateHttpServer = () => {
+const initiateHttpServer = (port) => {
   return new Promise((resolve, reject) => {
     app.use(cookieParser());
     app.use(bodyParser.json());
