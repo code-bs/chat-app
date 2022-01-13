@@ -9,9 +9,9 @@ servers:
     description: Local
 
 paths:
-  /chat/room:
+  /chat/room/{userId}:
     get:
-      summary: 모든 방 목록을 반환
+      summary: 유저가 입장해 있는 방 모두 반환
       tags: [Chat]
       responses:
         "200":
@@ -19,7 +19,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/room"
+                type: array
+                items:
+                  $ref: "#/components/schemas/room"
     post:
       summary: 새로운 방 생성
       tags: [Chat]
@@ -56,12 +58,52 @@ paths:
               schema:
                 type: object
                 properties:
-                  _id:
-                    type: string
-                    description: 방 고유 번호
-                  chatHistory:
+                  users:
                     type: array
-                    description: 채팅 기록
+                    items:
+                      $ref: "#/components/schemas/user"
+                  chatHistory:
+                    $ref: "#/components/schemas/chatHistory"
+  /chat/room/invites/{userId}:
+    get:
+      summary: 받은 채팅방 초대 목록 가져오기
+      tags: [Chat]
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: 로그인 아이디
+      responses:
+        200:
+          description: 초대 받은 방 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/room"
+  /chat/room/join:
+    post:
+      summary: 방 초대 승락
+      tags: [Chat]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: 로그인 아이디
+                roomId:
+                  type: string
+                  description: 방 고유 아이디
+      responses:
+        200:
+          description: 입장 성공
   /auth/login:
     post:
       summary: 로그인
@@ -87,14 +129,21 @@ paths:
               schema:
                 type: object
                 properties:
+                  user:
+                    $ref: "#/components/schemas/user"
                   accessToken:
                     type: string
-                  refreshToekn:
-                    type: string
-  /user:
+  /auth/logout:
+    get:
+      summary: 로그아웃
+      tags: [Auth]
+      responses:
+        200:
+          description: 로그아웃 성공
+  /auth:
     post:
       summary: 회원가입
-      tags: [User]
+      tags: [Auth]
       requestBody:
         required: true
         content:
@@ -111,8 +160,21 @@ paths:
                 properties:
                   userId:
                     type: string
-        400:
-          description: "중복된 아이디"
+  /auth/refresh_token:
+    get:
+      summary: token 재 발급
+      tags: [Auth]
+      responses:
+        200:
+          description: token 재 발급 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    description: brand new token
   /user/{userId}:
     get:
       summary: 유저 검색
@@ -130,7 +192,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/user"
+                type: array
+                items:
+                  $ref: "#/components/schemas/user"
   /user/friend:
     post:
       summary: 친구 추가
@@ -142,33 +206,55 @@ paths:
             schema:
               type: object
               properties:
-                userSeqno:
-                  type: number
-                  description: 본인 고유 번호
+                userId:
+                  type: string
+                  description: 본인 로그인 아이디
                 friendId:
                   type: string
                   description: 추가하고자 하는 유저 로그인 아이디
       responses:
         200:
           description: 친구 추가 성공
-  /user/friend/{userSeqno}:
+  /user/friend/{userId}:
     get:
-      summary: 친구 검색
+      summary: 친구 목록
       tags: [User]
       parameters:
         - in: path
-          name: userSeqno
+          name: userId
           schema:
-            type: number
+            type: string
           required: true
-          description: 유저 고유 번호
+          description: 유저 로그인 아이디
       responses:
         200:
           description: 친구 목록
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/friendList"
+                type: array
+                items:
+                  $ref: "#/components/schemas/user"
+  /user/friend_req/{userId}:
+    get:
+      summary: 친구 요청 목록
+      tags: [User]
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: 유저 로그인 아이디
+      responses:
+        200:
+          description:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/user"
 components:
   schemas:
     room:
@@ -187,12 +273,18 @@ components:
     user:
       type: object
       properties:
-        userSeqno:
-          type: number
         userId:
           type: string
+          description: 로그인 아이디
         nickname:
           type: string
+          description: 닉네임
+        avatarUrl:
+          type: string
+          description: 프사
+        statusMessage:
+          type: string
+          description: 상태 메세지
     createroom:
       type: object
       properties:
@@ -231,6 +323,12 @@ components:
         nickname:
           type: string
           description: 닉네임
+        avatarUrl:
+          type: string
+          description: 프사
+        statusMessage:
+          type: string
+          description: 상태 메세지
     friendList:
       type: array
       items:
