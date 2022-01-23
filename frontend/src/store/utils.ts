@@ -25,6 +25,11 @@ export type IFetchActionGroup = {
   failure: ActionCreatorWithPayload<string>;
 };
 
+type OnFinishCallback = {
+  onSuccess?: () => void;
+  onFailure?: () => void;
+};
+
 export const createFetchAction = <Params, Payload>(type: string): IFetchActionGroup => {
   const REQUEST = `${type}/REQUEST`;
   const SUCCESS = `${type}/SUCCESS`;
@@ -41,17 +46,18 @@ export const createFetchAction = <Params, Payload>(type: string): IFetchActionGr
   };
 };
 
-export const createSaga = <Params, Payload>(actions: IFetchActionGroup, req: any, onSuccess: () => void) => {
+export const createSaga = <Params, Payload>(actions: IFetchActionGroup, req: any, onFinish?: OnFinishCallback) => {
   return function* (action: PayloadAction<Params>) {
     const payload = action.payload;
     try {
       const res: Payload = yield call(req, payload);
       yield put(actions.success(res));
-      onSuccess();
+      if (onFinish && onFinish.onSuccess) onFinish.onSuccess();
     } catch (e) {
       if (axios.isAxiosError(e)) {
         yield put(actions.failure(e.response?.data));
       }
+      if (onFinish && onFinish.onFailure) onFinish.onFailure();
     }
   };
 };
