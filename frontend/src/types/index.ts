@@ -49,6 +49,10 @@ export type SignupParams = {
   nickname: string;
 };
 
+export type SignupResponse = {
+  userId: string;
+};
+
 export type GetChatRoomListParams = {
   userId: string;
 };
