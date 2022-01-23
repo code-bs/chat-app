@@ -1,4 +1,10 @@
-import { PayloadAction, ActionCreatorWithPayload, createAction, ActionReducerMapBuilder } from '@reduxjs/toolkit';
+import {
+  PayloadAction,
+  ActionCreatorWithPayload,
+  createAction,
+  ActionReducerMapBuilder,
+  Draft,
+} from '@reduxjs/toolkit';
 import { call, put } from 'redux-saga/effects';
 import axios from 'axios';
 
@@ -72,6 +78,13 @@ export const createPatialReducer = <State extends { [key: string]: AsyncEntity<a
   builder: ActionReducerMapBuilder<State>,
   entity: string,
   actions: IFetchActionGroup,
+  onSuccess?: (
+    state: Draft<State>,
+    action: {
+      payload: any;
+      type: string;
+    },
+  ) => void,
 ) => {
   builder
     .addCase(actions.request, state => {
@@ -79,9 +92,13 @@ export const createPatialReducer = <State extends { [key: string]: AsyncEntity<a
       state[entity].status = ASYNC_STATUS.LOADING;
     })
     .addCase(actions.success, (state, action) => {
-      state[entity].data = action.payload;
-      state[entity].error = null;
-      state[entity].status = ASYNC_STATUS.SUCCESS;
+      if (onSuccess) {
+        onSuccess(state, action);
+      } else {
+        state[entity].data = action.payload;
+        state[entity].error = null;
+        state[entity].status = ASYNC_STATUS.SUCCESS;
+      }
     })
     .addCase(actions.failure, (state, action) => {
       state[entity].error = action.payload;
