@@ -7,8 +7,9 @@ import style from './index.module.scss';
 import { useAppSelector } from '../../store/hooks';
 
 const ChatList = () => {
-  const { rooms } = useChatState();
   const auth = useAppSelector(state => state.auth);
+  const chat = useAppSelector(state => state.chat);
+  const rooms = chat.chatRoomList.data || [];
   const { signin } = auth;
   const [confirmVisible, setConfirmVisible] = useState<boolean>(false);
   const chatDispatch = useChatDispatch();

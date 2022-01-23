@@ -1,19 +1,24 @@
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 import logger from 'redux-logger';
-import authReducer from './auth/reducer';
-import authSaga from './auth/sagas';
 import { all } from 'redux-saga/effects';
+
+import authReducer from './auth/reducer';
+import chatReducer from './chat/reducer';
+
+import authSaga from './auth/sagas';
+import chatSaga from './chat/sagas';
 
 const sagaMiddleware = createSagaMiddleware();
 
 function* rootSaga() {
-  yield all([authSaga()]);
+  yield all([authSaga(), chatSaga()]);
 }
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
+    chat: chatReducer,
   },
   middleware: [sagaMiddleware, logger],
 });
