@@ -1,10 +1,5 @@
-export type AllChatRoomResponse = {
-  data: ChatRoomInfo[];
-};
-
-export type CreateChatRoomResponse = {
-  data: ChatRoomInfo;
-};
+export type GetChatRoomListResponse = ChatRoomInfo[];
+export type CreateChatRoomResponse = ChatRoomInfo;
 
 export type CreateChatRoomParams = {
   roomName: string;

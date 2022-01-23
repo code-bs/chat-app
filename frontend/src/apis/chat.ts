@@ -1,14 +1,14 @@
 import endpoint from './endpoint';
-import { AllChatRoomResponse, CreateChatRoomResponse, CreateChatRoomParams, GetChatRoomListParams } from '../types';
+import { GetChatRoomListResponse, CreateChatRoomResponse, CreateChatRoomParams, GetChatRoomListParams } from '../types';
 
-const getChatRoomList = async ({ userId }: GetChatRoomListParams) => {
-  const response: AllChatRoomResponse = await endpoint.get(`/chat/room/${userId}`);
+const getChatRoomList = async ({ userId }: GetChatRoomListParams): Promise<GetChatRoomListResponse> => {
+  const response = await endpoint.get(`/chat/room/${userId}`);
   const { data } = response;
   return data;
 };
 
-const createChatRoom = async ({ roomName, userId }: CreateChatRoomParams) => {
-  const response: CreateChatRoomResponse = await endpoint.post('/chat/room', { roomName, userId });
+const createChatRoom = async ({ roomName, userId }: CreateChatRoomParams): Promise<CreateChatRoomResponse> => {
+  const response = await endpoint.post('/chat/room', { roomName, userId });
   const { data } = response;
   return data;
 };
