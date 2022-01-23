@@ -8,4 +8,9 @@ const formatTime = (dateStr: string) => {
   return `${pre} ${hour < 10 ? `0${hour}` : hour}:${min < 10 ? `0${min}` : min}`;
 };
 
-export { formatTime };
+const getCookie = function (name: string) {
+  const value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+  return value ? decodeURIComponent(value[2]) : null;
+};
+
+export { formatTime, getCookie };

@@ -7,7 +7,7 @@ const FriendList = () => {
   return (
     <Sider theme="light">
       <Menu onClick={() => {}} mode="horizontal">
-        FriendList
+        친구목록
       </Menu>
     </Sider>
   );

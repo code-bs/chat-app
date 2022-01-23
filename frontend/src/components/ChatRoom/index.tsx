@@ -3,7 +3,7 @@ import { Layout, Button, Input } from 'antd';
 import { SpeechBubble } from '..';
 import { ChatLog } from '../../types';
 import style from './index.module.scss';
-import { useChatState, useChatDispatch, useAuthState, sendMessage } from '../../contexts';
+import { useChatState, useChatDispatch, sendMessage } from '../../contexts';
 import { Empty } from 'antd';
 const { Header, Content } = Layout;
 
@@ -11,7 +11,6 @@ const ChatRoom = () => {
   const [messages, setMessages] = useState<ChatLog[]>([]);
   const [text, setText] = useState<string>('');
   const { rooms, selectedRoomId } = useChatState();
-  const { auth } = useAuthState();
   const chatDispatch = useChatDispatch();
   const selectedRoom = rooms.find(room => room._id === selectedRoomId);
   const submitMessage = () => {

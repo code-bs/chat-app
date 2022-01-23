@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Menu, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Confirm } from '..';
-import { useChatState, useChatDispatch, useAuthState, createChatRoom, selectRoom } from '../../contexts';
+import { useChatState, useChatDispatch, createChatRoom, selectRoom } from '../../contexts';
 import style from './index.module.scss';
+import { useAppSelector } from '../../store/hooks';
 
 const ChatList = () => {
   const { rooms } = useChatState();
-  const { auth } = useAuthState();
+  const auth = useAppSelector(state => state.auth);
+  const { signin } = auth;
   const [confirmVisible, setConfirmVisible] = useState<boolean>(false);
   const chatDispatch = useChatDispatch();
   const onCreateButton = () => {
-    if (!auth.data) {
+    if (!signin.data) {
       alert('로그인이 필요합니다');
       return;
     }
@@ -45,7 +47,7 @@ const ChatList = () => {
           setConfirmVisible(false);
         }}
         onSubmit={value => {
-          createChatRoom(chatDispatch, { roomName: value, userId: auth.data?.user.userId || '' });
+          createChatRoom(chatDispatch, { roomName: value, userId: signin.data?.user.userId || '' });
           setConfirmVisible(false);
         }}
         title="채팅방 생성"

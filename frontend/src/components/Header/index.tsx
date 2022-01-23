@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, Space } from 'antd';
-import { useAuthState } from '../../contexts';
 import { useNavigate } from 'react-router-dom';
 import { UserOutlined } from '@ant-design/icons';
+import { useAppSelector } from '../../store/hooks';
 
 import style from './index.module.scss';
 
@@ -12,7 +12,8 @@ type HeaderProps = {
 };
 
 const Header = ({ friendListVisible, setFriendListVisible }: HeaderProps) => {
-  const { auth } = useAuthState();
+  const auth = useAppSelector(state => state.auth);
+  const { signin } = auth;
   const navigate = useNavigate();
   const onClickSignin = () => {
     navigate('/signin');
@@ -21,8 +22,8 @@ const Header = ({ friendListVisible, setFriendListVisible }: HeaderProps) => {
     <div className={style.container}>
       <h1 className={style.logo}>Chat App</h1>
       <Space className={style.wrap_btn}>
-        {auth.data ? (
-          <span className={style.username}>{auth.data.user.nickname} 님</span>
+        {signin.data ? (
+          <span className={style.username}>{signin.data.user.nickname} 님</span>
         ) : (
           <Button type="primary" onClick={onClickSignin}>
             Sign in

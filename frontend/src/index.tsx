@@ -2,7 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { unstable_HistoryRouter as HistoryRouter } from 'react-router-dom';
 import App from './App';
-import { ChatProvider, AuthProvider } from './contexts';
+import store from './store';
+import { Provider } from 'react-redux';
+
+import { AuthProvider } from './contexts';
 import { history } from './router/history';
 
 import reportWebVitals from './reportWebVitals';
@@ -12,9 +15,11 @@ import 'antd/dist/antd.css';
 ReactDOM.render(
   <React.StrictMode>
     <HistoryRouter history={history}>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <Provider store={store}>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </Provider>
     </HistoryRouter>
   </React.StrictMode>,
   document.getElementById('root'),

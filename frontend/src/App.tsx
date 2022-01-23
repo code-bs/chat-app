@@ -3,16 +3,18 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { ChatProvider } from './contexts';
 import { Signup, Signin, Main } from './pages';
 import { Centered } from './layouts';
-import { useAuthState } from './contexts';
+import { useAppSelector } from './store/hooks';
 
 function App() {
   const location = useLocation();
-  const { auth } = useAuthState();
+  const auth = useAppSelector(state => state.auth);
+  const { signin } = auth;
+  const { data } = signin;
   const navigate = useNavigate();
   const { pathname } = location;
   useEffect(() => {
-    if (!auth.data && pathname !== '/signin' && pathname !== '/signup') navigate('/signin');
-  }, [pathname, navigate, auth]);
+    if (!data && pathname !== '/signin' && pathname !== '/signup') navigate('/signin');
+  }, [pathname, navigate, data]);
   return (
     <Routes>
       <Route
