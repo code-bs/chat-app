@@ -7,14 +7,18 @@ import { history } from '../../router/history';
 function* authSaga() {
   yield takeLatest(
     signinAsync.REQUEST,
-    createSaga<SigninParams, SigninResponse>(signinAsync, AuthApi.signin, () => {
-      history.push('/');
+    createSaga<SigninParams, SigninResponse>(signinAsync, AuthApi.signin, {
+      onSuccess: () => {
+        history.push('/');
+      },
     }),
   );
   yield takeLatest(
-    signinAsync.REQUEST,
-    createSaga<SignupParams, SignupResponse>(signupAsync, AuthApi.signup, () => {
-      history.push('/signin');
+    signupAsync.REQUEST,
+    createSaga<SignupParams, SignupResponse>(signupAsync, AuthApi.signup, {
+      onSuccess: () => {
+        history.push('/signin');
+      },
     }),
   );
 }

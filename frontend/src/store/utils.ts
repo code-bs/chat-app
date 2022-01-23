@@ -74,8 +74,7 @@ export const createPatialReducer = <State extends { [key: string]: AsyncEntity<a
   actions: IFetchActionGroup,
 ) => {
   builder
-    .addCase(actions.request, (state, action) => {
-      state[entity].data = action.payload;
+    .addCase(actions.request, state => {
       state[entity].error = null;
       state[entity].status = ASYNC_STATUS.LOADING;
     })
