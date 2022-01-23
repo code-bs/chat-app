@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Menu, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import { Confirm } from '..';
-import { useChatDispatch, selectRoom } from '../../contexts';
 import style from './index.module.scss';
 import { createChatRoomAsync } from '../../store/chat/actions';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
@@ -10,10 +10,10 @@ import { useAppSelector, useAppDispatch } from '../../store/hooks';
 const ChatList = () => {
   const auth = useAppSelector(state => state.auth);
   const chat = useAppSelector(state => state.chat);
+  const navigate = useNavigate();
   const rooms = chat.chatRoomList.data || [];
   const { signin } = auth;
   const [confirmVisible, setConfirmVisible] = useState<boolean>(false);
-  const chatDispatch = useChatDispatch();
   const dispatch = useAppDispatch();
   const onCreateButton = () => {
     if (!signin.data) {
@@ -27,7 +27,7 @@ const ChatList = () => {
       <Menu
         theme="dark"
         onClick={({ key }) => {
-          selectRoom(chatDispatch, key);
+          navigate(key);
         }}>
         {rooms.map(room => {
           return (

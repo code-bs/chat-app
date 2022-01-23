@@ -25,7 +25,7 @@ function App() {
   return (
     <Routes>
       <Route
-        index
+        path="/*"
         element={
           <ChatProvider>
             <Main />

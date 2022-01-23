@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ChatRoom, ChatList, FriendList, Header as HeaderComponet } from '../../components';
-import { Layout } from 'antd';
+import { Layout, Empty } from 'antd';
+import { Route, Routes } from 'react-router-dom';
+import { Centered } from '../../layouts';
 import style from './index.module.scss';
 
 const { Header, Sider, Content } = Layout;
@@ -18,7 +20,17 @@ const Main = () => {
             <ChatList />
           </Sider>
           <Content>
-            <ChatRoom />
+            <Routes>
+              <Route path=":roomId" element={<ChatRoom />} />
+              <Route
+                index
+                element={
+                  <Centered>
+                    <Empty description={'Please select chat room!'} />
+                  </Centered>
+                }
+              />
+            </Routes>
           </Content>
         </Layout>
       </Layout>
