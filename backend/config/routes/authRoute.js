@@ -8,4 +8,6 @@ router.post("/", controller.registUser);
 
 router.get("/refresh_token", controller.refreshToken);
 
+router.get("/logout", controller.logout);
+
 module.exports = router;

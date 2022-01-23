@@ -1,5 +1,18 @@
 let Model = function () {
   const _mysql = require("../config/initializer/mysqldb");
+  const path = require("path");
+  require("dotenv").config({
+    path: path.join(
+      __dirname,
+      `../env/${process.env.MODE ? process.env.MODE : "local"}.env`
+    ),
+  });
+  const redis = require("redis");
+  const redisClient = redis.createClient({
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+  });
+  redisClient.connect();
 
   this.getUser = (id, done) => {
     _mysql((conn) => {
@@ -13,6 +26,16 @@ let Model = function () {
       );
       conn.release();
     });
+  };
+
+  this.insertToBlacklist = async (refreshToken, done) => {
+    await redisClient.setEx(refreshToken, 604800, "1");
+    done(null);
+  };
+
+  this.checkTokenInBlacklist = async (refreshToken, done) => {
+    const result = await redisClient.get(refreshToken);
+    done(null, result);
   };
 };
 
