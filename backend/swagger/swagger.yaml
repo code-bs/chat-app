@@ -419,6 +419,15 @@ components:
           userId:
             type: string
             description: 유저 아이디
+          nickname:
+            type: string
+            description: 유저 닉네임
+          avatarUrl:
+            type: string
+            description: 프사
+          statusMessage:
+            type: string
+            description: 상태 메세지
     newuser:
       type: object
       properties:

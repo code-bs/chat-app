@@ -23,6 +23,113 @@ $ brew services start redis
 
 <br/>
 
+# Socket
+
+## - 채팅 메시지 보내기
+
+- 이벤트명: `sendMessage`
+- 패킷 형태
+
+```js
+{
+  roomId, // 방 고유번호 (string)
+  message,  // 채팅 메시지 (string)
+  userId,  // 유저 로그인 아이디 (string)
+  nickname,  // 닉네임 (string)
+  avatarUrl,  // 프사 (string)
+  statusMessage,  // 상메 (string)
+}
+```
+
+```js
+// 예시
+socket.emit("sendMessage", {
+  roomId: "61d3cf901463bd1255fb5bae",
+  message: "응 더 떡락해봐 ㅋㅋㅋㅋㅋ 자살하면 그만이야 ㅋㅋㅋㅋㅋㅋ",
+  userId: "myTest01",
+  nickname: "비트코인중독자",
+  avatarUrl: "https://hyunwoo045.github.io/assets/images/ori.png",
+  statusMessage: "집에 가고 싶다",
+});
+```
+
+- 받는 쪽의 패킷
+
+```js
+// 위와 같음
+{
+  roomId, // 방 고유번호 (string)
+  message,  // 채팅 메시지 (string)
+  userId,  // 유저 로그인 아이디 (string)
+  nickname,  // 닉네임 (string)
+  avatarUrl,  // 프사 (string)
+  statusMessage,  // 상메 (string)
+}
+```
+
+## - 친구 추가
+
+- 이벤트명: `friend`
+- 패킷 형태
+
+```js
+{
+  userId, // 본인 로그인 아이디 (string)
+  targetId, // 친구 추가 요청을 보낼 상대 로그인 아이디 (string)
+}
+```
+
+```js
+// 예시
+socket.emit("friend", {
+  userId: "myTest01",
+  targetId: "yourTest01",
+});
+```
+
+- 받는 쪽의 패킷
+
+```js
+{
+  type: "friend", // <- "friend" 고정!!
+  userId: "" // 친추 보낸 사람 로그인 아이디 (string), 예시대로라면 "myTest01"
+}
+```
+
+## - 방에 초대
+
+- 이벤트명: `invite`
+- 패킷 형태
+
+```js
+{
+  userId, // 본인 로그인 아이디 (string)
+  targetId, // 방 초대 요청을 보낼 상대 로그인 아이디 (string)
+  roomId, // 상대를 초대할 방의 고유 번호 (string)
+}
+```
+
+```js
+// 예시
+socket.emit("invite", {
+  userId: "myTest01",
+  targetId: "yourTest01",
+  roomId: "61d3cf901463bd1255fb5bae",
+});
+```
+
+- 받는 쪽 패킷 형태
+
+```js
+{
+  type: "room", // <- "room" 고정!!!
+  userId: "",  // 초대 보낸 사람 로그인 아이디, 예시대로면 "myTest01"
+  roomId: "",  // 초대 받은 방의 고유 번호, 예시대로면 "61d3cf901463bd1255fb5bae"
+}
+```
+
+<br/>
+
 # MongoDB 설치 (macOS)
 
 ```

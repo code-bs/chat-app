@@ -49,11 +49,16 @@ let Model = function () {
     }
   };
 
-  this.createNewChatHistory = async (roomId, message, userId, callback) => {
+  this.createNewChatHistory = async (payload, callback) => {
+    const { roomId, userId, nickname, message, avatarUrl, statusMessage } =
+      payload;
     const newMessage = {
       message,
       regDate: new Date(),
       userId,
+      nickname,
+      avatarUrl,
+      statusMessage,
     };
     try {
       const result = await RoomSchema.findOneAndUpdate(

@@ -17,11 +17,14 @@ module.exports = function (socket_port) {
       });
 
       socket.on("sendMessage", (info) => {
-        const { roomId, nickname, message } = info;
-        chatModel.createNewChatHistory(roomId, message, nickname, (err) => {
-          if (err) reject(err);
-        });
-        io.emit(roomId, message);
+        const { roomId, nickname, message, avatarUrl, statusMessage } = info;
+        chatModel.createNewChatHistory(
+          { roomId, message, nickname, avatarUrl, statusMessage },
+          (err) => {
+            if (err) reject(err);
+          }
+        );
+        io.emit(roomId, info);
       });
 
       socket.on("friend", (info) => {
