@@ -10,4 +10,8 @@ router.get("/:userId", controller.findUser);
 
 router.get("/friend_req/:userId", controller.checkRequest);
 
+router.put("/avatar", controller.changeAvatar);
+
+router.put("/status_message", controller.changeStatusMessage);
+
 module.exports = router;

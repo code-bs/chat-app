@@ -13,6 +13,18 @@ paths:
     get:
       summary: 유저가 입장해 있는 방 모두 반환
       tags: [Chat]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: 로그인 아이디
       responses:
         "200":
           description: 모든 방 목록
@@ -22,9 +34,16 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/room"
+  /chat/room:
     post:
       summary: 새로운 방 생성
       tags: [Chat]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
       requestBody:
         description: Request Body 정의
         required: true
@@ -44,6 +63,11 @@ paths:
       summary: 방 고유 번호가 roomId 인 방에 입장
       tags: [Chat]
       parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
         - in: path
           name: roomId
           schema:
@@ -69,6 +93,11 @@ paths:
       summary: 받은 채팅방 초대 목록 가져오기
       tags: [Chat]
       parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
         - in: path
           name: userId
           schema:
@@ -88,6 +117,12 @@ paths:
     post:
       summary: 방 초대 승락
       tags: [Chat]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
       requestBody:
         required: true
         content:
@@ -180,6 +215,11 @@ paths:
       summary: 유저 검색
       tags: [User]
       parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
         - in: path
           name: userId
           schema:
@@ -199,6 +239,12 @@ paths:
     post:
       summary: 친구 추가
       tags: [User]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
       requestBody:
         required: true
         content:
@@ -220,6 +266,11 @@ paths:
       summary: 친구 목록
       tags: [User]
       parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
         - in: path
           name: userId
           schema:
@@ -240,6 +291,11 @@ paths:
       summary: 친구 요청 목록
       tags: [User]
       parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
         - in: path
           name: userId
           schema:
@@ -255,6 +311,58 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/user"
+  /user/avatar:
+    put:
+      summary: 프로필 사진 변경
+      tags: [User]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: 본인 로그인 아이디
+                avatarUrl:
+                  type: string
+                  description: 이미지 URL
+      responses:
+        200:
+          description: 변경 성공
+  /user/status_message:
+    put:
+      summary: 상태 메세지 변경
+      tags: [User]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: 본인 로그인 아이디
+                statusMessage:
+                  type: string
+                  description: 변경할 상태 메세지
+      responses:
+        200:
+          description: 변경 성공
 components:
   schemas:
     room:
