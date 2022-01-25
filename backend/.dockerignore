@@ -3,3 +3,5 @@ npm-debug.log
 logs
 setup
 test
+docker-build.markdown
+README.md

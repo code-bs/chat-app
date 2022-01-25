@@ -11,9 +11,12 @@ const io = new Server(httpServer, {
 module.exports = function (socket_port) {
   return new Promise((resolve, reject) => {
     io.on("connection", (socket) => {
-      socket.on("whisper", (info) => {
-        const { targetId, message } = info;
-        io.emit(targetId, message);
+      socket.on("init", (info) => {
+        const { userId } = info;
+        const roomIds = chatModel.getRoomIds(userId);
+        roomIds.forEach((roomId) => {
+          socket.join(roomId);
+        });
       });
 
       socket.on("sendMessage", (info) => {
@@ -24,7 +27,8 @@ module.exports = function (socket_port) {
             if (err) reject(err);
           }
         );
-        io.emit(roomId, info);
+        // io.emit(roomId, info);
+        io.to(roomId).emit("receiveMessage", info);
       });
 
       socket.on("friend", (info) => {

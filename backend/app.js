@@ -11,6 +11,10 @@ const runServer = async () => {
       `./config/env/${process.env.MODE ? process.env.MODE : "local"}.env`
     ),
   });
+  const { MONGO_HOST, MYSQL_HOST, REDIS_HOST } = process.env;
+  console.log("MYSQL:", MYSQL_HOST);
+  console.log("MONGO:", MONGO_HOST);
+  console.log("REDIS:", REDIS_HOST);
   try {
     await httpServer(process.env.PORT);
     await websocket(process.env.SOCKET_PORT);
