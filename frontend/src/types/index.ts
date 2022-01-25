@@ -68,3 +68,12 @@ export type AddFriendParams = {
   userId: string;
   friendId: string;
 };
+
+export type Message = {
+  roomId: string;
+  message: string;
+  userId: string;
+  nickname: string;
+  avatarUrl: string;
+  statusMessage: string;
+};
