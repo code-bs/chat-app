@@ -77,3 +77,7 @@ export type Message = {
   avatarUrl: string;
   statusMessage: string;
 };
+
+export type GetRefreshTokenResponse = {
+  accessToken: string;
+};

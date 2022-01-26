@@ -1,10 +1,10 @@
 import endpoint from './endpoint';
-import { SigninParams, SignupParams, SignupResponse, SigninResponse } from '../types';
+import { SigninParams, SignupParams, SignupResponse, SigninResponse, GetRefreshTokenResponse } from '../types';
 
 const signin = async ({ userId, password }: SigninParams): Promise<SigninResponse> => {
   const { data } = await endpoint.post('/auth/login', { userId, password });
   const { accessToken } = data;
-  endpoint.defaults.headers.common['access_token'] = accessToken;
+  onSigninSuccess(accessToken);
   return data;
 };
 
@@ -15,6 +15,17 @@ const signup = async ({ userId, password, nickname }: SignupParams): Promise<Sig
 
 const signout = async () => {
   await endpoint.get('/auth/logout');
+  delete endpoint.defaults.headers.common['access_token'];
 };
 
-export { signin, signup, signout };
+const getRefreshToken = async () => {
+  const { data }: { data: GetRefreshTokenResponse } = await endpoint.get('/auth/refresh_token');
+  const { accessToken } = data;
+  onSigninSuccess(accessToken);
+};
+
+const onSigninSuccess = (accessToken: string) => {
+  endpoint.defaults.headers.common['access_token'] = accessToken;
+};
+
+export { signin, signup, signout, getRefreshToken };
