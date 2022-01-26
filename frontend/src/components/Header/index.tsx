@@ -1,8 +1,9 @@
 import React from 'react';
 import { Button, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { UserOutlined } from '@ant-design/icons';
-import { useAppSelector } from '../../store/hooks';
+import { UserOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { signoutAsync } from '../../store/auth/actions';
 
 import style from './index.module.scss';
 
@@ -14,6 +15,7 @@ type HeaderProps = {
 const Header = ({ friendListVisible, setFriendListVisible }: HeaderProps) => {
   const auth = useAppSelector(state => state.auth);
   const { signin } = auth;
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const onClickSignin = () => {
     navigate('/signin');
@@ -36,6 +38,12 @@ const Header = ({ friendListVisible, setFriendListVisible }: HeaderProps) => {
           onClick={() => setFriendListVisible(!friendListVisible)}
           type={friendListVisible ? 'primary' : 'default'}
         />
+        <Button
+          shape="circle"
+          icon={<CloseCircleOutlined />}
+          size="large"
+          onClick={() => dispatch(signoutAsync.request({}))}
+          type="default"></Button>
       </Space>
     </div>
   );
