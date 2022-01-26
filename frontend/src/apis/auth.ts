@@ -13,4 +13,8 @@ const signup = async ({ userId, password, nickname }: SignupParams): Promise<Sig
   return data;
 };
 
-export { signin, signup };
+const signout = async () => {
+  await endpoint.get('/auth/logout');
+};
+
+export { signin, signup, signout };
