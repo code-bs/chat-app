@@ -5,8 +5,10 @@ import {
   ActionReducerMapBuilder,
   Draft,
 } from '@reduxjs/toolkit';
-import { call, put } from 'redux-saga/effects';
+import { eventChannel, EventChannel } from 'redux-saga';
+import { call, put, take } from 'redux-saga/effects';
 import axios from 'axios';
+import socket from './socket';
 
 export enum ASYNC_STATUS {
   IDLE,
@@ -104,4 +106,35 @@ export const createPatialReducer = <State extends { [key: string]: AsyncEntity<a
       state[entity].error = action.payload;
       state[entity].status = ASYNC_STATUS.FAILURE;
     });
+};
+
+export const createSocketChannel = <T>(eventType: string) => {
+  return eventChannel<T>(emit => {
+    const emitter = (message: T) => emit(message);
+
+    socket.on(eventType, emitter);
+    return function unsubscribe() {
+      socket.off(eventType, emitter);
+    };
+  });
+};
+
+export const closeChannel = (channel: EventChannel<any>) => {
+  if (channel) {
+    channel.close();
+  }
+};
+
+export const createSocketSaga = <T>(action: ActionCreatorWithPayload<T>, eventType: string) => {
+  return function* () {
+    const channel: EventChannel<T> = yield call(createSocketChannel, eventType);
+    while (true) {
+      try {
+        const message: T = yield take(channel);
+        yield put(action(message));
+      } catch (e: any) {
+        console.log(e.message);
+      }
+    }
+  };
 };
