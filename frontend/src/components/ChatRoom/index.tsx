@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Layout, Button, Input } from 'antd';
 import { SpeechBubble } from '..';
-import { ChatLog } from '../../types';
+import { Message, SigninResponse } from '../../types';
+import { sendMessage } from '../../store/socket';
 import { CloseCircleFilled } from '@ant-design/icons';
 import style from './index.module.scss';
 import { useAppSelector } from '../../store/hooks';
-import { useChatState, useChatDispatch, sendMessage } from '../../contexts';
 const { Header, Content } = Layout;
 
 const ChatRoom = () => {
@@ -14,11 +14,20 @@ const ChatRoom = () => {
   const [text, setText] = useState<string>('');
 
   const rooms = useAppSelector(state => state.chat.chatRoomList.data) || [];
-  const chatDispatch = useChatDispatch();
+  const {
+    user: { avatarUrl, nickname, statusMessage, userId },
+  } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
   const selectedRoom = rooms.find(room => room._id === roomId);
   const submitMessage = () => {
     if (text.length === 0) return;
-    sendMessage(chatDispatch, roomId as string, text);
+    sendMessage<Message>('sendMessage', {
+      roomId: roomId as string,
+      userId,
+      nickname,
+      avatarUrl,
+      statusMessage,
+      message: text,
+    });
     setText('');
   };
   if (!selectedRoom) {
