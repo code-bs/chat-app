@@ -13,6 +13,8 @@ const ChatList = () => {
   const navigate = useNavigate();
   const rooms = chat.chatRoomList.data || [];
   const { signin } = auth;
+  const userId = signin.data?.user.userId as string;
+
   const [confirmVisible, setConfirmVisible] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const onCreateButton = () => {
@@ -50,7 +52,7 @@ const ChatList = () => {
           setConfirmVisible(false);
         }}
         onSubmit={value => {
-          dispatch(createChatRoomAsync.request({ roomName: value, userId: signin.data?.user.userId || '' }));
+          dispatch(createChatRoomAsync.request({ userId, roomName: value }));
           setConfirmVisible(false);
         }}
         title="채팅방 생성"
