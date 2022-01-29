@@ -25,7 +25,7 @@ function* authSaga() {
     signoutAsync.REQUEST,
     createSaga<any, any>(signoutAsync, AuthApi.signout, {
       onSuccess: () => {
-        history.push('/');
+        history.push('/chat');
       },
     }),
   );
