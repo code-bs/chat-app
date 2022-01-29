@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChatRoom, ChatList, FriendList, Header as HeaderComponet } from '../../components';
 import { Layout, Empty } from 'antd';
 import { Route, Routes } from 'react-router-dom';
 import { Centered } from '../../layouts';
 import style from './index.module.scss';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { getChatRoomListAsync } from '../../store/chat/actions';
 
 const { Header, Sider, Content } = Layout;
 
 const Chat = () => {
   const [friendListVisible, setFriendListVisible] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const auth = useAppSelector(state => state.auth);
+  const { signin } = auth;
+  const userId = signin.data?.user?.userId;
+
+  useEffect(() => {
+    if (userId) dispatch(getChatRoomListAsync.request({ userId }));
+  }, [dispatch, userId]);
+
   return (
     <Layout className={style.container}>
       <Layout className={style.container}>
