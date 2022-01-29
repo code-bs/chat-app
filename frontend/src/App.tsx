@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { getChatRoomListAsync } from './store/chat/actions';
 import { ChatProvider } from './contexts';
-import { Signup, Signin, Main } from './pages';
+import { Signup, Signin, Chat } from './pages';
 import { Centered } from './layouts';
 import RequireAuth from './router/RequireAuth';
 import { useAppSelector, useAppDispatch } from './store/hooks';
@@ -24,7 +24,7 @@ function App() {
           path="/chat/*"
           element={
             <ChatProvider>
-              <Main />
+              <Chat />
             </ChatProvider>
           }
         />

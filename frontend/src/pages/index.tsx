@@ -1,3 +1,3 @@
 export * from './Signin';
 export * from './Signup';
-export * from './Main';
+export * from './Chat';

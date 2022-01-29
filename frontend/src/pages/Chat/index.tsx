@@ -7,7 +7,7 @@ import style from './index.module.scss';
 
 const { Header, Sider, Content } = Layout;
 
-const Main = () => {
+const Chat = () => {
   const [friendListVisible, setFriendListVisible] = useState<boolean>(false);
   return (
     <Layout className={style.container}>
@@ -39,4 +39,4 @@ const Main = () => {
   );
 };
 
-export { Main };
+export { Chat };
