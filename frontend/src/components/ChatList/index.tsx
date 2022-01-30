@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Menu, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useMatch } from 'react-router-dom';
 import { Confirm } from '..';
 import style from './index.module.scss';
 import { createChatRoomAsync } from '../../store/chat/actions';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 
 const ChatList = () => {
+  const match = useMatch('/chat/:roomId');
+  const roomId = match?.params.roomId || '';
   const auth = useAppSelector(state => state.auth);
   const chat = useAppSelector(state => state.chat);
   const navigate = useNavigate();
@@ -28,6 +30,7 @@ const ChatList = () => {
     <div className={style.container}>
       <Menu
         theme="dark"
+        selectedKeys={[roomId]}
         onClick={({ key }) => {
           navigate(key);
         }}>
