@@ -16,6 +16,9 @@ const Chat = () => {
   const auth = useAppSelector(state => state.auth);
   const { signin } = auth;
   const userId = signin.data?.user?.userId as string;
+  const closeFriendList = () => {
+    setFriendListVisible(false);
+  };
 
   useEffect(() => {
     dispatch(getChatRoomListAsync.request({ userId }));
@@ -47,7 +50,7 @@ const Chat = () => {
           </Content>
         </Layout>
       </Layout>
-      {friendListVisible && <FriendList />}
+      {friendListVisible && <FriendList closeFriendList={closeFriendList} />}
     </Layout>
   );
 };
