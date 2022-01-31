@@ -28,7 +28,7 @@ module.exports = function (socket_port) {
           }
         );
         // io.emit(roomId, info);
-        io.to(roomId).emit("receiveMessage", info);
+        io.emit("receiveMessage", info);
       });
 
       socket.on("friend", (info) => {
