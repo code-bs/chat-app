@@ -49,6 +49,19 @@ let Model = function () {
     });
   };
 
+  this.getUserInfo = (userId, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT userId, nickname, avatarUrl, statusMessage FROM tbl_member WHERE userId=?",
+        [userId],
+        (error, result) => {
+          if (error) done(error, null);
+          else done(null, result);
+        }
+      );
+      conn.release();
+    });
+  };
   this.searchIdBySubstr = (substr, done) => {
     _mysql((conn) => {
       conn.query(
