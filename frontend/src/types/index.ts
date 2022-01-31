@@ -56,13 +56,19 @@ export type FindUserParams = {
   userId: string;
 };
 
+export type FindUserResponse = User[];
+
 export type GetFriendListParams = {
   userId: string;
 };
 
+export type GetFriendListResponse = User[];
+
 export type CheckRequestParams = {
   userId: string;
 };
+
+export type CheckRequestResponse = User[];
 
 export type AddFriendParams = {
   userId: string;
