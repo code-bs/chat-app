@@ -334,7 +334,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/user"
-  /user/avatar:
+  /user:
     put:
       summary: 프로필 사진 변경
       tags: [User]
@@ -354,35 +354,8 @@ paths:
                 userId:
                   type: string
                   description: 본인 로그인 아이디
-                avatarUrl:
-                  type: string
-                  description: 이미지 URL
-      responses:
-        200:
-          description: 변경 성공
-  /user/status_message:
-    put:
-      summary: 상태 메세지 변경
-      tags: [User]
-      parameters:
-        - in: header
-          name: access_token
-          schema:
-            type: string
-          description: JWT 토큰
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userId:
-                  type: string
-                  description: 본인 로그인 아이디
-                statusMessage:
-                  type: string
-                  description: 변경할 상태 메세지
+                profile:
+                  $ref: "#/components/schemas/profile"
       responses:
         200:
           description: 변경 성공
@@ -442,15 +415,6 @@ components:
           userId:
             type: string
             description: 유저 아이디
-          nickname:
-            type: string
-            description: 유저 닉네임
-          avatarUrl:
-            type: string
-            description: 프사
-          statusMessage:
-            type: string
-            description: 상태 메세지
     newuser:
       type: object
       properties:
@@ -473,3 +437,15 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/user"
+    profile:
+      type: object
+      properties:
+        nickname:
+          type: string
+          description: 닉네임
+        avatarUrl:
+          type: string
+          description: 프사
+        statusMessage:
+          type: string
+          description: 상태 메세지

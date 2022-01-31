@@ -12,8 +12,6 @@ router.get("/search/:userId", controller.searchUser);
 
 router.get("/friend_req/:userId", controller.checkRequest);
 
-router.put("/avatar", controller.changeAvatar);
-
-router.put("/status_message", controller.changeStatusMessage);
+router.put("/", controller.updateProfile);
 
 module.exports = router;

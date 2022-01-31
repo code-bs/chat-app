@@ -175,25 +175,12 @@ let Model = function () {
     });
   };
 
-  this.updateAvatar = (userId, url, done) => {
+  this.updateProfile = (userId, profile, done) => {
+    const { nickname, avatarUrl, statusMessage } = profile;
     _mysql((conn) => {
       conn.query(
-        "UPDATE tbl_member SET avatarUrl=? WHERE userId=?",
-        [url, userId],
-        (err, result) => {
-          if (err) done(err, null);
-          else done(null, result);
-        }
-      );
-      conn.release();
-    });
-  };
-
-  this.updateStatusMessage = (userId, message, done) => {
-    _mysql((conn) => {
-      conn.query(
-        "UPDATE tbl_member SET statusMessage=? WHERE userID=?",
-        [message, userId],
+        "UPDATE tbl_member SET nickname=?, avatarUrl=?, statusMessage=? WHERE userID=?",
+        [nickname, avatarUrl, statusMessage, userId],
         (err) => {
           if (err) done(err);
           else done(null);

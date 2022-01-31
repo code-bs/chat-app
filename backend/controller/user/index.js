@@ -3,8 +3,7 @@ const searchUser = require("./searchUser");
 const getUser = require("./getUser");
 const friendList = require("./friendList");
 const checkRequest = require("./checkRequest");
-const changeAvatar = require("./changeAvatar");
-const changeStatusMessage = require("./changeStatusMessage");
+const updateProfile = require("./updateProfile");
 
 module.exports = {
   addFriend,
@@ -12,6 +11,5 @@ module.exports = {
   getUser,
   friendList,
   checkRequest,
-  changeAvatar,
-  changeStatusMessage,
+  updateProfile,
 };
