@@ -6,6 +6,7 @@ import { Centered } from '../../layouts';
 import style from './index.module.scss';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { getChatRoomListAsync } from '../../store/chat/actions';
+import { getFriendListAsync } from '../../store/user/actions';
 
 const { Header, Sider, Content } = Layout;
 
@@ -14,10 +15,11 @@ const Chat = () => {
   const dispatch = useAppDispatch();
   const auth = useAppSelector(state => state.auth);
   const { signin } = auth;
-  const userId = signin.data?.user?.userId;
+  const userId = signin.data?.user?.userId as string;
 
   useEffect(() => {
-    if (userId) dispatch(getChatRoomListAsync.request({ userId }));
+    dispatch(getChatRoomListAsync.request({ userId }));
+    dispatch(getFriendListAsync.request({ userId }));
   }, [dispatch, userId]);
 
   return (
