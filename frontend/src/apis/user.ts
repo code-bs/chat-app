@@ -5,7 +5,6 @@ import {
   CheckRequestParams,
   AddFriendParams,
   FindUserResponse,
-  GetChatRoomListResponse,
   CheckRequestResponse,
   GetFriendListResponse,
 } from '../types';
