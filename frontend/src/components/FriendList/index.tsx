@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PageHeader, Button } from 'antd';
 import { UserAddOutlined, CloseOutlined } from '@ant-design/icons';
+import { AddFriendForm } from '..';
 import { Layout } from 'antd';
 
 const { Sider } = Layout;
@@ -9,6 +10,10 @@ type FriendListProps = {
   closeFriendList: () => void;
 };
 const FriendList = ({ closeFriendList }: FriendListProps) => {
+  const [isModalVisible, setModalVisible] = useState<boolean>(false);
+  const closeModal = () => {
+    setModalVisible(false);
+  };
   return (
     <Sider theme="light">
       <PageHeader
@@ -17,8 +22,17 @@ const FriendList = ({ closeFriendList }: FriendListProps) => {
           closeFriendList();
         }}
         title="친구"
-        extra={[<Button shape="circle" icon={<UserAddOutlined />} size="large" onClick={() => {}}></Button>]}
+        extra={[
+          <Button
+            shape="circle"
+            icon={<UserAddOutlined />}
+            size="large"
+            onClick={() => {
+              setModalVisible(true);
+            }}></Button>,
+        ]}
       />
+      <AddFriendForm {...{ isModalVisible, closeModal }} />
     </Sider>
   );
 };
