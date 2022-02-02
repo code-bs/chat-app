@@ -85,5 +85,6 @@ export type Message = {
 };
 
 export type GetRefreshTokenResponse = {
+  user: User;
   accessToken: string;
 };
