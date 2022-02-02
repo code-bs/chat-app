@@ -18,10 +18,11 @@ const signout = async () => {
   delete endpoint.defaults.headers.common['access_token'];
 };
 
-const getRefreshToken = async () => {
-  const { data }: { data: GetRefreshTokenResponse } = await endpoint.get('/auth/refresh_token');
+const getRefreshToken = async (): Promise<GetRefreshTokenResponse> => {
+  const { data } = await endpoint.get('/auth/refresh_token');
   const { accessToken } = data;
   onSigninSuccess(accessToken);
+  return data;
 };
 
 const onSigninSuccess = (accessToken: string) => {
