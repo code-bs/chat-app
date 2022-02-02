@@ -233,7 +233,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/user"
-  /user/search/{userId}:
+  /user:
     get:
       summary: userId (부분 문자열)을 포함한 유저 정보 리스트 조회
       tags: [User]
@@ -243,7 +243,7 @@ paths:
           schema:
             type: string
           description: JWT 토큰
-        - in: path
+        - in: query
           name: userId
           schema:
             type: string

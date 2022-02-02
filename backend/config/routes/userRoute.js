@@ -8,7 +8,7 @@ router.post("/friend", controller.addFriend);
 
 router.get("/:userId", controller.getUser);
 
-router.get("/search/:userId", controller.searchUser);
+router.get("/", controller.searchUser);
 
 router.get("/friend_req/:userId", controller.checkRequest);
 
