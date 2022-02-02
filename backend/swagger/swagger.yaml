@@ -258,6 +258,30 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/user"
+    put:
+      summary: 프로필 변경
+      tags: [User]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: 본인 로그인 아이디
+                profile:
+                  $ref: "#/components/schemas/profile"
+      responses:
+        200:
+          description: 변경 성공
   /user/friend:
     post:
       summary: 친구 추가
@@ -334,31 +358,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/user"
-  /user:
-    put:
-      summary: 프로필 사진 변경
-      tags: [User]
-      parameters:
-        - in: header
-          name: access_token
-          schema:
-            type: string
-          description: JWT 토큰
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userId:
-                  type: string
-                  description: 본인 로그인 아이디
-                profile:
-                  $ref: "#/components/schemas/profile"
-      responses:
-        200:
-          description: 변경 성공
 components:
   schemas:
     room:
