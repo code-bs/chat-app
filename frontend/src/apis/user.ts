@@ -10,7 +10,7 @@ import {
 } from '../types';
 
 const findUser = async ({ userId }: FindUserParams): Promise<FindUserResponse> => {
-  const { data } = await endpoint.get(`/user/${userId}`);
+  const { data } = await endpoint.get(`/user`, { params: { userId } });
   console.log(data);
   return data;
 };
