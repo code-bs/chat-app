@@ -2,10 +2,10 @@ import endpoint from './endpoint';
 import {
   FindUserParams,
   GetFriendListParams,
-  CheckRequestParams,
+  GetFriendRequestParams,
   AddFriendParams,
   FindUserResponse,
-  CheckRequestResponse,
+  GetFriendRequestResponse,
   GetFriendListResponse,
 } from '../types';
 
@@ -21,7 +21,7 @@ const getFriendList = async ({ userId }: GetFriendListParams): Promise<GetFriend
   return data;
 };
 
-const checkRequest = async ({ userId }: CheckRequestParams): Promise<CheckRequestResponse> => {
+const getFriendRequest = async ({ userId }: GetFriendRequestParams): Promise<GetFriendRequestResponse> => {
   const { data } = await endpoint.get(`/user/friend_req/${userId}`);
   console.log(data);
   return data;
@@ -31,4 +31,4 @@ const addFriend = async ({ userId, friendId }: AddFriendParams): Promise<void> =
   await endpoint.post('/auth', { userId, friendId });
 };
 
-export { findUser, getFriendList, checkRequest, addFriend };
+export { findUser, getFriendList, getFriendRequest, addFriend };
