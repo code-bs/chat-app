@@ -64,11 +64,11 @@ export type GetFriendListParams = {
 
 export type GetFriendListResponse = User[];
 
-export type CheckRequestParams = {
+export type GetFriendRequestParams = {
   userId: string;
 };
 
-export type CheckRequestResponse = User[];
+export type GetFriendRequestResponse = User[];
 
 export type AddFriendParams = {
   userId: string;
