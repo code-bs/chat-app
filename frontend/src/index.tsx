@@ -10,6 +10,7 @@ import { history } from './router/history';
 
 import reportWebVitals from './reportWebVitals';
 import './styles/base.scss';
+import './styles/antd.scss';
 import 'antd/dist/antd.css';
 
 ReactDOM.render(
