@@ -1,9 +1,11 @@
 import React, { useState, ChangeEvent, useMemo } from 'react';
-import { Modal, Input, List, Avatar, Button } from 'antd';
+import { Modal, Input, List, Avatar, Button, Popconfirm, notification } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { findUserAsync } from '../../store/user/actions';
 import { debounce } from '../../utils';
+import { sendMessage } from '../../store/socket';
+import { SendFriendRequestParams } from '../../types';
 
 type AddFriendFormProps = {
   isModalVisible: boolean;
@@ -14,7 +16,8 @@ const AddFriendForm = ({ isModalVisible, closeModal }: AddFriendFormProps) => {
   const [input, setInput] = useState<string>('');
   const dispatch = useAppDispatch();
   const { findUser } = useAppSelector(state => state.user);
-  const { data, status } = findUser;
+  const { data } = findUser;
+  const auth = useAppSelector(state => state.auth.signin.data);
   const debouncedDispatch = useMemo(
     () =>
       debounce((value: string) => {
@@ -29,6 +32,18 @@ const AddFriendForm = ({ isModalVisible, closeModal }: AddFriendFormProps) => {
     setInput(value);
     debouncedDispatch(value);
   };
+
+  const sendFriendRequest = ({ nickname, targetId }: { targetId: string; nickname: string }) => {
+    sendMessage<SendFriendRequestParams>('friend', {
+      targetId,
+      userId: auth?.user.userId as string,
+    });
+    notification.open({
+      message: '친구추가 요청',
+      description: `${nickname}님에게 친구추가 요청을 완료했습니다.`,
+    });
+  };
+
   return (
     <Modal
       title="친구 추가"
@@ -42,7 +57,14 @@ const AddFriendForm = ({ isModalVisible, closeModal }: AddFriendFormProps) => {
         itemLayout="horizontal"
         dataSource={data || []}
         renderItem={({ userId, avatarUrl, nickname, statusMessage }) => (
-          <List.Item actions={[<Button>친구추가</Button>]}>
+          <List.Item
+            actions={[
+              <Popconfirm
+                title={`${nickname}님에게 친구요청을 보내시겠습니까?`}
+                onConfirm={() => sendFriendRequest({ nickname, targetId: userId })}>
+                <Button type="primary">친구추가</Button>
+              </Popconfirm>,
+            ]}>
             <List.Item.Meta
               avatar={avatarUrl ? <Avatar src={avatarUrl} /> : <UserOutlined />}
               title={`[${userId}]${nickname}`}

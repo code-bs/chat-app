@@ -88,3 +88,8 @@ export type GetRefreshTokenResponse = {
   user: User;
   accessToken: string;
 };
+
+export type SendFriendRequestParams = {
+  userId: string;
+  targetId: string;
+};
