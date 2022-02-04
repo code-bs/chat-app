@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Space } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
-import { Profile } from '..';
+import { Profile, Alarm } from '..';
 
 import style from './index.module.scss';
 
@@ -16,6 +16,7 @@ const Header = ({ friendListVisible, setFriendListVisible }: HeaderProps) => {
       <h1 className={style.logo}>Chat App</h1>
       <Space className={style.wrap_btn}>
         <Profile />
+        <Alarm />
         <Button
           shape="circle"
           icon={<MenuOutlined />}

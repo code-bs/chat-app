@@ -6,3 +6,4 @@ export * from './Confirm';
 export * from './FriendList';
 export * from './AddFriendForm';
 export * from './Profile';
+export * from './Alarm';
