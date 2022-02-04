@@ -1,17 +1,54 @@
 /* IMPORTS */
 const crypto = require("crypto");
 const authModel = require("../../models/authModels")();
+const errorHandler = require("../common/errorHandler");
 const logger = require("../../config/logger");
 const jwt = require("../common/jwt");
 
 /* METHODS */
-function getUserById(context) {
-  const { userId } = context;
+function validateInput(body) {
   return new Promise((resolve, reject) => {
-    logger.info(`[Auth][Login][${userId}]-> checking id validation`);
+    const { userId, password, ...extra } = body;
+    const defaultError = {
+      module: "auth",
+      service: "login",
+      method: "validateInput",
+    };
+    if (!userId) {
+      reject({
+        status: 400,
+        message: "아이디를 입력하세요.",
+        ...defaultError,
+      });
+    } else if (!password) {
+      reject({
+        status: 400,
+        message: "비밀번호를 입력하세요.",
+        ...defaultError,
+      });
+    } else if (!!Object.keys(extra).length) {
+      reject({
+        status: 400,
+        message: "허용되지 않은 입력값입니다.",
+        ...defaultError,
+      });
+    }
+    resolve();
+  });
+}
+
+function getUserById(userId) {
+  return new Promise((resolve, reject) => {
     authModel.getUser(userId, (error, result) => {
       if (error) {
-        reject(error);
+        reject({
+          module: "auth",
+          service: "login",
+          method: "getUserById",
+          status: 500,
+          message: "알 수 없는 오류가 발생하였습니다.",
+          errorMsg: error,
+        });
       } else {
         if (result.length < 1) {
           reject({ status: 400, message: "존재하지 않는 아이디 입니다." });
@@ -23,10 +60,8 @@ function getUserById(context) {
   });
 }
 
-function validatePassword(context, dbUserInfo) {
-  const { userId, password } = context;
+function validatePassword(password, dbUserInfo) {
   return new Promise((resolve, reject) => {
-    logger.info(`[Auth][Login][${userId}]-> checking password validation`);
     crypto.pbkdf2(
       password,
       dbUserInfo.hashCode,
@@ -45,7 +80,6 @@ function validatePassword(context, dbUserInfo) {
 }
 
 function getAccessToken(context) {
-  logger.info(`[Auth][Login][${context.userId}]-> generating token`);
   return new Promise((resolve, reject) => {
     jwt
       .generate(context)
@@ -53,13 +87,18 @@ function getAccessToken(context) {
         resolve(token);
       })
       .catch((error) => {
-        reject(error);
+        reject({
+          module: "auth",
+          service: "login",
+          method: "getAccessToken",
+          status: 500,
+          message: error,
+        });
       });
   });
 }
 
 function getRefreshToken(context) {
-  logger.info(`[Auth][Login][${context.userId}]-> generating refresh token`);
   return new Promise((resolve, reject) => {
     jwt
       .generate_refresh(context)
@@ -67,74 +106,51 @@ function getRefreshToken(context) {
         resolve(token);
       })
       .catch((error) => {
-        reject(error);
+        reject({
+          module: "auth",
+          service: "login",
+          method: "getRefreshToken",
+          status: 500,
+          message: error,
+        });
       });
   });
 }
 
-/* EXPORTS */
-async function login(context, callback) {
-  logger.info(`[Auth][Login][${context.userId}]-> loggin in`);
+module.exports = async function (req, res) {
+  const { userId, password } = req.body;
 
+  logger.info(`[Auth][Login] ${userId}: loggin in`);
   try {
-    const dbUserInfo = await getUserById(context);
-    await validatePassword(context, dbUserInfo);
-
-    logger.info(`[Auth][Login][${context.userId}]-> login success`);
-
-    const { userId, nickname, avatarUrl, statusMessage } = dbUserInfo;
-    const token = await getAccessToken({
-      userId,
+    await validateInput(req.body);
+    const dbUserInfo = await getUserById(userId);
+    await validatePassword(password, dbUserInfo);
+    const { id, nickname, avatarUrl, statusMessage } = dbUserInfo;
+    const accessToken = await getAccessToken({
+      userId: id,
       nickname,
       avatarUrl,
       statusMessage,
     });
     const refreshToken = await getRefreshToken({
-      userId,
+      userId: id,
       nickname,
       avatarUrl,
       statusMessage,
     });
 
-    callback(null, {
+    logger.info(`[Auth][Login] ${userId}: login success`);
+    res.cookie("refreshToken", refreshToken).send({
       user: {
-        userId,
+        userId: id,
         nickname,
         avatarUrl,
         statusMessage,
       },
-      accessToken: token,
-      refreshToken,
+      accessToken,
     });
   } catch (error) {
-    if (!error.status)
-      callback(
-        {
-          status: 500,
-          error,
-          message: "알 수 없는 오류가 발생하였습니다.",
-        },
-        null
-      );
-    else callback(error, null);
+    errorHandler(error);
+    res.status(error.status).send(error.message);
   }
-}
-
-module.exports = function (req, res) {
-  const context = req.body;
-  login(context, (error, payload) => {
-    if (error) {
-      if (error.status >= 500) {
-        logger.error(error.error);
-      } else {
-        logger.info(`
-[Auth][Login][${context.userId}]-> STATUS: ${error.status}
-${error.message}`);
-      }
-      res.status(error.status).send(error.message);
-    } else {
-      const { user, accessToken, refreshToken } = payload;
-      res.cookie("refreshToken", refreshToken).send({ user, accessToken });
-    }
-  });
 };

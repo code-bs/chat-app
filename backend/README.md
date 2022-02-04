@@ -45,9 +45,9 @@ $ brew services start redis
 // 예시
 socket.emit("sendMessage", {
   roomId: "61d3cf901463bd1255fb5bae",
-  message: "응 더 떡락해봐 ㅋㅋㅋㅋㅋ 자살하면 그만이야 ㅋㅋㅋㅋㅋㅋ",
+  message: "ㅋㅋㅋㅋ",
   userId: "myTest01",
-  nickname: "비트코인중독자",
+  nickname: "부아앙",
   avatarUrl: "https://hyunwoo045.github.io/assets/images/ori.png",
   statusMessage: "집에 가고 싶다",
 });
