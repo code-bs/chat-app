@@ -18,7 +18,6 @@ module.exports = function (socket_port) {
           socket.join(roomId);
         });
       });
-
       socket.on("sendMessage", (info) => {
         const { roomId, nickname, message, avatarUrl, statusMessage } = info;
         chatModel.createNewChatHistory(
