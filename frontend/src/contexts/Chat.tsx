@@ -2,6 +2,7 @@ import React, { useReducer, useContext, useEffect, createContext, Dispatch, Reac
 import { io } from 'socket.io-client';
 import { ChatLog, ChatRoomInfo, CreateChatRoomParams } from '../types';
 import { ChatApi } from '../apis';
+import { useAuthState } from '.';
 
 type State = {
   rooms: ChatRoomInfo[];
@@ -78,10 +79,17 @@ const addMessageEvent = (dispatch: ChatDispatch, roomId: string) => {
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { auth } = useAuthState();
+
   useEffect(() => {
+    const { data } = auth;
+    if (!data) return;
+    const {
+      user: { userId },
+    } = data;
     const init = async () => {
       try {
-        const { rooms } = await ChatApi.getChatRoomList();
+        const rooms = await ChatApi.getChatRoomList({ userId });
         dispatch({ type: ChatActionTypes.GET_ROOM_LIST, rooms });
         initSocketEvent();
         rooms.forEach(room => {
@@ -112,7 +120,7 @@ export const useChatDispatch = () => {
 
 export const createChatRoom = async (dispatch: ChatDispatch, { roomName, userId }: CreateChatRoomParams) => {
   try {
-    const { room } = await ChatApi.createChatRoom({ roomName, userId });
+    const room = await ChatApi.createChatRoom({ roomName, userId });
     dispatch({ type: ChatActionTypes.CREATE_ROOM, room });
   } catch (e: any) {
     console.log(e.message);

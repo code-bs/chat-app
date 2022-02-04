@@ -1,22 +1,34 @@
 import endpoint from './endpoint';
-import { SigninParams, SignupParams } from '../types';
+import {
+  FindUserParams,
+  GetFriendListParams,
+  GetFriendRequestParams,
+  AddFriendParams,
+  FindUserResponse,
+  GetFriendRequestResponse,
+  GetFriendListResponse,
+} from '../types';
 
-const signin = async ({ userId, password }: SigninParams) => {
-  try {
-    const response: any = await endpoint.post('/auth/login', { userId, password });
-    console.log(response);
-  } catch (e: any) {
-    console.log(e.message);
-  }
+const findUser = async ({ userId }: FindUserParams): Promise<FindUserResponse> => {
+  const { data } = await endpoint.get(`/user`, { params: { userId } });
+  console.log(data);
+  return data;
 };
 
-const signup = async ({ userId, password, nickname }: SignupParams) => {
-  try {
-    const response: any = await endpoint.post('/user', { userId, password, nickname });
-    console.log(response);
-  } catch (e: any) {
-    console.log(e.message);
-  }
+const getFriendList = async ({ userId }: GetFriendListParams): Promise<GetFriendListResponse> => {
+  const { data } = await endpoint.get(`/user/friend/${userId}`);
+  console.log(data);
+  return data;
 };
 
-export { signin, signup };
+const getFriendRequest = async ({ userId }: GetFriendRequestParams): Promise<GetFriendRequestResponse> => {
+  const { data } = await endpoint.get(`/user/friend_req/${userId}`);
+  console.log(data);
+  return data;
+};
+
+const addFriend = async ({ userId, friendId }: AddFriendParams): Promise<void> => {
+  await endpoint.post('/auth', { userId, friendId });
+};
+
+export { findUser, getFriendList, getFriendRequest, addFriend };

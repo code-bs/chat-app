@@ -1,27 +1,29 @@
 import React from 'react';
-import { Button } from 'antd';
-import { useAuthState } from '../../contexts';
-import { useNavigate } from 'react-router-dom';
+import { Button, Space } from 'antd';
+import { MenuOutlined } from '@ant-design/icons';
+import { Profile } from '..';
+
 import style from './index.module.scss';
 
-const Header = () => {
-  const { userId } = useAuthState();
-  const navigate = useNavigate();
-  const onClickSignin = () => {
-    navigate('/signin');
-  };
+type HeaderProps = {
+  friendListVisible: boolean;
+  setFriendListVisible: (visible: boolean) => void;
+};
+
+const Header = ({ friendListVisible, setFriendListVisible }: HeaderProps) => {
   return (
     <div className={style.container}>
       <h1 className={style.logo}>Chat App</h1>
-      <div className={style.wrap_btn}>
-        {userId ? (
-          <span className={style.username}>{userId} 님</span>
-        ) : (
-          <Button type="primary" onClick={onClickSignin}>
-            Sign in
-          </Button>
-        )}
-      </div>
+      <Space className={style.wrap_btn}>
+        <Profile />
+        <Button
+          shape="circle"
+          icon={<MenuOutlined />}
+          size="large"
+          onClick={() => setFriendListVisible(!friendListVisible)}
+          type={friendListVisible ? 'primary' : 'default'}
+        />
+      </Space>
     </div>
   );
 };

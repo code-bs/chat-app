@@ -4,13 +4,13 @@ import { Modal, Input } from 'antd';
 type ConfirmProps = {
   title: string;
   message: string;
-  onSubmit: (value: string) => void;
+  onSubmit: (value?: string) => void;
   onCancel: () => void;
   withInput: boolean;
   isModalVisible: boolean;
 };
 
-const Confirm = ({ title, message, onSubmit, onCancel, withInput, isModalVisible }: ConfirmProps) => {
+const Confirm = ({ title, message, onSubmit, onCancel, withInput = true, isModalVisible }: ConfirmProps) => {
   const [input, setInput] = useState<string>('');
   const clearInput = () => {
     setInput('');
@@ -26,7 +26,8 @@ const Confirm = ({ title, message, onSubmit, onCancel, withInput, isModalVisible
       onCancel={() => {
         onCancel();
         clearInput();
-      }}>
+      }}
+      okButtonProps={{ disabled: withInput && input.length === 0 }}>
       <p>{message}</p>
       {withInput && <Input onChange={e => setInput(e.target.value)} value={input} />}
     </Modal>

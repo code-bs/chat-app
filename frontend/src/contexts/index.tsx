@@ -1,2 +1,2 @@
-export * from './ChatContext';
+export * from './Chat';
 export * from './Auth';

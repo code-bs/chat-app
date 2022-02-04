@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Form, Input, Divider, Button, Space } from 'antd';
+import { Card, Form, Input, Divider, Button, Space, message } from 'antd';
 import { UserOutlined, LockOutlined, SmileOutlined } from '@ant-design/icons';
-import { useAuthDispatch, signup } from '../../contexts';
 import style from './index.module.scss';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { signupAsync } from '../../store/auth/actions';
 
 type FormValues = {
   userId: string;
@@ -14,13 +15,20 @@ type FormValues = {
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { signup } = useAppSelector(state => state.auth);
+  const { error } = signup;
   const onClickCancel = () => {
     navigate(-1);
   };
-  const dispatch = useAuthDispatch();
+  useEffect(() => {
+    if (error) {
+      message.error(error);
+    }
+  }, [error]);
+  const dispatch = useAppDispatch();
   const onClickSubmit = async (values: FormValues) => {
     const { userId, password, nickname } = values;
-    await signup(dispatch, { userId, password, nickname });
+    await dispatch(signupAsync.request({ userId, password, nickname }));
   };
   return (
     <Card className={style.container}>

@@ -1,17 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Menu, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { useNavigate, useMatch } from 'react-router-dom';
 import { Confirm } from '..';
-import { useChatState, useChatDispatch, useAuthState, createChatRoom, selectRoom } from '../../contexts';
 import style from './index.module.scss';
+import { createChatRoomAsync } from '../../store/chat/actions';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
 
 const ChatList = () => {
-  const { rooms } = useChatState();
-  const { userId } = useAuthState();
+  const match = useMatch('/chat/:roomId');
+  const roomId = match?.params.roomId || '';
+  const auth = useAppSelector(state => state.auth);
+  const chat = useAppSelector(state => state.chat);
+  const navigate = useNavigate();
+  const rooms = chat.chatRoomList.data || [];
+  const { signin } = auth;
+  const userId = signin.data?.user.userId as string;
+
   const [confirmVisible, setConfirmVisible] = useState<boolean>(false);
-  const chatDispatch = useChatDispatch();
+  const dispatch = useAppDispatch();
   const onCreateButton = () => {
-    if (!userId) {
+    if (!signin.data) {
       alert('로그인이 필요합니다');
       return;
     }
@@ -21,8 +30,9 @@ const ChatList = () => {
     <div className={style.container}>
       <Menu
         theme="dark"
+        selectedKeys={[roomId]}
         onClick={({ key }) => {
-          selectRoom(chatDispatch, key);
+          navigate(key);
         }}>
         {rooms.map(room => {
           return (
@@ -45,7 +55,7 @@ const ChatList = () => {
           setConfirmVisible(false);
         }}
         onSubmit={value => {
-          createChatRoom(chatDispatch, { roomName: value, userId: userId });
+          dispatch(createChatRoomAsync.request({ userId, roomName: value }));
           setConfirmVisible(false);
         }}
         title="채팅방 생성"

@@ -60,7 +60,10 @@ module.exports = async function (req, res) {
     });
 
     logger.info(`[auth][refreshToken]-> done`);
-    res.send({ accessToken });
+    res.send({
+      accessToken,
+      user: { userId, nickname, avatarUrl, statusMessage },
+    });
   } catch (error) {
     if (!error.status) {
       logger.error(error);

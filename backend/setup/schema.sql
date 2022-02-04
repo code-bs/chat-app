@@ -5,7 +5,7 @@ USE bs_auth;
 DROP TABLE IF EXISTS tbl_member;
 CREATE TABLE `tbl_member` (
   userId varchar(20) NOT NULL,
-  password varchar(255) NOT NULL,
+ password varchar(255) NOT NULL,
   nickname varchar(10) NOT NULL,
   avatarUrl varchar(255),
   statusMessage varchar(255) DEFAULT "",

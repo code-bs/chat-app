@@ -1,15 +1,15 @@
 const addFriend = require("./addFriend");
-const findUser = require("./findUser");
+const searchUser = require("./searchUser");
+const getUser = require("./getUser");
 const friendList = require("./friendList");
 const checkRequest = require("./checkRequest");
-const changeAvatar = require("./changeAvatar");
-const changeStatusMessage = require("./changeStatusMessage");
+const updateProfile = require("./updateProfile");
 
 module.exports = {
   addFriend,
-  findUser,
+  searchUser,
+  getUser,
   friendList,
   checkRequest,
-  changeAvatar,
-  changeStatusMessage,
+  updateProfile,
 };

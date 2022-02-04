@@ -4,13 +4,15 @@ let Model = function () {
   require("dotenv").config({
     path: path.join(
       __dirname,
-      `../env/${process.env.MODE ? process.env.MODE : "local"}.env`
+      `../config/env/${process.env.MODE ? process.env.MODE : "local"}.env`
     ),
   });
+  const { REDIS_HOST, REDIS_PORT } = process.env;
+  console.log(`REDIS: ${REDIS_HOST}:${REDIS_PORT}`);
   const redis = require("redis");
   const redisClient = redis.createClient({
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
+    host: REDIS_HOST,
+    port: REDIS_PORT,
   });
   redisClient.connect();
 

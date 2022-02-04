@@ -9,9 +9,6 @@ const roomSchema = new mongoose.Schema({
       message: String,
       regDate: Date,
       userId: String,
-      nickname: String,
-      avatarUrl: String,
-      statusMessage: String,
     },
   ],
 });

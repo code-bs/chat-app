@@ -232,9 +232,56 @@ paths:
           content:
             application/json:
               schema:
+                $ref: "#/components/schemas/user"
+  /user:
+    get:
+      summary: userId (부분 문자열)을 포함한 유저 정보 리스트 조회
+      tags: [User]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: 검색하는 아이디 부분 문자열
+      responses:
+        200:
+          description: 유저 검색 결과 리스트
+          content:
+            application/json:
+              schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/user"
+    put:
+      summary: 프로필 변경
+      tags: [User]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: 본인 로그인 아이디
+                profile:
+                  $ref: "#/components/schemas/profile"
+      responses:
+        200:
+          description: 변경 성공
   /user/friend:
     post:
       summary: 친구 추가
@@ -311,58 +358,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/user"
-  /user/avatar:
-    put:
-      summary: 프로필 사진 변경
-      tags: [User]
-      parameters:
-        - in: header
-          name: access_token
-          schema:
-            type: string
-          description: JWT 토큰
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userId:
-                  type: string
-                  description: 본인 로그인 아이디
-                avatarUrl:
-                  type: string
-                  description: 이미지 URL
-      responses:
-        200:
-          description: 변경 성공
-  /user/status_message:
-    put:
-      summary: 상태 메세지 변경
-      tags: [User]
-      parameters:
-        - in: header
-          name: access_token
-          schema:
-            type: string
-          description: JWT 토큰
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userId:
-                  type: string
-                  description: 본인 로그인 아이디
-                statusMessage:
-                  type: string
-                  description: 변경할 상태 메세지
-      responses:
-        200:
-          description: 변경 성공
 components:
   schemas:
     room:
@@ -419,15 +414,6 @@ components:
           userId:
             type: string
             description: 유저 아이디
-          nickname:
-            type: string
-            description: 유저 닉네임
-          avatarUrl:
-            type: string
-            description: 프사
-          statusMessage:
-            type: string
-            description: 상태 메세지
     newuser:
       type: object
       properties:
@@ -450,3 +436,15 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/user"
+    profile:
+      type: object
+      properties:
+        nickname:
+          type: string
+          description: 닉네임
+        avatarUrl:
+          type: string
+          description: 프사
+        statusMessage:
+          type: string
+          description: 상태 메세지

@@ -11,6 +11,13 @@ const io = new Server(httpServer, {
 module.exports = function (socket_port) {
   return new Promise((resolve, reject) => {
     io.on("connection", (socket) => {
+      socket.on("init", (info) => {
+        const { userId } = info;
+        const roomIds = chatModel.getRoomIds(userId);
+        roomIds.forEach((roomId) => {
+          socket.join(roomId);
+        });
+      });
       socket.on("sendMessage", (info) => {
         const { roomId, nickname, message, avatarUrl, statusMessage } = info;
         chatModel.createNewChatHistory(
@@ -19,7 +26,8 @@ module.exports = function (socket_port) {
             if (err) reject(err);
           }
         );
-        io.emit(roomId, info);
+        // io.emit(roomId, info);
+        io.emit("receiveMessage", info);
       });
 
       socket.on("friend", (info) => {

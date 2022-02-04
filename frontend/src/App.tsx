@@ -1,31 +1,41 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Signup, Signin, Main } from './pages';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { ChatProvider } from './contexts';
+import { Signup, Signin, Chat } from './pages';
 import { Centered } from './layouts';
+import RequireAuth from './router/RequireAuth';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route index element={<Main />} />
+    <Routes>
+      <Route path="/" element={<Navigate to="/chat" replace />} />
+      <Route element={<RequireAuth />}>
         <Route
-          path="signup"
+          path="/chat/*"
           element={
-            <Centered>
-              <Signup />
-            </Centered>
+            <ChatProvider>
+              <Chat />
+            </ChatProvider>
           }
         />
-        <Route
-          path="signin"
-          element={
-            <Centered>
-              <Signin />
-            </Centered>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+      </Route>
+      <Route
+        path="/signup"
+        element={
+          <Centered>
+            <Signup />
+          </Centered>
+        }
+      />
+      <Route
+        path="/signin"
+        element={
+          <Centered>
+            <Signin />
+          </Centered>
+        }
+      />
+    </Routes>
   );
 }
 

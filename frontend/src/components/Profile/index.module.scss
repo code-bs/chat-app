@@ -1,0 +1,13 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+.button {
+  border: 0;
+  &:hover {
+    background-color: #1890ff;
+    color: #fff;
+  }
+}

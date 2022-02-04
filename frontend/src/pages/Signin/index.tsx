@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Form, Input, Divider, Button, Space } from 'antd';
+import { Card, Form, Input, Divider, Button, Space, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useAuthDispatch, signin } from '../../contexts';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { signinAsync } from '../../store/auth/actions';
 import style from './index.module.scss';
 
 type FormValues = {
@@ -12,13 +13,21 @@ type FormValues = {
 
 const Signin = () => {
   const navigate = useNavigate();
+  const auth = useAppSelector(state => state.auth);
+  const { signin } = auth;
+  const { error } = signin;
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (error) {
+      message.error(error).then();
+    }
+  }, [error]);
   const onClickSignup = () => {
     navigate('/signup');
   };
-  const dispatch = useAuthDispatch();
   const onClickSubmit = async (values: FormValues) => {
     const { userId, password } = values;
-    await signin(dispatch, { userId, password });
+    await dispatch(signinAsync.request({ userId, password }));
   };
   return (
     <Card className={style.container}>

@@ -1,29 +1,40 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Layout, Button, Input } from 'antd';
 import { SpeechBubble } from '..';
-import { ChatLog } from '../../types';
+import { Message, SigninResponse } from '../../types';
+import { sendMessage } from '../../store/socket';
+import { CloseCircleFilled } from '@ant-design/icons';
 import style from './index.module.scss';
-import { useChatState, useChatDispatch, useAuthState, sendMessage } from '../../contexts';
-import { Empty } from 'antd';
+import { useAppSelector } from '../../store/hooks';
 const { Header, Content } = Layout;
 
 const ChatRoom = () => {
-  const [messages, setMessages] = useState<ChatLog[]>([]);
+  const { roomId } = useParams();
   const [text, setText] = useState<string>('');
-  const { rooms, selectedRoomId } = useChatState();
-  const { userId } = useAuthState();
-  const chatDispatch = useChatDispatch();
-  const selectedRoom = rooms.find(room => room._id === selectedRoomId);
+
+  const rooms = useAppSelector(state => state.chat.chatRoomList.data) || [];
+  const {
+    user: { avatarUrl, nickname, statusMessage, userId },
+  } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
+  const selectedRoom = rooms.find(room => room._id === roomId);
   const submitMessage = () => {
     if (text.length === 0) return;
-    // setMessages([...messages, { message: text, userId, regDate: new Date().toString() }]);
-    sendMessage(chatDispatch, selectedRoomId, text);
+    sendMessage<Message>('sendMessage', {
+      roomId: roomId as string,
+      userId,
+      nickname,
+      avatarUrl,
+      statusMessage,
+      message: text,
+    });
     setText('');
   };
   if (!selectedRoom) {
     return (
       <Layout className={style.container}>
-        <Empty description={'Please select chat room!'} />
+        <CloseCircleFilled />
+        <p>찾으시는 방이 존재하지 않습니다!</p>
       </Layout>
     );
   }
