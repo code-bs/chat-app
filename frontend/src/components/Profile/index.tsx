@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Popover, Image, Space } from 'antd';
+import { Button, Popover } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { useAppDispatch } from '../../store/hooks';
 import { signoutAsync } from '../../store/auth/actions';
