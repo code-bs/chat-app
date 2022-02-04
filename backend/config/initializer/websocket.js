@@ -11,11 +11,6 @@ const io = new Server(httpServer, {
 module.exports = function (socket_port) {
   return new Promise((resolve, reject) => {
     io.on("connection", (socket) => {
-      socket.on("whisper", (info) => {
-        const { targetId, message } = info;
-        io.emit(targetId, message);
-      });
-
       socket.on("sendMessage", (info) => {
         const { roomId, nickname, message, avatarUrl, statusMessage } = info;
         chatModel.createNewChatHistory(
