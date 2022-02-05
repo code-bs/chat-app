@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { Button, Popover } from 'antd';
+import { Button, Popover, Avatar } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { useAppDispatch } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { signoutAsync } from '../../store/auth/actions';
 import { Confirm } from '..';
 import style from './index.module.scss';
+import { SigninResponse } from '../../types';
 
 const Profile = () => {
   const dispatch = useAppDispatch();
+  const { user } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
+  const { avatarUrl, nickname } = user;
   const [popoverVisible, setPopoverVisible] = useState<boolean>(false);
   const [confirmVisible, setConfirmVisible] = useState<boolean>(false);
   const content = (
@@ -22,6 +25,7 @@ const Profile = () => {
   );
   return (
     <>
+      <span className={style.username}>{nickname}님</span>
       <Popover
         placement="bottom"
         content={content}
@@ -30,7 +34,12 @@ const Profile = () => {
         visible={popoverVisible}
         onVisibleChange={setPopoverVisible}
         className={style.container}>
-        <Button shape="circle" icon={<UserOutlined />} size="large" />
+        <Avatar
+          shape="circle"
+          size="large"
+          className={style.avatar}
+          {...(avatarUrl ? { src: avatarUrl } : { icon: <UserOutlined /> })}
+        />
       </Popover>
       <Confirm
         onCancel={() => {
