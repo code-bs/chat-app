@@ -1,11 +1,16 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { getChatRoomListAsync, createChatRoomAsync, recieveMessage } from './actions';
-import { GetChatRoomListResponse, CreateChatRoomResponse } from '../../types';
+import {
+  GetChatRoomListParams,
+  GetChatRoomListResponse,
+  CreateChatRoomParams,
+  CreateChatRoomResponse,
+} from '../../types';
 import { createInitialState, createPatialReducer } from '../utils';
 
 const initialState = {
-  chatRoomList: createInitialState<GetChatRoomListResponse>(),
-  createChatRoom: createInitialState<CreateChatRoomResponse>(),
+  chatRoomList: createInitialState<GetChatRoomListParams, GetChatRoomListResponse>(),
+  createChatRoom: createInitialState<CreateChatRoomParams, CreateChatRoomResponse>(),
 };
 
 export type ChatState = typeof initialState;

@@ -1,13 +1,13 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { signinAsync, signupAsync, signoutAsync, getRefreshTokenAsync } from './actions';
-import { SigninResponse, SignupResponse } from '../../types';
+import { SigninParams, SigninResponse, SignupParams, SignupResponse, GetRefreshTokenResponse } from '../../types';
 import { createInitialState, createPatialReducer } from '../utils';
 
 const initialState = {
-  signin: createInitialState<SigninResponse>(),
-  signup: createInitialState<SignupResponse>(),
-  signout: createInitialState<any>(),
-  getRefreshToken: createInitialState<any>(),
+  signin: createInitialState<SigninParams, SigninResponse>(),
+  signup: createInitialState<SignupParams, SignupResponse>(),
+  signout: createInitialState<any, any>(),
+  getRefreshToken: createInitialState<any, GetRefreshTokenResponse>(),
 };
 
 export type AuthState = typeof initialState;

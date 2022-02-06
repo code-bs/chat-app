@@ -1,12 +1,21 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { getFriendListAsync, findUserAsync, getFriendRequestAsync } from './actions';
-import { GetFriendListResponse, FindUserResponse, GetFriendRequestResponse } from '../../types';
+import { getFriendListAsync, findUserAsync, getFriendRequestAsync, addFriendAsync } from './actions';
+import {
+  GetFriendListParams,
+  GetFriendListResponse,
+  FindUserParams,
+  FindUserResponse,
+  GetFriendRequestParams,
+  GetFriendRequestResponse,
+  AddFriendParams,
+} from '../../types';
 import { createInitialState, createPatialReducer } from '../utils';
 
 const initialState = {
-  friendList: createInitialState<GetFriendListResponse>(),
-  findUser: createInitialState<FindUserResponse>(),
-  friendRequest: createInitialState<GetFriendRequestResponse>(),
+  friendList: createInitialState<GetFriendListParams, GetFriendListResponse>(),
+  findUser: createInitialState<FindUserParams, FindUserResponse>(),
+  friendRequest: createInitialState<GetFriendRequestParams, GetFriendRequestResponse>(),
+  addFriend: createInitialState<AddFriendParams, any>(),
 };
 
 export type UserState = typeof initialState;
