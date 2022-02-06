@@ -17,10 +17,11 @@ export enum ASYNC_STATUS {
   FAILURE,
 }
 
-export type AsyncEntity<T> = {
-  data: T | null;
+export type AsyncEntity<P, R> = {
+  data: R | null;
   status: ASYNC_STATUS;
   error: string | null;
+  payload: P | null;
 };
 
 export type IFetchActionGroup = {
@@ -70,13 +71,14 @@ export const createSaga = <Params, Payload>(actions: IFetchActionGroup, req: any
   };
 };
 
-export const createInitialState = <T>(): AsyncEntity<T> => ({
+export const createInitialState = <P, R>(): AsyncEntity<P, R> => ({
   data: null,
   status: ASYNC_STATUS.IDLE,
   error: null,
+  payload: null,
 });
 
-export const createPatialReducer = <State extends { [key: string]: AsyncEntity<any> }>(
+export const createPatialReducer = <State extends { [key: string]: AsyncEntity<any, any> }>(
   builder: ActionReducerMapBuilder<State>,
   entity: string,
   actions: IFetchActionGroup,
@@ -89,9 +91,10 @@ export const createPatialReducer = <State extends { [key: string]: AsyncEntity<a
   ) => void,
 ) => {
   builder
-    .addCase(actions.request, state => {
+    .addCase(actions.request, (state, action) => {
       state[entity].error = null;
       state[entity].status = ASYNC_STATUS.LOADING;
+      state[entity].payload = action.payload;
     })
     .addCase(actions.success, (state, action) => {
       if (onSuccess) {
