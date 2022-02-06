@@ -28,7 +28,7 @@ const getFriendRequest = async ({ userId }: GetFriendRequestParams): Promise<Get
 };
 
 const addFriend = async ({ userId, friendId }: AddFriendParams): Promise<void> => {
-  await endpoint.post('/auth', { userId, friendId });
+  await endpoint.post('/user/friend', { userId, friendId });
 };
 
 export { findUser, getFriendList, getFriendRequest, addFriend };
