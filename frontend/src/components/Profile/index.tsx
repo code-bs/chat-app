@@ -29,7 +29,6 @@ const Profile = () => {
       <Popover
         placement="bottom"
         content={content}
-        style={{ padding: 0 }}
         trigger="click"
         visible={popoverVisible}
         onVisibleChange={setPopoverVisible}
