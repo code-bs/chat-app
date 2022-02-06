@@ -51,7 +51,8 @@ const SendFriendRequestFrom = ({ isModalVisible, closeModal }: SendFriendRequest
       onOk={() => {}}
       onCancel={() => {
         closeModal();
-      }}>
+      }}
+      footer={null}>
       <Input placeholder="userId" allowClear onChange={onChange} value={input} />
       <List
         itemLayout="horizontal"
