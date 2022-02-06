@@ -7,6 +7,7 @@ import style from './index.module.scss';
 
 const Alarm = () => {
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
+  const [popoverVisible, setPopoverVisible] = useState<boolean>(false);
   const closeModal = () => {
     setModalVisible(false);
   };
@@ -20,10 +21,14 @@ const Alarm = () => {
       )}
     </div>
   );
-  console.log(isModalVisible);
   return (
     <>
-      <Popover placement="bottom" content={contents}>
+      <Popover
+        placement="bottom"
+        content={contents}
+        trigger="click"
+        visible={popoverVisible}
+        onVisibleChange={setPopoverVisible}>
         <Badge dot size="small">
           <Button icon={<BellOutlined />} size="large" shape="circle" />
         </Badge>
