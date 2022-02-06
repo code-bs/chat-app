@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PageHeader, Button } from 'antd';
 import { UserAddOutlined, CloseOutlined } from '@ant-design/icons';
-import { AddFriendForm } from '..';
+import { SendFriendRequestFrom } from '..';
 import { Layout } from 'antd';
 
 const { Sider } = Layout;
@@ -32,7 +32,7 @@ const FriendList = ({ closeFriendList }: FriendListProps) => {
             }}></Button>,
         ]}
       />
-      <AddFriendForm {...{ isModalVisible, closeModal }} />
+      <SendFriendRequestFrom {...{ isModalVisible, closeModal }} />
     </Sider>
   );
 };

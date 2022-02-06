@@ -7,12 +7,12 @@ import { debounce } from '../../utils';
 import { sendMessage } from '../../store/socket';
 import { SendFriendRequestParams } from '../../types';
 
-type AddFriendFormProps = {
+type SendFriendRequestFromProps = {
   isModalVisible: boolean;
   closeModal: () => void;
 };
 
-const AddFriendForm = ({ isModalVisible, closeModal }: AddFriendFormProps) => {
+const SendFriendRequestFrom = ({ isModalVisible, closeModal }: SendFriendRequestFromProps) => {
   const [input, setInput] = useState<string>('');
   const dispatch = useAppDispatch();
   const { findUser } = useAppSelector(state => state.user);
@@ -77,4 +77,4 @@ const AddFriendForm = ({ isModalVisible, closeModal }: AddFriendFormProps) => {
   );
 };
 
-export { AddFriendForm };
+export { SendFriendRequestFrom };
