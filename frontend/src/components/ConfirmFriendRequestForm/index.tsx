@@ -1,7 +1,9 @@
 import React from 'react';
 import { Modal, List, Avatar, Button } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { GetFriendRequestResponse } from '../../types';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { addFriendAsync } from '../../store/user/actions';
+import { GetFriendRequestResponse, SigninResponse } from '../../types';
 
 type ConfirmFriendRequestFormProps = {
   isModalVisible: boolean;
@@ -10,6 +12,13 @@ type ConfirmFriendRequestFormProps = {
 };
 
 const ConfirmFriendRequestForm = ({ isModalVisible, closeModal, friendRequest }: ConfirmFriendRequestFormProps) => {
+  const {
+    user: { userId },
+  } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
+  const dispatch = useAppDispatch();
+  const addFriendRequest = (friendId: string) => {
+    dispatch(addFriendAsync.request({ userId, friendId }));
+  };
   return (
     <Modal
       title="친구 요청"
@@ -25,7 +34,9 @@ const ConfirmFriendRequestForm = ({ isModalVisible, closeModal, friendRequest }:
         renderItem={({ userId, avatarUrl, nickname, statusMessage }) => (
           <List.Item
             actions={[
-              <Button type="primary">수락</Button>,
+              <Button type="primary" onClick={() => addFriendRequest(userId)}>
+                수락
+              </Button>,
               <Button type="primary" danger>
                 거절
               </Button>,
