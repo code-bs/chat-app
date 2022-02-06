@@ -7,3 +7,4 @@ export * from './FriendList';
 export * from './SendFriendRequestForm';
 export * from './Profile';
 export * from './Alarm';
+export * from './ConfirmFriendRequestForm';
