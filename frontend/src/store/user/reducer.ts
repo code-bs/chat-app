@@ -24,5 +24,10 @@ const userReducer = createReducer(initialState, builder => {
   createPatialReducer<UserState>(builder, 'friendList', getFriendListAsync);
   createPatialReducer<UserState>(builder, 'findUser', findUserAsync);
   createPatialReducer<UserState>(builder, 'friendRequest', getFriendRequestAsync);
+  createPatialReducer<UserState>(builder, 'addFriend', addFriendAsync, state => {
+    const { friendId } = state.addFriend.payload as AddFriendParams;
+    const nextFriendRequest = state.friendRequest.data as FindUserResponse;
+    state.friendRequest.data = nextFriendRequest.filter(({ userId }) => friendId !== userId);
+  });
 });
 export default userReducer;
