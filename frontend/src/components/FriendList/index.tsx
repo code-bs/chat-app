@@ -29,7 +29,8 @@ const FriendList = ({ closeFriendList }: FriendListProps) => {
             size="large"
             onClick={() => {
               setModalVisible(true);
-            }}></Button>,
+            }}
+          />,
         ]}
       />
       <SendFriendRequestFrom {...{ isModalVisible, closeModal }} />
