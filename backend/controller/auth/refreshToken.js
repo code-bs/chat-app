@@ -2,16 +2,27 @@
 const jwt = require("../common/jwt");
 const logger = require("../../config/logger");
 const authModel = require("../../models/authModels")();
+const errorHandler = require("../common/errorHandler");
+const defaultModuleInfo = {
+  module: "auth",
+  service: "refreshToken",
+};
 
 /* METHODS */
 function checkBlacklist(refreshToken) {
-  logger.info(`[Auth][refreshToken]-> check blacklist`);
+  const moduleInfo = { ...defaultModuleInfo, method: "checkBlacklist" };
   return new Promise((resolve, reject) => {
     authModel.checkTokenInBlacklist(refreshToken, (error, result) => {
-      if (error) reject(error);
+      if (error)
+        reject({
+          ...moduleInfo,
+          status: 500,
+          message: "알 수 없는 오류가 발생하였습니다.",
+          errorMsg: error,
+        });
       else {
         if (result === "1")
-          reject({ status: 404, message: "만료된 세션입니다." });
+          reject({ status: 404, message: "만료된 세션입니다.", ...moduleInfo });
         else {
           resolve();
         }
@@ -21,26 +32,40 @@ function checkBlacklist(refreshToken) {
 }
 
 function verifyToken(refreshToken) {
-  logger.info(`[auth][refreshToken]-> verify token`);
+  const moduleInfo = { ...defaultModuleInfo, method: "verifyToken" };
   return new Promise((resolve, reject) => {
     jwt
       .validate_refresh(refreshToken)
       .then((payload) => {
         resolve(payload);
       })
-      .catch((error) => reject(error));
+      .catch((error) =>
+        reject({
+          ...moduleInfo,
+          status: 500,
+          message: "알 수 없는 오류가 발생하였습니다.",
+          errorMsg: error,
+        })
+      );
   });
 }
 
 function generateToken(payload) {
-  logger.info(`[auth][refreshToken]-> generate new access token`);
+  const moduleInfo = { ...defaultModuleInfo, method: "generateToken" };
   return new Promise((resolve, reject) => {
     jwt
       .generate(payload)
       .then((token) => {
         resolve(token);
       })
-      .catch((error) => reject(error));
+      .catch((error) =>
+        reject({
+          ...moduleInfo,
+          status: 500,
+          message: "알 수 없는 오류가 발생하였습니다.",
+          errorMsg: error,
+        })
+      );
   });
 }
 
@@ -65,12 +90,7 @@ module.exports = async function (req, res) {
       user: { userId, nickname, avatarUrl, statusMessage },
     });
   } catch (error) {
-    if (!error.status) {
-      logger.error(error);
-      res.status(500).send("알 수 없는 오류가 발생하였습니다.");
-    } else {
-      logger.info(`[auth][refreshToken]-> ${error.status}:${error.message}`);
-      res.status(error.status).send(error.message);
-    }
+    errorHandler(error);
+    res.status(error.status).send(error.message);
   }
 };

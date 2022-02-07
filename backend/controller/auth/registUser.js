@@ -1,21 +1,71 @@
 /* IMPORTS */
 const crypto = require("crypto");
+const { resolve } = require("path");
 const logger = require("../../config/logger");
+const errorHandler = require("../common/errorHandler");
 const userModel = require("../../models/userModels")();
+const defaultModuleInfo = {
+  module: "auth",
+  service: "registUser",
+};
 
 /* METHODS */
+function validateInput(body) {
+  const { userId, password, nickname, avatarUrl, statusMessage, ...extra } =
+    body;
+  const moduleInfo = { ...defaultModuleInfo, method: "validateInput" };
+  return new Promise((resolve, reject) => {
+    if (!userId) {
+      reject({ ...moduleInfo, status: 400, message: "아이디를 입력하세요." });
+    } else if (userId.length < 4 || userId.length > 12) {
+      reject({
+        ...moduleInfo,
+        status: 400,
+        message: "아이디는 4자 이상 12자 이하여야 합니다.",
+      });
+    } else if (!password) {
+      reject({ ...moduleInfo, status: 400, message: "비밀번호를 입력하세요." });
+    } else if (password.length < 4 || password.length > 12) {
+      reject({
+        ...moduleInfo,
+        status: 400,
+        message: "비밀번호는 4자 이상 12자 이하여야 합니다.",
+      });
+    } else if (!nickname) {
+      reject({ ...moduleInfo, status: 400, message: "닉네임을 입력하세요." });
+    } else if (nickname.length < 2 || nickname.length > 8) {
+      reject({
+        ...moduleInfo,
+        status: 400,
+        message: "닉네임은 2자 이상 8자 이하여야 합니다.",
+      });
+    } else if (!!Object.keys(extra).length) {
+      reject({
+        ...moduleInfo,
+        status: 400,
+        message: "허용되지 않는 입력입니다.",
+      });
+    } else resolve();
+  });
+}
+
 function checkIdDuplication(userId) {
-  logger.info(`[User][registUser]-> check ID duplicaiton`);
+  const moduleInfo = { ...defaultModuleInfo, method: "checkIdDuplication" };
   return new Promise((resolve, reject) => {
     userModel.searchId(userId, (err, res) => {
       if (err)
         reject({
           status: 500,
-          error: err,
           message: "알 수 없는 에러가 발생하였습니다.",
+          errorMsg: err,
+          ...moduleInfo,
         });
       if (res.length > 0)
-        reject({ status: 400, message: "중복된 아이디 입니다." });
+        reject({
+          status: 400,
+          message: "중복된 아이디 입니다.",
+          ...moduleInfo,
+        });
       else {
         resolve();
       }
@@ -24,7 +74,7 @@ function checkIdDuplication(userId) {
 }
 
 function encryptPassword(password) {
-  logger.info(`[User][registUser]-> encrypt password`);
+  const moduleInfo = { ...defaultModuleInfo, method: "encryptPassword" };
   return new Promise((resolve, reject) => {
     crypto.randomBytes(64, (err, buf) => {
       crypto.pbkdf2(
@@ -37,8 +87,9 @@ function encryptPassword(password) {
           if (err)
             reject({
               status: 500,
-              error: err,
-              message: "알 수 없는 에러가 발생하였습니다.",
+              message: "알 수 없는 오류가 발생하였습니다.",
+              errorMsg: err,
+              ...moduleInfo,
             });
           resolve({
             hashCode: buf.toString("base64"),
@@ -50,19 +101,27 @@ function encryptPassword(password) {
   });
 }
 
-function checkNickNameDuplication(nickname) {
-  logger.info(`[User][registUser]-> check nickname duplication`);
+function checkNicknameDuplication(nickname) {
+  const moduleInfo = {
+    ...defaultModuleInfo,
+    method: "checkNicknameDuplication",
+  };
   return new Promise((resolve, reject) => {
     userModel.searchNickname(nickname, (err, res) => {
       if (err)
         reject({
           status: 500,
-          error: err,
           message: "알 수 없는 에러가 발생하였습니다.",
+          errorMsg: err,
+          ...moduleInfo,
         });
       else {
         if (res.length > 0)
-          reject({ status: 400, message: "중복된 닉네임 입니다." });
+          reject({
+            status: 400,
+            message: "중복된 닉네임 입니다.",
+            ...moduleInfo,
+          });
         else resolve();
       }
     });
@@ -70,62 +129,47 @@ function checkNickNameDuplication(nickname) {
 }
 
 function insertNewUser(context) {
-  logger.info(`[User][registUser]-> insert new user`);
+  const moduleInfo = { ...defaultModuleInfo, method: "insertNewUser" };
   return new Promise((resolve, reject) => {
     userModel.insertUser(context, (err) => {
-      if (err) reject(err);
+      if (err)
+        reject({
+          status: 500,
+          message: "알 수 없는 에러가 발생하였습니다.",
+          errorMsg: err,
+          ...moduleInfo,
+        });
       else resolve();
     });
   });
 }
 
 /* EXPORTS */
-async function register(context, callback) {
-  logger.info(`[User][registUser]-> start`);
-  const { userId, password, nickname, avatarUrl, statusMessage } = context;
+module.exports = async function (req, res) {
+  const { userId, password, nickname, avatarUrl, statusMessage } = req.body;
+  logger.info(`[Auth][registUser]-> regists new user: ${userId}`);
   try {
+    await validateInput(req.body);
     await checkIdDuplication(userId);
+    await checkNicknameDuplication(nickname);
     const { hashCode, ePassword } = await encryptPassword(password);
-    await checkNickNameDuplication(nickname);
-    await insertNewUser({ ...context, password: ePassword, hashCode });
-    logger.info(`[User][registUser]-> done`);
-    callback(null, {
+    await insertNewUser({
+      userId,
+      password: ePassword,
+      nickname,
+      avatarUrl,
+      statusMessage,
+      hashCode,
+    });
+    logger.info(`[Auth][registUser]-> registration done: ${userId}`);
+    res.send({
       userId,
       nickname,
       avatarUrl,
       statusMessage,
     });
   } catch (error) {
-    if (!error.status)
-      callback(
-        {
-          status: 500,
-          error,
-          message: "알 수 없는 오류가 발생하였습니다.",
-        },
-        null
-      );
-    else callback(error, null);
+    errorHandler(error);
+    res.status(error.status).send(error.message);
   }
-}
-
-module.exports = function (req, res) {
-  const { userId, password, nickname, avatarUrl, statusMessage } = req.body;
-
-  register(
-    { userId, password, nickname, avatarUrl, statusMessage },
-    (error, payload) => {
-      if (error) {
-        if (error.status >= 500) {
-          logger.error(error.error);
-        } else {
-          logger.info(`[User][registUser]-> ${error.status}
-${error.message}`);
-        }
-        res.status(error.status).send(error.message);
-      } else {
-        res.send(payload);
-      }
-    }
-  );
 };
