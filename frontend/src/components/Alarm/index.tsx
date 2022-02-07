@@ -24,7 +24,7 @@ const Alarm = () => {
     </div>
   );
   return (
-    <>
+    <div>
       <Popover
         placement="bottom"
         content={contents}
@@ -36,7 +36,7 @@ const Alarm = () => {
         </Badge>
       </Popover>
       <ConfirmFriendRequestForm {...{ isModalVisible, closeModal, friendRequest }} />
-    </>
+    </div>
   );
 };
 
