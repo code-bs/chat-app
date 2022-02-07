@@ -1,8 +1,44 @@
 /* IMPORTS */
 const chatModel = require("../../models/chatModels")();
 const logger = require("../../config/logger");
-
+const errorHandler = require("../common/errorHandler");
+const defaultModuleInfo = {
+  module: "chat",
+  service: "createRoom",
+};
 /* METHODS */
+function validateInput(body) {
+  const { userId, roomName, ...extra } = body;
+  const moduleInfo = { ...defaultModuleInfo, method: "validateInput" };
+  return new Promise((resolve, reject) => {
+    if (!userId)
+      reject({
+        status: 400,
+        message: "유효하지 않는 입력값입니다.",
+        ...moduleInfo,
+      });
+    else if (!roomName)
+      reject({
+        status: 400,
+        message: "방 이름을 입력하세요.",
+        ...moduleInfo,
+      });
+    else if (roomName.length > 20 || roomName.length < 4)
+      reject({
+        status: 400,
+        message: "방 이름은 4자 이상 20자 이하여야 합니다.",
+        ...moduleInfo,
+      });
+    else if (!!Object.keys(extra).length)
+      reject({
+        status: 400,
+        message: "유효하지 않는 입력값입니다.",
+        ...moduleInfo,
+      });
+    else resolve();
+  });
+}
+
 function insertRoom(context) {
   return new Promise((resolve, reject) => {
     const { roomName, userId } = context;

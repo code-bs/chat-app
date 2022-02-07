@@ -5,13 +5,25 @@
 /* IMPORTS */
 const authModel = require("../../models/authModels")();
 const logger = require("../../config/logger");
+const errorHandler = require("../common/errorHandler");
+const defaultModuleInfo = {
+  module: "auth",
+  service: "logout",
+};
 
 /* METHODS */
 function insertToBlacklist(refreshToken) {
+  const moduleInfo = { ...defaultModuleInfo, method: "insertToBlacklist" };
   logger.info(`[Auth][logout]-> insert into blacklist`);
   return new Promise((resolve, reject) => {
     authModel.insertToBlacklist(refreshToken, (error) => {
-      if (error) reject(error);
+      if (error)
+        reject({
+          ...moduleInfo,
+          status: 500,
+          message: "알 수 없는 오류가 발생하였습니다.",
+          errorMsg: error,
+        });
       else resolve();
     });
   });
@@ -23,19 +35,10 @@ module.exports = async function (req, res) {
 
   try {
     await insertToBlacklist(refreshToken);
-
     logger.info(`[Auth][logout]-> logout done`);
     res.end();
   } catch (error) {
-    if (!error.status) {
-      logger.error(error);
-      res.status(500).send("알 수 없는 오류가 발생하였습니다.");
-    } else {
-      logger.info(`[Auth][logout]-> ${error.status}:${error.message}`);
-      res.status(error.status).send(error.message);
-    }
+    errorHandler(error);
+    res.status(error.status).send(error.message);
   }
-
-  // res.cookie("refreshToken", "").end();
-  res.end();
 };
