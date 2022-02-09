@@ -1,12 +1,11 @@
 import React, { useState, ChangeEvent, useMemo } from 'react';
-import { Modal, Input, List, Avatar, Button, Popconfirm, notification } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Modal, Input, Button, Popconfirm, notification } from 'antd';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { findUserAsync } from '../../store/user/actions';
 import { debounce } from '../../utils';
 import { sendMessage } from '../../store/socket';
 import { UserSummaryList } from '..';
-import { SendFriendRequestParams } from '../../types';
+import { SendFriendRequestParams, SigninResponse } from '../../types';
 
 type SendFriendRequestFromProps = {
   isModalVisible: boolean;
@@ -16,9 +15,15 @@ type SendFriendRequestFromProps = {
 const SendFriendRequestFrom = ({ isModalVisible, closeModal }: SendFriendRequestFromProps) => {
   const [input, setInput] = useState<string>('');
   const dispatch = useAppDispatch();
+  const {
+    user: { userId },
+  } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
   const { findUser } = useAppSelector(state => state.user);
-  const { data } = findUser;
-  const auth = useAppSelector(state => state.auth.signin.data);
+  const friends = useAppSelector(state => state.user.friendList.data) || [];
+  const exception = [userId, ...friends.map(user => user.userId)];
+
+  const { data: searchResults } = findUser;
+  const data = (searchResults || []).filter(({ userId }) => !exception.some(id => id === userId));
   const debouncedDispatch = useMemo(
     () =>
       debounce((value: string) => {
@@ -37,7 +42,7 @@ const SendFriendRequestFrom = ({ isModalVisible, closeModal }: SendFriendRequest
   const sendFriendRequest = ({ nickname, targetId }: { targetId: string; nickname: string }) => {
     sendMessage<SendFriendRequestParams>('friend', {
       targetId,
-      userId: auth?.user.userId as string,
+      userId: userId as string,
     });
     notification.open({
       message: '친구추가 요청',
