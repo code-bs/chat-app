@@ -54,7 +54,7 @@ function getUserById(userId) {
           reject({
             status: 400,
             message: "존재하지 않는 아이디 입니다.",
-            ...defaultError,
+            ...moduleInfo,
           });
         } else {
           resolve(result[0]);
@@ -132,7 +132,7 @@ module.exports = async function (req, res) {
     await validateInput(req.body);
     const dbUserInfo = await getUserById(userId);
     await validatePassword(password, dbUserInfo);
-    const { id, nickname, avatarUrl, statusMessage } = dbUserInfo;
+    const { userId: id, nickname, avatarUrl, statusMessage } = dbUserInfo;
     const accessToken = await getAccessToken({
       userId: id,
       nickname,
