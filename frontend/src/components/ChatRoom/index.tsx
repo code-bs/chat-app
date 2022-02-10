@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Layout, Button, Input } from 'antd';
+import { CloseCircleFilled, MenuOutlined } from '@ant-design/icons';
 import { SpeechBubble } from '..';
 import { Message, SigninResponse } from '../../types';
 import { sendMessage } from '../../store/socket';
-import { CloseCircleFilled } from '@ant-design/icons';
 import style from './index.module.scss';
 import { useAppSelector } from '../../store/hooks';
+import { RoomInfoDrawer } from '..';
 const { Header, Content } = Layout;
 
 const ChatRoom = () => {
   const { roomId } = useParams();
   const [text, setText] = useState<string>('');
+  const [roomInfoVisible, setRoomInfoVisible] = useState<boolean>(false);
 
   const rooms = useAppSelector(state => state.chat.chatRoomList.data) || [];
   const {
@@ -42,6 +44,12 @@ const ChatRoom = () => {
     <Layout className={style.container}>
       <Header className={style.header}>
         <h3>{selectedRoom.roomName}</h3>
+        <Button
+          className={style.btnMore}
+          icon={<MenuOutlined />}
+          size="large"
+          onClick={() => setRoomInfoVisible(true)}
+        />
       </Header>
       <Content className={style.content}>
         <ul className={style.messages}>
@@ -56,6 +64,7 @@ const ChatRoom = () => {
           </Button>
         </div>
       </Content>
+      <RoomInfoDrawer roomInfoVisible={roomInfoVisible} closeRoomInfo={() => setRoomInfoVisible(false)} />
     </Layout>
   );
 };
