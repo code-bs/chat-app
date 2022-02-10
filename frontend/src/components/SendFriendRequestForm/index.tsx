@@ -1,11 +1,11 @@
 import React, { useState, ChangeEvent, useMemo } from 'react';
-import { Modal, Input, List, Avatar, Button, Popconfirm, notification } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Modal, Input, Button, Popconfirm, notification } from 'antd';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { findUserAsync } from '../../store/user/actions';
 import { debounce } from '../../utils';
 import { sendMessage } from '../../store/socket';
-import { SendFriendRequestParams } from '../../types';
+import { UserSummaryList } from '..';
+import { SendFriendRequestParams, SigninResponse } from '../../types';
 
 type SendFriendRequestFromProps = {
   isModalVisible: boolean;
@@ -15,9 +15,15 @@ type SendFriendRequestFromProps = {
 const SendFriendRequestFrom = ({ isModalVisible, closeModal }: SendFriendRequestFromProps) => {
   const [input, setInput] = useState<string>('');
   const dispatch = useAppDispatch();
+  const {
+    user: { userId },
+  } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
   const { findUser } = useAppSelector(state => state.user);
-  const { data } = findUser;
-  const auth = useAppSelector(state => state.auth.signin.data);
+  const friends = useAppSelector(state => state.user.friendList.data) || [];
+  const exception = [userId, ...friends.map(user => user.userId)];
+
+  const { data: searchResults } = findUser;
+  const data = (searchResults || []).filter(({ userId }) => !exception.some(id => id === userId));
   const debouncedDispatch = useMemo(
     () =>
       debounce((value: string) => {
@@ -36,7 +42,7 @@ const SendFriendRequestFrom = ({ isModalVisible, closeModal }: SendFriendRequest
   const sendFriendRequest = ({ nickname, targetId }: { targetId: string; nickname: string }) => {
     sendMessage<SendFriendRequestParams>('friend', {
       targetId,
-      userId: auth?.user.userId as string,
+      userId: userId as string,
     });
     notification.open({
       message: '친구추가 요청',
@@ -54,25 +60,17 @@ const SendFriendRequestFrom = ({ isModalVisible, closeModal }: SendFriendRequest
       }}
       footer={null}>
       <Input placeholder="userId" allowClear onChange={onChange} value={input} />
-      <List
-        itemLayout="horizontal"
-        dataSource={data || []}
-        renderItem={({ userId, avatarUrl, nickname, statusMessage }) => (
-          <List.Item
-            actions={[
-              <Popconfirm
-                title={`${nickname}님에게 친구요청을 보내시겠습니까?`}
-                onConfirm={() => sendFriendRequest({ nickname, targetId: userId })}>
-                <Button type="primary">친구추가</Button>
-              </Popconfirm>,
-            ]}>
-            <List.Item.Meta
-              avatar={avatarUrl ? <Avatar src={avatarUrl} /> : <UserOutlined />}
-              title={`[${userId}]${nickname}`}
-              description={<p>{statusMessage}</p>}
-            />
-          </List.Item>
-        )}
+      <UserSummaryList
+        data={data}
+        createActions={({ userId, nickname }) => {
+          return [
+            <Popconfirm
+              title={`${nickname}님에게 친구요청을 보내시겠습니까?`}
+              onConfirm={() => sendFriendRequest({ nickname, targetId: userId })}>
+              <Button type="primary">친구추가</Button>
+            </Popconfirm>,
+          ];
+        }}
       />
     </Modal>
   );
