@@ -10,3 +10,4 @@ export * from './Alarm';
 export * from './ConfirmFriendRequestForm';
 export * from './UserSummaryList';
 export * from './RoomInfoDrawer';
+export * from './InviteChatRoomForm';

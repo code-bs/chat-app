@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Drawer, Button, Space, Divider, Layout } from 'antd';
+import { InviteChatRoomForm } from '..';
 import style from './index.module.scss';
 
 const { Content, Footer } = Layout;
@@ -10,6 +11,10 @@ type RoomInfoDrawerProps = {
 };
 
 const RoomInfoDrawer = ({ roomInfoVisible, closeRoomInfo }: RoomInfoDrawerProps) => {
+  const [isModalVisible, setModalVisible] = useState<boolean>(false);
+  const closeModal = () => {
+    setModalVisible(false);
+  };
   return (
     <Drawer visible={roomInfoVisible} onClose={closeRoomInfo} title="방 정보">
       <Layout className={style.container}>
@@ -18,7 +23,7 @@ const RoomInfoDrawer = ({ roomInfoVisible, closeRoomInfo }: RoomInfoDrawerProps)
           <Divider />
         </Content>
         <Footer className={style.footer}>
-          <Button block type="primary">
+          <Button block type="primary" onClick={() => setModalVisible(true)}>
             친구 초대
           </Button>
           <Button block type="primary" danger>
@@ -26,6 +31,7 @@ const RoomInfoDrawer = ({ roomInfoVisible, closeRoomInfo }: RoomInfoDrawerProps)
           </Button>
         </Footer>
       </Layout>
+      <InviteChatRoomForm {...{ isModalVisible, closeModal }} />
     </Drawer>
   );
 };
