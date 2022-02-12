@@ -42,7 +42,7 @@ const SendFriendRequestFrom = ({ isModalVisible, closeModal }: SendFriendRequest
   const sendFriendRequest = ({ nickname, targetId }: { targetId: string; nickname: string }) => {
     sendMessage<SendFriendRequestParams>('friend', {
       targetId,
-      userId: userId as string,
+      userId,
     });
     notification.open({
       message: '친구추가 요청',
