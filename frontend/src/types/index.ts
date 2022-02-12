@@ -93,3 +93,9 @@ export type SendFriendRequestParams = {
   userId: string;
   targetId: string;
 };
+
+export type InviteChatRoomParams = {
+  userId: string;
+  targetId: string;
+  roomId: string;
+};
