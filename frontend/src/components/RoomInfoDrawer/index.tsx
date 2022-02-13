@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Drawer, Button, Space, Divider, Layout } from 'antd';
-import { InviteChatRoomForm } from '..';
+import { InviteChatRoom } from '..';
 import style from './index.module.scss';
 
 const { Content, Footer } = Layout;
@@ -31,7 +31,7 @@ const RoomInfoDrawer = ({ roomInfoVisible, closeRoomInfo }: RoomInfoDrawerProps)
           </Button>
         </Footer>
       </Layout>
-      <InviteChatRoomForm {...{ isModalVisible, closeModal }} />
+      <InviteChatRoom {...{ isModalVisible, closeModal }} />
     </Drawer>
   );
 };

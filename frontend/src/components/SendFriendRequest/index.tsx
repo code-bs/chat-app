@@ -7,12 +7,12 @@ import { sendMessage } from '../../store/socket';
 import { UserSummaryList } from '..';
 import { SendFriendRequestParams, SigninResponse } from '../../types';
 
-type SendFriendRequestFromProps = {
+type SendFriendRequestProps = {
   isModalVisible: boolean;
   closeModal: () => void;
 };
 
-const SendFriendRequestFrom = ({ isModalVisible, closeModal }: SendFriendRequestFromProps) => {
+const SendFriendRequest = ({ isModalVisible, closeModal }: SendFriendRequestProps) => {
   const [input, setInput] = useState<string>('');
   const dispatch = useAppDispatch();
   const {
@@ -76,4 +76,4 @@ const SendFriendRequestFrom = ({ isModalVisible, closeModal }: SendFriendRequest
   );
 };
 
-export { SendFriendRequestFrom };
+export { SendFriendRequest };

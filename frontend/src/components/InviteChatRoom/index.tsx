@@ -6,12 +6,12 @@ import { sendMessage } from '../../store/socket';
 import { UserSummaryList } from '..';
 import { InviteChatRoomParams, SigninResponse } from '../../types';
 
-type InviteChatRoomFormProps = {
+type InviteChatRoomProps = {
   isModalVisible: boolean;
   closeModal: () => void;
 };
 
-const InviteChatRoomForm = ({ isModalVisible, closeModal }: InviteChatRoomFormProps) => {
+const InviteChatRoom = ({ isModalVisible, closeModal }: InviteChatRoomProps) => {
   const friends = useAppSelector(state => state.user.friendList.data) || [];
   const {
     user: { userId },
@@ -54,4 +54,4 @@ const InviteChatRoomForm = ({ isModalVisible, closeModal }: InviteChatRoomFormPr
   );
 };
 
-export { InviteChatRoomForm };
+export { InviteChatRoom };

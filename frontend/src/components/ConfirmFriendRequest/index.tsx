@@ -5,13 +5,13 @@ import { addFriendAsync } from '../../store/user/actions';
 import { GetFriendRequestResponse, SigninResponse } from '../../types';
 import { UserSummaryList } from '..';
 
-type ConfirmFriendRequestFormProps = {
+type ConfirmFriendRequestProps = {
   isModalVisible: boolean;
   closeModal: () => void;
   friendRequest: GetFriendRequestResponse | null;
 };
 
-const ConfirmFriendRequestForm = ({ isModalVisible, closeModal, friendRequest }: ConfirmFriendRequestFormProps) => {
+const ConfirmFriendRequest = ({ isModalVisible, closeModal, friendRequest }: ConfirmFriendRequestProps) => {
   const {
     user: { userId },
   } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
@@ -45,4 +45,4 @@ const ConfirmFriendRequestForm = ({ isModalVisible, closeModal, friendRequest }:
   );
 };
 
-export { ConfirmFriendRequestForm };
+export { ConfirmFriendRequest };

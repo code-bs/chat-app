@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PageHeader, Button, Layout } from 'antd';
 import { UserAddOutlined, CloseOutlined } from '@ant-design/icons';
 import { useAppSelector } from '../../store/hooks';
-import { SendFriendRequestFrom, UserSummaryList } from '..';
+import { SendFriendRequest, UserSummaryList } from '..';
 
 const { Sider } = Layout;
 
@@ -35,7 +35,7 @@ const FriendList = ({ closeFriendList }: FriendListProps) => {
         ]}
       />
       <UserSummaryList data={data} />
-      <SendFriendRequestFrom {...{ isModalVisible, closeModal }} />
+      <SendFriendRequest {...{ isModalVisible, closeModal }} />
     </Sider>
   );
 };

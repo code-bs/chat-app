@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Badge, Button, Popover } from 'antd';
 import { BellOutlined, EllipsisOutlined } from '@ant-design/icons';
 import { useAppSelector } from '../../store/hooks';
-import { ConfirmFriendRequestForm } from '..';
+import { ConfirmFriendRequest } from '..';
 import style from './index.module.scss';
 
 const Alarm = () => {
@@ -42,7 +42,7 @@ const Alarm = () => {
           <Button icon={<BellOutlined />} size="large" shape="circle" />
         </Badge>
       </Popover>
-      <ConfirmFriendRequestForm {...{ isModalVisible, closeModal, friendRequest }} />
+      <ConfirmFriendRequest {...{ isModalVisible, closeModal, friendRequest }} />
     </div>
   );
 };
