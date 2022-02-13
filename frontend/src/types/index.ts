@@ -56,6 +56,12 @@ export type FindUserParams = {
   userId: string;
 };
 
+export type GetRoomInviteParams = {
+  userId: string;
+};
+
+export type GetRoomInviteResponse = ChatRoomInfo[];
+
 export type FindUserResponse = User[];
 
 export type GetFriendListParams = {
