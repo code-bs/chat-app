@@ -5,3 +5,4 @@ import { Message } from '../../types';
 export const getChatRoomListAsync = createFetchAction('getChatRoomList');
 export const createChatRoomAsync = createFetchAction('createChatRoom');
 export const recieveMessage = createAction<Message>('recieveMessage');
+export const getRoomInviteAsync = createFetchAction('getRoomInvite');
