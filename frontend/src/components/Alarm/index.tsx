@@ -12,12 +12,19 @@ const Alarm = () => {
     setModalVisible(false);
   };
   const friendRequest = useAppSelector(state => state.user.friendRequest.data);
+  const roomInvite = useAppSelector(state => state.chat.roomInvite.data);
   const existFriendRequest = !!friendRequest && friendRequest.length > 0;
+  const existRoomInvite = !!roomInvite && roomInvite.length > 0;
   const contents = (
     <div className={style.content}>
       {existFriendRequest && (
         <Button className={style.button} onClick={() => setModalVisible(true)} block>
           {friendRequest.length}개의 친구요청이 있습니다.
+        </Button>
+      )}
+      {existRoomInvite && (
+        <Button className={style.button} onClick={() => setModalVisible(true)} block>
+          {roomInvite.length}개의 초대가 있습니다.
         </Button>
       )}
       <Button className={style.button} icon={<EllipsisOutlined />} block />

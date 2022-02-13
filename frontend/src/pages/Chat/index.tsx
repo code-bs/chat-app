@@ -5,7 +5,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Centered } from '../../layouts';
 import style from './index.module.scss';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { getChatRoomListAsync } from '../../store/chat/actions';
+import { getChatRoomListAsync, getRoomInviteAsync } from '../../store/chat/actions';
 import { getFriendListAsync, getFriendRequestAsync } from '../../store/user/actions';
 
 const { Header, Sider, Content } = Layout;
@@ -24,6 +24,7 @@ const Chat = () => {
     dispatch(getChatRoomListAsync.request({ userId }));
     dispatch(getFriendListAsync.request({ userId }));
     dispatch(getFriendRequestAsync.request({ userId }));
+    dispatch(getRoomInviteAsync.request({ userId }));
   }, [dispatch, userId]);
 
   return (
