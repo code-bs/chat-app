@@ -6,6 +6,7 @@ import {
   GetChatRoomListParams,
   GetRoomInviteParams,
   GetRoomInviteResponse,
+  JoinChatRoomParams,
 } from '../types';
 
 const getChatRoomList = async ({ userId }: GetChatRoomListParams): Promise<GetChatRoomListResponse> => {
@@ -26,4 +27,8 @@ const getRoomInvite = async ({ userId }: GetRoomInviteParams): Promise<GetRoomIn
   return data;
 };
 
-export { getChatRoomList, createChatRoom, getRoomInvite };
+const joinChatRoom = async ({ userId, roomId }: JoinChatRoomParams): Promise<void> => {
+  await endpoint.post('/chat/room/join', { userId, roomId });
+};
+
+export { getChatRoomList, createChatRoom, getRoomInvite, joinChatRoom };

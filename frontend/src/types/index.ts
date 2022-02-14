@@ -105,3 +105,8 @@ export type InviteChatRoomParams = {
   targetId: string;
   roomId: string;
 };
+
+export type JoinChatRoomParams = {
+  userId: string;
+  roomId: string;
+};
