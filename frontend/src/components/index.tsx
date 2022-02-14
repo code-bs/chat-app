@@ -11,3 +11,4 @@ export * from './ConfirmFriendRequest';
 export * from './UserSummaryList';
 export * from './RoomInfoDrawer';
 export * from './InviteChatRoom';
+export * from './ConfirmRoomInvite';
