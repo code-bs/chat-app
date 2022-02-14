@@ -48,9 +48,7 @@ const Alarm = () => {
           <Button icon={<BellOutlined />} size="large" shape="circle" />
         </Badge>
       </Popover>
-      <ConfirmFriendRequest
-        {...{ isModalVisible: modalStatus === MODAL_STATUS.friendRequest, closeModal, friendRequest }}
-      />
+      <ConfirmFriendRequest isModalVisible={modalStatus === MODAL_STATUS.friendRequest} closeModal={closeModal} />
       <ConfirmRoomInvite isModalVisible={modalStatus === MODAL_STATUS.roomInvite} closeModal={closeModal} />
     </div>
   );
