@@ -1,6 +1,12 @@
 import { fork, takeLatest } from 'redux-saga/effects';
 import { createSaga, createSocketSaga } from '../utils';
-import { getChatRoomListAsync, createChatRoomAsync, recieveMessage, getRoomInviteAsync } from './actions';
+import {
+  getChatRoomListAsync,
+  createChatRoomAsync,
+  recieveMessage,
+  getRoomInviteAsync,
+  joinChatRoomAsync,
+} from './actions';
 import { ChatApi } from '../../apis';
 import {
   GetChatRoomListParams,
@@ -10,6 +16,7 @@ import {
   GetRoomInviteParams,
   GetRoomInviteResponse,
   Message,
+  JoinChatRoomParams,
 } from '../../types';
 function* chatSaga() {
   yield takeLatest(
@@ -23,6 +30,10 @@ function* chatSaga() {
   yield takeLatest(
     getRoomInviteAsync.REQUEST,
     createSaga<GetRoomInviteParams, GetRoomInviteResponse>(getRoomInviteAsync, ChatApi.getRoomInvite),
+  );
+  yield takeLatest(
+    joinChatRoomAsync.REQUEST,
+    createSaga<JoinChatRoomParams, any>(joinChatRoomAsync, ChatApi.joinChatRoom),
   );
   yield fork(createSocketSaga<Message>(recieveMessage, 'receiveMessage'));
 }
