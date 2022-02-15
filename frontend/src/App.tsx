@@ -1,6 +1,5 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { ChatProvider } from './contexts';
 import { Signup, Signin, Chat } from './pages';
 import { Centered } from './layouts';
 import RequireAuth from './router/RequireAuth';
@@ -10,14 +9,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/chat" replace />} />
       <Route element={<RequireAuth />}>
-        <Route
-          path="/chat/*"
-          element={
-            <ChatProvider>
-              <Chat />
-            </ChatProvider>
-          }
-        />
+        <Route path="/chat/*" element={<Chat />} />
       </Route>
       <Route
         path="/signup"

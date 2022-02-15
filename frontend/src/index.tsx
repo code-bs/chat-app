@@ -5,7 +5,6 @@ import App from './App';
 import store from './store';
 import { Provider } from 'react-redux';
 
-import { AuthProvider } from './contexts';
 import { history } from './router/history';
 
 import reportWebVitals from './reportWebVitals';
@@ -17,9 +16,7 @@ ReactDOM.render(
   <React.StrictMode>
     <HistoryRouter history={history}>
       <Provider store={store}>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <App />
       </Provider>
     </HistoryRouter>
   </React.StrictMode>,
