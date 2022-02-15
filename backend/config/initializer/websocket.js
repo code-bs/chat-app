@@ -1,61 +1,110 @@
-const chatModel = require("../../models/chatModels")({});
+const chatModel = require("../../models/chatModels")();
 const userModel = require("../../models/userModels")();
 const logger = require("../logger");
 const { Server } = require("socket.io");
 const { createServer } = require("http");
+const { instrument } = require("@socket.io/admin-ui");
 const httpServer = createServer();
 const io = new Server(httpServer, {
-  cors: "*",
+  cors: ["http://localhost:8000", "https://admin.socket.io"],
+  credentials: true,
+});
+
+instrument(io, {
+  auth: false,
 });
 
 module.exports = function (socket_port) {
   return new Promise((resolve, reject) => {
     io.on("connection", (socket) => {
-      socket.on("init", (info) => {
-        const { userId } = info;
-        const roomIds = chatModel.getRoomIds(userId);
-        roomIds.forEach((roomId) => {
-          socket.join(roomId);
+      socket.on("disconnect", (done) => {
+        console.log(socket.id);
+        userModel.deleteSocketInfo(socket.id, (err, result) => {
+          if (err) done(err);
+          else done(null);
         });
       });
-      socket.on("sendMessage", (info) => {
-        const { roomId, nickname, message, avatarUrl, statusMessage } = info;
-        chatModel.createNewChatHistory(
-          { roomId, message, nickname, avatarUrl, statusMessage },
-          (err) => {
-            if (err) reject(err);
-          }
-        );
-        // io.emit(roomId, info);
-        io.emit("receiveMessage", info);
+
+      socket.on("login", (userId, done) => {
+        socket["nickname"] = userId;
+        userModel.newSocketInfo(userId, socket.id, (err, result) => {
+          if (err) done("Internal Server Error");
+        });
+        chatModel.getRoomIds(userId, (err, results) => {
+          if (err) done("Internal Server Error");
+          results.forEach((result) => {
+            socket.join(result.roomId);
+          });
+          done(null);
+        });
       });
 
-      socket.on("friend", (info) => {
-        const { userId, targetId } = info;
-        logger.info(
-          `[socket][friend]-> ${userId} wants to be friend, ${targetId}`
-        );
-        const message = { type: "friend", userId };
-        userModel.invite(userId, targetId, (err) => {
-          if (err)
-            io.emit(userId, {
-              type: "friend_invite_error",
-              message: "DB ERROR",
+      socket.on("message", (info, done) => {
+        const { roomId, userId, nickname, message, avatarUrl, statusMessage } =
+          info;
+        chatModel.createNewChatHistory(info, (err) => {
+          if (err) done("Internal Server Error");
+        });
+        socket.to(roomId).emit("newMessage", {
+          roomId,
+          userId,
+          nickname,
+          message,
+          avatarUrl,
+          statusMessage,
+        });
+        done(null);
+      });
+
+      socket.on("enterRoom", (roomId, done) => {
+        socket.join(roomId);
+      });
+
+      socket.on("leaveRoom", (roomId, done) => {
+        socket.leave(roomId);
+      });
+
+      socket.on("friend", (info, done) => {
+        const { sender, targetId } = info;
+        userModel.checkInvite(sender.userId, targetId, (err, result) => {
+          if (result.length > 0) {
+            done("이미 보낸 요청입니다.");
+          } else {
+            userModel.invite(sender.userId, targetId, (err) => {
+              if (err) done("Internal Server Error");
             });
-          else io.emit(targetId, message);
+          }
+        });
+
+        userModel.getSocketId(targetId, (err, result) => {
+          if (err) console.log(err);
+          else {
+            const { socketId } = result[0];
+            socket.to(socketId).emit("friendRequest", sender);
+            done();
+          }
         });
       });
 
-      socket.on("invite", (info) => {
-        const { userId, targetId, roomId } = info;
-        logger.info(
-          `[socket][room]-> ${userId} invites ${targetId} to ${roomId}`
-        );
-        const message = { type: "room", userId, roomId };
-        chatModel.inviteRoom(targetId, roomId, (err) => {
-          if (err)
-            io.emit(userId, { type: "room_invite_error", message: "DB ERROR" });
-          else io.emit(targetId, message);
+      socket.on("room", (info, done) => {
+        const { sender, targetId, roomId } = info;
+        chatModel.checkInvite(targetId, roomId, (err, result) => {
+          if (err) done("Internal Server Error");
+          else if (result.length > 0) done("이미 보낸 요청입니다.");
+          else {
+            chatModel.inviteRoom(targetId, roomId, (err) => {
+              if (err) done("Internal Server Error");
+            });
+          }
+        });
+
+        userModel.getSocketId(targetId, (err, result) => {
+          if (err) console.log(err);
+          else {
+            const { socketId } = result[0];
+            socket.to(socketId).emit("roomInvite", sender, roomId);
+            done();
+          }
         });
       });
     });

@@ -6,6 +6,82 @@
 
 <br/>
 
+# Socket
+
+## 이벤트 보내기
+
+emit 하는 이벤트는 총 6개입니다. 감사합니다.
+
+- `socket.emit("login", userId)`: 로그인 시 'login' 이벤트로 로그인 아이디를 전달. userId는 string 입니다.
+- `socket.emit("message", info)`: 채팅 메시지 보낼 때. info는 object로 아래와 같습니다.
+
+```js
+{
+  roomId, // 채팅을 보낸 방 id
+  message,  // 채팅 메시지
+  userId, // 보낸 사람 로그인 아이디
+  nickname, // 닉네임
+  avatarUrl, // 프사
+  statusMessage, // 상메
+}
+```
+
+- `socket.emit("enterRoom", roomId)`: 방 생성 / 초대 수락 시. roomId 는 string 입니다.
+- `socket.emit("leaveRoom", roomId)`: 방에서 나가기 시. roomId 는 string 입니다.
+- `socket.emit("friend", info)`: 친추 요청 보내기 시. info는 object로 아래와 같습니다.
+
+```js
+{
+  sender: { // 보내는 사람
+    userId,
+    nickname,
+    avatarUrl,
+    statusMessage
+  },
+  targetId, // 받는 사람 로그인 아이디
+}
+```
+
+- `socket.emit("room", info)`: 방 초대하기 시. info 는 object 로 아래와 같습니다.
+
+```js
+{
+  roomId,
+  targetId,
+  sender: {
+    userId,
+    nickname,
+    avatarUrl,
+    statusMessage
+  }
+}
+```
+
+## 이벤트 받기
+
+on 하고 있는 이벤트는 총 3개입니다. 감사합니다.
+
+- `socket.on("newMessage", payload)`: 새 메시지가 도착했습니다. payload는 아래와 같습니다.
+
+```js
+{ roomId, message, userId, nickname, avatarUrl, statusMessage, }
+```
+
+- `socket.on("friendRequest", sender)`: 친구 요청이 왔습니다. sender는 아래와 같습니다.
+
+```js
+{
+  userId,
+  nickname,
+  avatarUrl,
+  statusMessage,
+}
+```
+
+- `socket.on("roomInvite", sender, roomId)`: 방 초대가 왔습니다. sender는 위에 거랑 같고, roomId는 string 입니다.
+
+<br/>
+
 # Redis 설치 (macOS)
 
 ```bash
@@ -20,113 +96,6 @@ $ brew services start redis
 환경 변수를 추가해줘야 함. 아래에 목차에 한 번에 정리해놓을테니 걍 긁어 쓰셈
 
 [환경 변수 정리](#환경-변수-정리)
-
-<br/>
-
-# Socket
-
-## - 채팅 메시지 보내기
-
-- 이벤트명: `sendMessage`
-- 패킷 형태
-
-```js
-{
-  roomId, // 방 고유번호 (string)
-  message,  // 채팅 메시지 (string)
-  userId,  // 유저 로그인 아이디 (string)
-  nickname,  // 닉네임 (string)
-  avatarUrl,  // 프사 (string)
-  statusMessage,  // 상메 (string)
-}
-```
-
-```js
-// 예시
-socket.emit("sendMessage", {
-  roomId: "61d3cf901463bd1255fb5bae",
-  message: "ㅋㅋㅋㅋ",
-  userId: "myTest01",
-  nickname: "부아앙",
-  avatarUrl: "https://hyunwoo045.github.io/assets/images/ori.png",
-  statusMessage: "집에 가고 싶다",
-});
-```
-
-- 받는 쪽의 패킷
-
-```js
-// 위와 같음
-{
-  roomId, // 방 고유번호 (string)
-  message,  // 채팅 메시지 (string)
-  userId,  // 유저 로그인 아이디 (string)
-  nickname,  // 닉네임 (string)
-  avatarUrl,  // 프사 (string)
-  statusMessage,  // 상메 (string)
-}
-```
-
-## - 친구 추가
-
-- 이벤트명: `friend`
-- 패킷 형태
-
-```js
-{
-  userId, // 본인 로그인 아이디 (string)
-  targetId, // 친구 추가 요청을 보낼 상대 로그인 아이디 (string)
-}
-```
-
-```js
-// 예시
-socket.emit("friend", {
-  userId: "myTest01",
-  targetId: "yourTest01",
-});
-```
-
-- 받는 쪽의 패킷
-
-```js
-{
-  type: "friend", // <- "friend" 고정!!
-  userId: "" // 친추 보낸 사람 로그인 아이디 (string), 예시대로라면 "myTest01"
-}
-```
-
-## - 방에 초대
-
-- 이벤트명: `invite`
-- 패킷 형태
-
-```js
-{
-  userId, // 본인 로그인 아이디 (string)
-  targetId, // 방 초대 요청을 보낼 상대 로그인 아이디 (string)
-  roomId, // 상대를 초대할 방의 고유 번호 (string)
-}
-```
-
-```js
-// 예시
-socket.emit("invite", {
-  userId: "myTest01",
-  targetId: "yourTest01",
-  roomId: "61d3cf901463bd1255fb5bae",
-});
-```
-
-- 받는 쪽 패킷 형태
-
-```js
-{
-  type: "room", // <- "room" 고정!!!
-  userId: "",  // 초대 보낸 사람 로그인 아이디, 예시대로면 "myTest01"
-  roomId: "",  // 초대 받은 방의 고유 번호, 예시대로면 "61d3cf901463bd1255fb5bae"
-}
-```
 
 <br/>
 

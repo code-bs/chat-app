@@ -1,5 +1,33 @@
 let Model = function () {
   const _mysql = require("../config/initializer/mysqldb");
+  const userSchema = require("./schemas/user");
+
+  this.newSocketInfo = async (userId, socketId, done) => {
+    const newSocket = new userSchema({ userId, socketId });
+    try {
+      const result = await newSocket.save();
+      done(null, result);
+    } catch (err) {
+      done(err, null);
+    }
+  };
+
+  this.getSocketId = async (userId, done) => {
+    try {
+      const result = await userSchema.find({ userId });
+      done(null, result);
+    } catch (err) {
+      done(err, null);
+    }
+  };
+
+  this.deleteSocketInfo = async (socketId, done) => {
+    try {
+      await userSchema.deleteOne({ socketId });
+    } catch (err) {
+      done(err, null);
+    }
+  };
 
   this.searchId = (id, done) => {
     _mysql((conn) => {
