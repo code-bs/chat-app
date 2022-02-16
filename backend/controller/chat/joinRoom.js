@@ -9,10 +9,10 @@ const defaultModuleInfo = {
 
 /* METHODS */
 function validateInput(body) {
-  const { userId, roomId, ...extra } = body;
+  const { user, roomId, ...extra } = body;
   const moduleInfo = { ...defaultModuleInfo, method: "validateInput" };
   return new Promise((resolve, reject) => {
-    if (!userId)
+    if (!user)
       reject({
         status: 400,
         message: "userId가 설정되지 않았습니다.",
@@ -52,9 +52,9 @@ function checkInviteValid(userId, roomId) {
   });
 }
 
-function joinRoom(userId, roomId) {
+function joinRoom(user, roomId) {
   return new Promise((resolve, reject) => {
-    chatModel.mapRoomList({ userId, roomId }, (error, result) => {
+    chatModel.mapRoomList({ userId: user.userId, roomId }, (error, result) => {
       if (error)
         reject({
           status: 500,
@@ -62,7 +62,18 @@ function joinRoom(userId, roomId) {
           errMsg: error,
           ...moduleInfo,
         });
-      else resolve();
+      else {
+        chatModel.newUser(roomId, user, (error) => {
+          if (error)
+            reject({
+              status: 500,
+              message: "알 수 없는 오류가 발생하였습니다.",
+              errMsg: error,
+              ...moduleInfo,
+            });
+          else resolve();
+        });
+      }
     });
   });
 }
@@ -84,15 +95,17 @@ function deleteInvite(userId, roomId) {
 
 /* EXPORTS */
 module.exports = async function (req, res) {
-  const { userId, roomId } = req.body;
-  logger.info(`[chat][joinRoom]-> ${userId} accepting invitation ${roomId}`);
+  const { user, roomId } = req.body;
+  logger.info(
+    `[chat][joinRoom]-> ${user.userId} accepting invitation ${roomId}`
+  );
   try {
     await validateInput(req.body);
-    await checkInviteValid(userId, roomId);
-    await joinRoom(userId, roomId);
-    await deleteInvite(userId, roomId);
+    await checkInviteValid(user.userId, roomId);
+    await joinRoom(user, roomId);
+    await deleteInvite(user.userId, roomId);
 
-    logger.info(`[chat][joinRoom]-> ${userId} join ${roomId} done`);
+    logger.info(`[chat][joinRoom]-> ${user.userId} join ${roomId} done`);
     res.end();
   } catch (error) {
     errorHandler(error);

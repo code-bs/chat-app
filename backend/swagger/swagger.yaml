@@ -50,7 +50,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/createroom"
+              type: object
+              properties:
+                user:
+                  $ref: "#/components/schemas/user"
+                roomName:
+                  type: string
       responses:
         "200":
           description: 생성한 방 정보
@@ -135,9 +140,8 @@ paths:
             schema:
               type: object
               properties:
-                userId:
-                  type: string
-                  description: 로그인 아이디
+                user:
+                  $ref: "#/components/schemas/user"
                 roomId:
                   type: string
                   description: 방 고유 아이디
@@ -374,8 +378,10 @@ components:
           type: string
         regDate:
           type: string
-        masterUserId:
-          type: string
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/user"
         chatHistory:
           $ref: "#/components/schemas/chatHistory"
     user:
@@ -393,15 +399,6 @@ components:
         statusMessage:
           type: string
           description: 상태 메세지
-    createroom:
-      type: object
-      properties:
-        roomName:
-          type: string
-          description: 사용자가 입력한 방 이름
-        userId:
-          type: string
-          description: 요청한 유저의 고유 번호
     chatHistory:
       type: array
       items:

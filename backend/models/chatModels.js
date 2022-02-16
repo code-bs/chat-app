@@ -2,16 +2,16 @@ let Model = function () {
   const RoomSchema = require("./schemas/chatRoom");
   const _mysql = require("../config/initializer/mysqldb");
 
-  this.createRoom = async (roomName, userId, callback) => {
+  this.createRoom = async (roomName, user, callback) => {
+    const users = [];
+    users.push(user);
     const payload = {
       roomName,
-      masterUserId: userId,
+      users,
       regDate: new Date(),
       chatHistory: [],
     };
-
     const newRoom = new RoomSchema(payload);
-
     try {
       const result = await newRoom.save();
       callback(null, result);
@@ -63,15 +63,19 @@ let Model = function () {
       );
       callback(null, result);
     } catch (err) {
-      if (err.path && err.path === "_id") {
-        callback(
-          {
-            status: 400,
-            message: "방이 존재하지 않습니다.",
-          },
-          null
-        );
-      } else callback(err, null);
+      callback(err, null);
+    }
+  };
+
+  this.newUser = async (roomId, user, callback) => {
+    try {
+      await RoomSchema.findOneAndUpdate(
+        { _id: roomId },
+        { $push: { users: user } }
+      );
+      callback(null);
+    } catch (err) {
+      callback(err);
     }
   };
 
@@ -177,7 +181,7 @@ let Model = function () {
   this.deleteInvite = (userId, roomId, callback) => {
     _mysql((conn) => {
       conn.query(
-        "DELETE FROM tbl_invite_room WHERE userId=? AND roomId=?",
+        "DELETE FROM tbl_invite_room WHERE targetId=? AND roomId=?",
         [userId, roomId],
         (err) => {
           if (err) callback(err);

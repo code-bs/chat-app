@@ -9,10 +9,10 @@ const defaultModuleInfo = {
 
 /* METHODS */
 function validateInput(body) {
-  const { userId, roomName, ...extra } = body;
+  const { user, roomName, ...extra } = body;
   const moduleInfo = { ...defaultModuleInfo, method: "validateInput" };
   return new Promise((resolve, reject) => {
-    if (!userId)
+    if (!user)
       reject({
         status: 400,
         message: "유효하지 않는 입력값입니다.",
@@ -40,10 +40,10 @@ function validateInput(body) {
   });
 }
 
-function insertRoom(roomName, userId) {
+function insertRoom(roomName, user) {
   const moduleInfo = { ...defaultModuleInfo, method: "insertRoom" };
   return new Promise((resolve, reject) => {
-    chatModel.createRoom(roomName, userId, (error, result) => {
+    chatModel.createRoom(roomName, user, (error, result) => {
       if (error)
         reject({
           status: 500,
@@ -76,13 +76,13 @@ function mapRoomList(context) {
 
 /* EXPORTS */
 module.exports = async function (req, res) {
-  const { userId, roomName } = req.body;
+  const { user, roomName } = req.body;
   logger.info(`[Chat][createRoom]-> creating ${roomName}`);
   try {
     await validateInput(req.body);
-    const room = await insertRoom(roomName, userId);
+    const room = await insertRoom(roomName, user);
     const roomId = Object(room._id).toString();
-    await mapRoomList({ userId, roomId });
+    await mapRoomList({ userId: user.userId, roomId });
 
     logger.info(`[Chat][createRoom]-> creating ${roomName} done`);
     res.send(room);
