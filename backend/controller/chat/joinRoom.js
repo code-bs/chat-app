@@ -1,16 +1,51 @@
 /* IMPORTS */
 const chatModel = require("../../models/chatModels")();
 const logger = require("../../config/logger");
+const errorHandler = require("../common/errorHandler");
+const defaultModuleInfo = {
+  module: "chat",
+  service: "joinRoom",
+};
 
 /* METHODS */
+function validateInput(body) {
+  const { userId, roomId, ...extra } = body;
+  const moduleInfo = { ...defaultModuleInfo, method: "validateInput" };
+  return new Promise((resolve, reject) => {
+    if (!userId)
+      reject({
+        status: 400,
+        message: "userId가 설정되지 않았습니다.",
+        ...moduleInfo,
+      });
+    else if (!roomId)
+      reject({
+        status: 400,
+        message: "roomId가 설정되지 않았습니다.",
+        ...moduleInfo,
+      });
+    else if (!!Object.keys(extra).length)
+      reject({
+        status: 400,
+        message: "유효하지 않는 입력값입니다.",
+        ...moduleInfo,
+      });
+    else resolve();
+  });
+}
+
 function checkInviteValid(userId, roomId) {
-  logger.info(`[chat][joinRoom]-> check invite valid`);
+  const moduleInfo = { ...defaultModuleInfo, method: "checkInviteValid" };
   return new Promise((resolve, reject) => {
     chatModel.checkInvite(userId, roomId, (error, result) => {
       if (error) reject(error);
       else {
         if (result.length < 1)
-          reject({ status: 400, message: "유효하지 않은 초대입니다." });
+          reject({
+            status: 400,
+            message: "유효하지 않은 초대입니다.",
+            ...moduleInfo,
+          });
         else resolve();
       }
     });
@@ -18,20 +53,30 @@ function checkInviteValid(userId, roomId) {
 }
 
 function joinRoom(userId, roomId) {
-  logger.info(`[chat][joinRoom]-> insert to mysql db`);
   return new Promise((resolve, reject) => {
     chatModel.mapRoomList({ userId, roomId }, (error, result) => {
-      if (error) reject(error);
+      if (error)
+        reject({
+          status: 500,
+          message: "알 수 없는 오류가 발생하였습니다.",
+          errMsg: error,
+          ...moduleInfo,
+        });
       else resolve();
     });
   });
 }
 
 function deleteInvite(userId, roomId) {
-  logger.info(`[chat][joinRoom]-> delete invite data`);
   return new Promise((resolve, reject) => {
     chatModel.deleteInvite(userId, roomId, (error) => {
-      if (error) reject(error);
+      if (error)
+        reject({
+          status: 500,
+          message: "알 수 없는 오류가 발생하였습니다.",
+          errMsg: error,
+          ...moduleInfo,
+        });
       else resolve();
     });
   });
@@ -39,22 +84,18 @@ function deleteInvite(userId, roomId) {
 
 /* EXPORTS */
 module.exports = async function (req, res) {
-  logger.info(`[chat][joinRoom]-> accepting invitation room`);
   const { userId, roomId } = req.body;
+  logger.info(`[chat][joinRoom]-> ${userId} accepting invitation ${roomId}`);
   try {
+    await validateInput(req.body);
     await checkInviteValid(userId, roomId);
     await joinRoom(userId, roomId);
     await deleteInvite(userId, roomId);
 
-    logger.info(`[chat][joinRoom]-> join room done`);
+    logger.info(`[chat][joinRoom]-> ${userId} join ${roomId} done`);
     res.end();
   } catch (error) {
-    if (!error.status) {
-      logger.error(`[chat][joinRoom]-> ${error}`);
-      res.status(500).send("알 수 없는 오류가 발생하였습니다.");
-    } else {
-      logger.info(`[chat][joinRoom]-> ${error.status}:${error.message}`);
-      res.status(error.status).send(error.message);
-    }
+    errorHandler(error);
+    res.status(error.status).send(error.message);
   }
 };

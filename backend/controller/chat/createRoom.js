@@ -6,6 +6,7 @@ const defaultModuleInfo = {
   module: "chat",
   service: "createRoom",
 };
+
 /* METHODS */
 function validateInput(body) {
   const { userId, roomName, ...extra } = body;
@@ -39,30 +40,35 @@ function validateInput(body) {
   });
 }
 
-function insertRoom(context) {
+function insertRoom(roomName, userId) {
+  const moduleInfo = { ...defaultModuleInfo, method: "insertRoom" };
   return new Promise((resolve, reject) => {
-    const { roomName, userId } = context;
-    if (!roomName)
-      reject({ status: 400, message: "방 이름은 필수 입력 항목입니다." });
-    else if (!userId)
-      reject({ status: 400, message: "방장이 설정되지 않았습니다." });
-    else {
-      logger.info(`[Chat][createRoom]-> insert into mongodb`);
-      chatModel.createRoom(roomName, userId, (error, result) => {
-        if (error) reject(error);
-        else {
-          resolve(result);
-        }
-      });
-    }
+    chatModel.createRoom(roomName, userId, (error, result) => {
+      if (error)
+        reject({
+          status: 500,
+          errMsg: error,
+          message: "알 수 없는 오류가 발생하였습니다.",
+          ...moduleInfo,
+        });
+      else {
+        resolve(result);
+      }
+    });
   });
 }
 
 function mapRoomList(context) {
-  logger.info(`[Chat][createRoom]-> mapping (mysql)`);
+  const moduleInfo = { ...defaultModuleInfo, method: "mapRoomList" };
   return new Promise((resolve, reject) => {
     chatModel.mapRoomList(context, (error) => {
-      if (error) reject(error);
+      if (error)
+        reject({
+          status: 500,
+          message: "알 수 없는 오류가 발생하였습니다.",
+          errMsg: error,
+          ...moduleInfo,
+        });
       else resolve();
     });
   });
@@ -71,20 +77,17 @@ function mapRoomList(context) {
 /* EXPORTS */
 module.exports = async function (req, res) {
   const { userId, roomName } = req.body;
-
+  logger.info(`[Chat][createRoom]-> creating ${roomName}`);
   try {
-    const room = await insertRoom({ userId, roomName });
+    await validateInput(req.body);
+    const room = await insertRoom(roomName, userId);
     const roomId = Object(room._id).toString();
     await mapRoomList({ userId, roomId });
 
-    logger.info(`[Chat][createRoom]-> create room done`);
+    logger.info(`[Chat][createRoom]-> creating ${roomName} done`);
     res.send(room);
   } catch (error) {
-    logger.error(`[Chat][createRoom]-> ${error}`);
-    if (!error.status)
-      res.status(500).send("알 수 없는 오류가 발생하였습니다.");
-    else {
-      res.status(error.status).send(error.message);
-    }
+    errorHandler(error);
+    res.status(error.status).send(error.message);
   }
 };
