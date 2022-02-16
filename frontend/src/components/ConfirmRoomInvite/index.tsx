@@ -1,6 +1,8 @@
 import React from 'react';
 import { Modal, Button, List } from 'antd';
-import { useAppSelector } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { SigninResponse } from '../../types';
+import { joinChatRoomAsync } from '../../store/chat/actions';
 
 type ConfirmRoomInviteProps = {
   isModalVisible: boolean;
@@ -8,7 +10,11 @@ type ConfirmRoomInviteProps = {
 };
 
 const ConfirmRoomInvite = ({ isModalVisible, closeModal }: ConfirmRoomInviteProps) => {
+  const {
+    user: { userId },
+  } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
   const { data } = useAppSelector(state => state.chat.roomInvite);
+  const dispatch = useAppDispatch();
   return (
     <Modal
       title="방 초대"
@@ -22,10 +28,12 @@ const ConfirmRoomInvite = ({ isModalVisible, closeModal }: ConfirmRoomInviteProp
         itemLayout="horizontal"
         dataSource={data || []}
         style={{ padding: '16px 24px' }}
-        renderItem={({ roomName }) => (
+        renderItem={({ _id, roomName }) => (
           <List.Item
             actions={[
-              <Button type="primary">수락</Button>,
+              <Button type="primary" onClick={() => dispatch(joinChatRoomAsync.request({ userId, roomId: _id }))}>
+                수락
+              </Button>,
               <Button type="primary" danger>
                 거절
               </Button>,
