@@ -74,6 +74,7 @@ module.exports = async function (req, res) {
     await findUser(friendId);
     await isFriend(userId, friendId);
     await insertFriend(userId, friendId);
+    await insertFriend(friendId, userId);
     await deleteInvite(userId, friendId);
 
     logger.info(`[User][addFriend]-> add friend done`);

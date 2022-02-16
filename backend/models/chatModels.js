@@ -2,16 +2,16 @@ let Model = function () {
   const RoomSchema = require("./schemas/chatRoom");
   const _mysql = require("../config/initializer/mysqldb");
 
-  this.createRoom = async (roomName, userId, callback) => {
+  this.createRoom = async (roomName, user, callback) => {
+    const users = [];
+    users.push(user);
     const payload = {
       roomName,
-      masterUserId: userId,
+      users,
       regDate: new Date(),
       chatHistory: [],
     };
-
     const newRoom = new RoomSchema(payload);
-
     try {
       const result = await newRoom.save();
       callback(null, result);
@@ -63,15 +63,19 @@ let Model = function () {
       );
       callback(null, result);
     } catch (err) {
-      if (err.path && err.path === "_id") {
-        callback(
-          {
-            status: 400,
-            message: "방이 존재하지 않습니다.",
-          },
-          null
-        );
-      } else callback(err, null);
+      callback(err, null);
+    }
+  };
+
+  this.newUser = async (roomId, user, callback) => {
+    try {
+      await RoomSchema.findOneAndUpdate(
+        { _id: roomId },
+        { $push: { users: user } }
+      );
+      callback(null);
+    } catch (err) {
+      callback(err);
     }
   };
 
@@ -130,11 +134,11 @@ let Model = function () {
     });
   };
 
-  this.inviteRoom = (userId, roomId, callback) => {
+  this.inviteRoom = (userId, targetId, roomId, callback) => {
     _mysql((conn) => {
       conn.query(
-        "INSERT INTO tbl_invite_room (userId, roomId) VALUES(?, ?)",
-        [userId, roomId],
+        "INSERT INTO tbl_invite_room (userId, targetId, roomId) VALUES(?, ?, ?)",
+        [userId, targetId, roomId],
         (err) => {
           if (err) callback(err);
           else callback(null);
@@ -147,7 +151,7 @@ let Model = function () {
   this.checkInvite = (userId, roomId, callback) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT _id FROM tbl_invite_room WHERE userId=? AND roomId=?",
+        "SELECT _id FROM tbl_invite_room WHERE targetId=? AND roomId=?",
         [userId, roomId],
         (err, result) => {
           if (err) callback(err, null);
@@ -158,11 +162,11 @@ let Model = function () {
     });
   };
 
-  this.getRoomInvites = (userId, callback) => {
+  this.getRoomInvites = (targetId, callback) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT roomId FROM tbl_invite_room WHERE userId=?",
-        [userId],
+        "SELECT r.targetId, r.userId, m.nickname, m.avatarUrl, m.statusMessage, r.roomId FROM tbl_invite_room as r INNER JOIN tbl_member as m ON m.userId=r.userId WHERE r.targetId=?",
+        [targetId],
         (err, result) => {
           if (err) callback(err, null);
           else {
@@ -177,13 +181,55 @@ let Model = function () {
   this.deleteInvite = (userId, roomId, callback) => {
     _mysql((conn) => {
       conn.query(
-        "DELETE FROM tbl_invite_room WHERE userId=? AND roomId=?",
+        "DELETE FROM tbl_invite_room WHERE targetId=? AND roomId=?",
         [userId, roomId],
         (err) => {
           if (err) callback(err);
           else callback(null);
         }
       );
+      conn.release();
+    });
+  };
+
+  /* leaveRoom */
+  this.checkUserInRoom = (userId, roomId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT _id FROM tbl_map_room WHERE userId=? AND roomId=?",
+        [userId, roomId],
+        (err, result) => {
+          if (err) callback(err, null);
+          else callback(null, result);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.delUserInMongo = async (roomId, userId, callback) => {
+    try {
+      await RoomSchema.findOneAndUpdate(
+        { _id: roomId },
+        { $pull: { users: { userId: userId } } }
+      );
+      callback(null);
+    } catch (error) {
+      callback(error);
+    }
+  };
+
+  this.delUserInMysql = (roomId, userId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "DELETE FROM tbl_map_room WHERE userId=? AND roomId=?",
+        [userId, roomId],
+        (err) => {
+          if (err) callback(err);
+          else callback(null);
+        }
+      );
+      conn.release();
     });
   };
 };

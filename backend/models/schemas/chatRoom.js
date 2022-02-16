@@ -3,7 +3,14 @@ const mongoose = require("mongoose");
 const roomSchema = new mongoose.Schema({
   roomName: String,
   regDate: Date,
-  masterUserId: String,
+  users: [
+    {
+      userId: String,
+      nickname: String,
+      avatarUrl: String,
+      statusMessage: String,
+    },
+  ],
   chatHistory: [
     {
       message: String,
