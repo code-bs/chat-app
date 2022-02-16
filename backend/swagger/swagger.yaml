@@ -63,6 +63,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/room"
+    delete:
+      summary: 방에서 나가기
+      tags: [Chat]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+      requestBody:
+        required:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: 유저 로그인 아이디
+                roomId:
+                  type: string
+                  description: 방 고유 아이디
+      responses:
+        "200":
+          description: 성공
   /chat/room/enter/{roomId}:
     get:
       summary: 방 고유 번호가 roomId 인 방에 입장

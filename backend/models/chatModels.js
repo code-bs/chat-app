@@ -188,6 +188,48 @@ let Model = function () {
           else callback(null);
         }
       );
+      conn.release();
+    });
+  };
+
+  /* leaveRoom */
+  this.checkUserInRoom = (userId, roomId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT _id FROM tbl_map_room WHERE userId=? AND roomId=?",
+        [userId, roomId],
+        (err, result) => {
+          if (err) callback(err, null);
+          else callback(null, result);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.delUserInMongo = async (roomId, userId, callback) => {
+    try {
+      await RoomSchema.findOneAndUpdate(
+        { _id: roomId },
+        { $pull: { users: { userId: userId } } }
+      );
+      callback(null);
+    } catch (error) {
+      callback(error);
+    }
+  };
+
+  this.delUserInMysql = (roomId, userId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "DELETE FROM tbl_map_room WHERE userId=? AND roomId=?",
+        [userId, roomId],
+        (err) => {
+          if (err) callback(err);
+          else callback(null);
+        }
+      );
+      conn.release();
     });
   };
 };

@@ -3,6 +3,7 @@ const enterRoom = require("./enterRoom");
 const roomList = require("./roomList");
 const joinRoom = require("./joinRoom");
 const getInvites = require("./getInvites");
+const leaveRoom = require("./leaveRoom");
 
 module.exports = {
   createRoom,
@@ -10,4 +11,5 @@ module.exports = {
   roomList,
   joinRoom,
   getInvites,
+  leaveRoom,
 };

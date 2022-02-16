@@ -12,4 +12,6 @@ router.post("/room/join", controller.joinRoom);
 
 router.get("/room/invites/:userId", controller.getInvites);
 
+router.delete("/room", controller.leaveRoom);
+
 module.exports = router;
