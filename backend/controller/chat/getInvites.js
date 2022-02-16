@@ -4,7 +4,6 @@ const chatModel = require("../../models/chatModels")();
 
 /* METHODS */
 function getInvites(userId) {
-  logger.info(`[chat][getInvites]-> get invites from mysql db`);
   return new Promise((resolve, reject) => {
     chatModel.getRoomInvites(userId, (error, result) => {
       if (error) reject(error);
@@ -16,7 +15,6 @@ function getInvites(userId) {
 }
 
 function getRoomInfo(roomId) {
-  logger.info(`[chat][getInvites]-> get room info`);
   return new Promise((resolve, reject) => {
     chatModel.getRoomInfo(roomId, (error, result) => {
       if (error) reject(error);
@@ -36,9 +34,13 @@ module.exports = async function (req, res) {
     const roomIds = await getInvites(userId);
     let roomInfos = [];
     for (let i = 0; i < roomIds.length; i++) {
-      let roomId = roomIds[i].roomId;
+      const { userId, nickname, avatarUrl, statusMessage, roomId } = roomIds[i];
       const roomInfo = await getRoomInfo(roomId);
-      roomInfos.push(roomInfo);
+
+      roomInfos.push({
+        sender: { userId, nickname, avatarUrl, statusMessage },
+        room: roomInfo,
+      });
     }
     logger.info(`[chat][getInvites]-> get invites done`);
     res.send(roomInfos);

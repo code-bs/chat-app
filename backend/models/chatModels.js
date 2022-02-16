@@ -130,11 +130,11 @@ let Model = function () {
     });
   };
 
-  this.inviteRoom = (userId, roomId, callback) => {
+  this.inviteRoom = (userId, targetId, roomId, callback) => {
     _mysql((conn) => {
       conn.query(
-        "INSERT INTO tbl_invite_room (userId, roomId) VALUES(?, ?)",
-        [userId, roomId],
+        "INSERT INTO tbl_invite_room (userId, targetId, roomId) VALUES(?, ?, ?)",
+        [userId, targetId, roomId],
         (err) => {
           if (err) callback(err);
           else callback(null);
@@ -147,7 +147,7 @@ let Model = function () {
   this.checkInvite = (userId, roomId, callback) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT _id FROM tbl_invite_room WHERE userId=? AND roomId=?",
+        "SELECT _id FROM tbl_invite_room WHERE targetId=? AND roomId=?",
         [userId, roomId],
         (err, result) => {
           if (err) callback(err, null);
@@ -158,11 +158,11 @@ let Model = function () {
     });
   };
 
-  this.getRoomInvites = (userId, callback) => {
+  this.getRoomInvites = (targetId, callback) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT roomId FROM tbl_invite_room WHERE userId=?",
-        [userId],
+        "SELECT r.targetId, r.userId, m.nickname, m.avatarUrl, m.statusMessage, r.roomId FROM tbl_invite_room as r INNER JOIN tbl_member as m ON m.userId=r.userId WHERE r.targetId=?",
+        [targetId],
         (err, result) => {
           if (err) callback(err, null);
           else {

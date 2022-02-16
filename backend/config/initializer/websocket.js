@@ -77,7 +77,7 @@ module.exports = function (socket_port) {
         });
 
         userModel.getSocketId(targetId, (err, result) => {
-          if (err) console.log(err);
+          if (err) done("Internal Server Error");
           else {
             const { socketId } = result[0];
             socket.to(socketId).emit("friendRequest", sender);
@@ -90,16 +90,16 @@ module.exports = function (socket_port) {
         const { sender, targetId, roomId } = info;
         chatModel.checkInvite(targetId, roomId, (err, result) => {
           if (err) done("Internal Server Error");
-          else if (result.length > 0) done("이미 보낸 요청입니다.");
+          else if (result.length > 0) done("이미 해당 방의 초대를 받았습니다.");
           else {
-            chatModel.inviteRoom(targetId, roomId, (err) => {
+            chatModel.inviteRoom(sender.userId, targetId, roomId, (err) => {
               if (err) done("Internal Server Error");
             });
           }
         });
 
         userModel.getSocketId(targetId, (err, result) => {
-          if (err) console.log(err);
+          if (err) done("Internal Server Error");
           else {
             const { socketId } = result[0];
             socket.to(socketId).emit("roomInvite", sender, roomId);

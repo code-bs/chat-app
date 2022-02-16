@@ -112,7 +112,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/room"
+                  type: object
+                  properties:
+                    sender:
+                      $ref: "#/components/schemas/user"
+                    room:
+                      $ref: "#/components/schemas/room"
   /chat/room/join:
     post:
       summary: 방 초대 승락
