@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Drawer, Button, Space, Divider, Layout } from 'antd';
+import { Drawer, Button, Divider, Layout } from 'antd';
 import { InviteChatRoom } from '..';
 import style from './index.module.scss';
 
