@@ -14,7 +14,7 @@ let Model = function () {
 
   this.getSocketId = async (userId, done) => {
     try {
-      const result = await userSchema.find({ userId });
+      const result = await userSchema.find({ userId: userId });
       done(null, result);
     } catch (err) {
       done(err, null);
@@ -151,7 +151,7 @@ let Model = function () {
   this.invite = (userId, targetId, done) => {
     _mysql((conn) => {
       conn.query(
-        "INSERT INTO tbl_invite_friend (userId, targetId) VALUES(?, ?)",
+        "INSERT INTO tbl_invite_friend (userId, targetId, curStatus) VALUES(?, ?, 'ND')",
         [targetId, userId],
         (err) => {
           if (err) done(err);
@@ -178,11 +178,52 @@ let Model = function () {
   this.getFriendReqs = (userId, done) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT m.userId, m.nickName, m.avatarUrl, m.statusMessage FROM tbl_invite_friend as f INNER JOIN tbl_member as m ON f.targetId=m.userId WHERE f.userId=?",
+        "SELECT m.userId, m.nickname, m.avatarUrl, m.statusMessage, f.curStatus FROM tbl_invite_friend as f INNER JOIN tbl_member as m ON f.targetId=m.userId WHERE f.userId=?",
         [userId],
         (err, result) => {
           if (err) done(err, null);
           else done(null, result);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.getFriendSentReqs = (userId, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "SELECT m.userId, m.nickname, m.avatarUrl, m.statusMessage, f.curStatus FROM tbl_invite_friend as f INNER JOIN tbl_member as m ON f.userId=m.userId WHERE f.targetId=?",
+        [userId],
+        (err, result) => {
+          if (err) done(err, null);
+          else done(null, result);
+        }
+      );
+    });
+  };
+
+  this.acceptInvite = (userId, friendId, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "UPDATE tbl_invite_friend SET curStatus='Y' WHERE userId=? AND targetId=?",
+        [userId, friendId],
+        (err) => {
+          if (err) done(err);
+          else done(null);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.rejectInvite = (userId, friendId, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "UPDATE tbl_invite_friend SET curStatus='N' WHERE userId=? AND targetId=?",
+        [userId, friendId],
+        (err) => {
+          if (err) done(err);
+          else done(null);
         }
       );
       conn.release();
@@ -203,6 +244,7 @@ let Model = function () {
     });
   };
 
+  /* 프로필 업데이트 관련 */
   this.updateProfile = (userId, profile, done) => {
     const { nickname, avatarUrl, statusMessage } = profile;
     _mysql((conn) => {

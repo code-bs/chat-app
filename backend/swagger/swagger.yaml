@@ -318,7 +318,7 @@ paths:
           description: 변경 성공
   /user/friend:
     post:
-      summary: 친구 추가
+      summary: 친구 추가 (친구 요청 수락)
       tags: [User]
       parameters:
         - in: header
@@ -367,9 +367,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/user"
-  /user/friend_req/{userId}:
+  /user/friend_req/received/{userId}:
     get:
-      summary: 친구 요청 목록
+      summary: 받은 친구 요청 목록
       tags: [User]
       parameters:
         - in: header
@@ -392,6 +392,76 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/user"
+  /user/friend_req/sent/{userId}:
+    get:
+      summary: 보낸 친구 요청 목록
+      tags: [User]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: 유저 로그인 아이디
+      responses:
+        200:
+          description:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/user"
+  /user/friend_req:
+    put:
+      summary: 친구 요청 거절
+      tags: [User]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: 로그인 해 있는 유저 아이디
+                targetId:
+                  type: string
+                  description: 요청을 보낸 유저 아이디
+    delete:
+      summary: 친구 요청 삭제
+      tags: [User]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: 로그인 해 있는 유저 아이디
+                targetId:
+                  type: string
+                  description: 요청을 보낸 유저 아이디
 components:
   schemas:
     room:

@@ -10,8 +10,14 @@ router.get("/:userId", controller.getUser);
 
 router.get("/", controller.searchUser);
 
-router.get("/friend_req/:userId", controller.checkRequest);
+router.get("/friend_req/received/:userId", controller.getReceivedReq);
+
+router.get("/friend_req/sent/:userId", controller.getSentReq);
 
 router.put("/", controller.updateProfile);
+
+router.put("/friend_req", controller.rejectRequest);
+
+router.delete("/friend_req", controller.deleteRequest);
 
 module.exports = router;

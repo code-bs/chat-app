@@ -42,7 +42,11 @@ CREATE TABLE tbl_invite_friend (
   _id int(11) NOT NULL AUTO_INCREMENT,
   userId varchar(20) NOT NULL,
   targetId varchar(20) NOT NULL,
-  PRIMARY KEY(_id)
+  curStatus varchar(5) NOT NULL,
+  PRIMARY KEY(_id),
+  FOREIGN KEY (userId)
+  REFERENCES tbl_member (userId)
+  ON DELETE CASCADE
 ) CHARSET=UTF8MB4;
 
 DROP TABLE IF EXISTS tbl_invite_room;
@@ -51,5 +55,9 @@ CREATE TABLE tbl_invite_room (
   userId varchar(20) NOT NULL,
   targetId varchar(20) NOT NULL,
   roomId varchar(255) NOT NULL,
-  PRIMARY KEY(_id)
+  curStatus varchar(5) NOT NULL,
+  PRIMARY KEY(_id),
+  FOREIGN KEY (userId)
+  REFERENCES tbl_member (userId)
+  ON DELETE CASCADE
 ) CHARSET=UTF8MB4;
