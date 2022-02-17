@@ -3,7 +3,7 @@ import { Button, Popover, Avatar } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { signoutAsync } from '../../store/auth/actions';
-import { Confirm } from '..';
+import { Confirm, ChangeProfile } from '..';
 import style from './index.module.scss';
 import { SigninResponse } from '../../types';
 
@@ -13,9 +13,13 @@ const Profile = () => {
   const { avatarUrl, nickname } = user;
   const [popoverVisible, setPopoverVisible] = useState<boolean>(false);
   const [confirmVisible, setConfirmVisible] = useState<boolean>(false);
+  const [isModalVisible, setModalVisible] = useState<boolean>(false);
+  const closeModal = () => {
+    setModalVisible(false);
+  };
   const content = (
     <div className={style.content}>
-      <Button block className={style.button}>
+      <Button block className={style.button} onClick={() => setModalVisible(true)}>
         프로필 변경
       </Button>
       <Button block className={style.button} onClick={() => setConfirmVisible(true)}>
@@ -24,7 +28,7 @@ const Profile = () => {
     </div>
   );
   return (
-    <>
+    <div>
       <span className={style.username}>{nickname}님</span>
       <Popover
         placement="bottom"
@@ -53,7 +57,8 @@ const Profile = () => {
         isModalVisible={confirmVisible}
         withInput={false}
       />
-    </>
+      <ChangeProfile {...{ isModalVisible, closeModal }} />
+    </div>
   );
 };
 

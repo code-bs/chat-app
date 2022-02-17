@@ -12,3 +12,4 @@ export * from './UserSummaryList';
 export * from './RoomInfoDrawer';
 export * from './InviteChatRoom';
 export * from './ConfirmRoomInvite';
+export * from './ChangeProfile';
