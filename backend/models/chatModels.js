@@ -137,7 +137,7 @@ let Model = function () {
   this.inviteRoom = (userId, targetId, roomId, callback) => {
     _mysql((conn) => {
       conn.query(
-        "INSERT INTO tbl_invite_room (userId, targetId, roomId) VALUES(?, ?, ?)",
+        "INSERT INTO tbl_invite_room (userId, targetId, roomId, curStatus) VALUES(?, ?, ?, 'ND')",
         [userId, targetId, roomId],
         (err) => {
           if (err) callback(err);
