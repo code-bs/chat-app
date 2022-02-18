@@ -37,7 +37,7 @@ function validateInput(body) {
 function checkInviteValid(userId, roomId) {
   const moduleInfo = { ...defaultModuleInfo, method: "checkInviteValid" };
   return new Promise((resolve, reject) => {
-    chatModel.checkInvite(userId, roomId, (error, result) => {
+    chatModel.checkInvite(userId, targetId, roomId, (error, result) => {
       if (error) reject(error);
       else {
         if (result.length < 1)
@@ -95,15 +95,15 @@ function deleteInvite(userId, roomId) {
 
 /* EXPORTS */
 module.exports = async function (req, res) {
-  const { user, roomId } = req.body;
+  const { senderId, user, roomId } = req.body;
   logger.info(
     `[chat][joinRoom]-> ${user.userId} accepting invitation ${roomId}`
   );
   try {
     await validateInput(req.body);
-    await checkInviteValid(user.userId, roomId);
+    await checkInviteValid(senderId, user.userId, roomId);
     await joinRoom(user, roomId);
-    await deleteInvite(user.userId, roomId);
+    await deleteInvite(senderId, user.userId, roomId);
 
     logger.info(`[chat][joinRoom]-> ${user.userId} join ${roomId} done`);
     res.end();

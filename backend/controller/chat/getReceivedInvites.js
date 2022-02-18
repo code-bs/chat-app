@@ -4,7 +4,7 @@ const errorHandler = require("../common/errorHandler");
 const chatModel = require("../../models/chatModels")();
 const defaultModuleInfo = {
   module: "chat",
-  service: "getInvites",
+  service: "getReceivedInvites",
 };
 
 /* METHODS */
@@ -72,12 +72,14 @@ module.exports = async function (req, res) {
     const roomIds = await getInvites(userId);
     let roomInfos = [];
     for (let i = 0; i < roomIds.length; i++) {
-      const { userId, nickname, avatarUrl, statusMessage, roomId } = roomIds[i];
+      const { userId, nickname, avatarUrl, statusMessage, roomId, curStatus } =
+        roomIds[i];
       const roomInfo = await getRoomInfo(roomId);
 
       roomInfos.push({
         sender: { userId, nickname, avatarUrl, statusMessage },
         room: roomInfo,
+        curStatus,
       });
     }
     logger.info(`[chat][getInvites]-> ${userId}: get invites done`);

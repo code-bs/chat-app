@@ -92,26 +92,31 @@ module.exports = function (socket_port) {
 
       socket.on("room", (info, done) => {
         const { sender, targetId, roomId } = info;
-        chatModel.checkInvite(targetId, roomId, (err, result) => {
-          if (err) done("Internal Server Error");
-          else if (result.length > 0) done("이미 보낸 요청입니다.");
-          else {
-            chatModel.inviteRoom(sender.userId, targetId, roomId, (err) => {
-              if (err) done("Internal Server Error");
-            });
-            userModel.getSocketId(targetId, (err, result) => {
-              if (err) {
-                done("Internal Server Error");
-              } else {
-                if (result.length !== 0) {
-                  const { socketId } = result[0];
-                  socket.to(socketId).emit("roomInvite", sender, roomId);
+        chatModel.checkInvite(
+          sender.userId,
+          targetId,
+          roomId,
+          (err, result) => {
+            if (err) done("Internal Server Error");
+            else if (result.length > 0) done("이미 보낸 요청입니다.");
+            else {
+              chatModel.inviteRoom(sender.userId, targetId, roomId, (err) => {
+                if (err) done("Internal Server Error");
+              });
+              userModel.getSocketId(targetId, (err, result) => {
+                if (err) {
+                  done("Internal Server Error");
+                } else {
+                  if (result.length !== 0) {
+                    const { socketId } = result[0];
+                    socket.to(socketId).emit("roomInvite", sender, roomId);
+                  }
+                  done(null);
                 }
-                done(null);
-              }
-            });
+              });
+            }
           }
-        });
+        );
       });
     });
 

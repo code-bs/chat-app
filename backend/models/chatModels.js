@@ -148,11 +148,11 @@ let Model = function () {
     });
   };
 
-  this.checkInvite = (userId, roomId, callback) => {
+  this.checkInvite = (userId, targetId, roomId, callback) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT _id FROM tbl_invite_room WHERE targetId=? AND roomId=?",
-        [userId, roomId],
+        "SELECT _id FROM tbl_invite_room WHERE userId=? AND targetId=? AND roomId=?",
+        [userId, targetId, roomId],
         (err, result) => {
           if (err) callback(err, null);
           else callback(null, result);
@@ -165,7 +165,7 @@ let Model = function () {
   this.getRoomInvites = (targetId, callback) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT r.targetId, r.userId, m.nickname, m.avatarUrl, m.statusMessage, r.roomId FROM tbl_invite_room as r INNER JOIN tbl_member as m ON m.userId=r.userId WHERE r.targetId=?",
+        "SELECT r.targetId, r.userId, m.nickname, m.avatarUrl, m.statusMessage, r.roomId, r.curStatus FROM tbl_invite_room as r INNER JOIN tbl_member as m ON m.userId=r.userId WHERE r.targetId=?",
         [targetId],
         (err, result) => {
           if (err) callback(err, null);
@@ -178,11 +178,39 @@ let Model = function () {
     });
   };
 
-  this.deleteInvite = (userId, roomId, callback) => {
+  this.getSentRoomInvites = (userId, callback) => {
     _mysql((conn) => {
       conn.query(
-        "DELETE FROM tbl_invite_room WHERE targetId=? AND roomId=?",
-        [userId, roomId],
+        "SELECT r.targetId, r.userId, m.nickname, m.avatarUrl, m.statusMessage, r.roomId, r.curStatus FROM tbl_invite_room as r INNER JOIN tbl_member as m ON m.userId=r.targetId WHERE r.userId=?",
+        [userId],
+        (err, result) => {
+          if (err) callback(err, null);
+          else {
+            callback(null, result);
+          }
+        }
+      );
+    });
+  };
+  this.updateInvite = (userId, targetId, roomId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "UPDATE tbl_invite_room SET curStatus='N' WHERE userId=? AND targetId=? AND roomId=?",
+        [userId, targetId, roomId],
+        (err, result) => {
+          if (err) callback(err);
+          else callback(null);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.deleteInvite = (userId, targetId, roomId, callback) => {
+    _mysql((conn) => {
+      conn.query(
+        "DELETE FROM tbl_invite_room WHERE userId=? AND targetId=? AND roomId=?",
+        [userId, targetId, roomId],
         (err) => {
           if (err) callback(err);
           else callback(null);
