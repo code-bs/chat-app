@@ -465,6 +465,28 @@ paths:
       responses:
         200:
           description: 친구 추가 성공
+    delete:
+      summary: 친구 삭제
+      tags: [User]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                friendId:
+                  type: string
+                  description: 친구 로그인 아이디
+      responses:
+        200:
+          description: 성공
 components:
   schemas:
     room:

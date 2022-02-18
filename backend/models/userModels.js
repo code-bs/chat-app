@@ -106,6 +106,7 @@ let Model = function () {
     });
   };
 
+  /* 친구 */
   this.addFriend = (userId, friendId, done) => {
     _mysql((conn) => {
       conn.query(
@@ -141,6 +142,27 @@ let Model = function () {
         (error, result) => {
           if (error) done(error, null);
           else done(null, result);
+        }
+      );
+      conn.release();
+    });
+  };
+
+  this.deleteFriend = (userId, friendId, done) => {
+    _mysql((conn) => {
+      conn.query(
+        "DELETE FROM tbl_map_friend WHERE userId=? AND friendId=?",
+        [userId, friendId],
+        (err) => {
+          if (err) done(err);
+        }
+      );
+      conn.query(
+        "DELETE FROM tbl_map_friend WHERE userId=? AND friendId=?",
+        [friendId, userId],
+        (err) => {
+          if (err) done(err);
+          else done(null);
         }
       );
       conn.release();
