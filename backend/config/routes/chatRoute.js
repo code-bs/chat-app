@@ -4,20 +4,18 @@ const controller = require("../../controller/chat");
 
 router.post("/room", controller.createRoom);
 
-router.get("/room/:userId", controller.roomList);
-
-router.get("/room/enter/:roomId", controller.enterRoom);
-
-router.post("/room/join", controller.joinRoom);
-
-router.get("/room/invites/received/:userId", controller.getReceivedInvites);
-
-router.get("/room/invites/sent/:userId", controller.getSentInvites);
-
-router.put("/room/invites", controller.rejectInvite);
-
-router.delete("/room/invites", controller.deleteInvite);
+router.get("/room", controller.roomList);
 
 router.delete("/room", controller.leaveRoom);
+
+router.get("/invitation/got", controller.getReceivedInvites);
+
+router.get("/invitation/sent", controller.getSentInvites);
+
+router.post("/invitation", controller.joinRoom);
+
+router.put("/invitation", controller.rejectInvite);
+
+router.delete("/invitation", controller.deleteInvite);
 
 module.exports = router;

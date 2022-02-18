@@ -12,13 +12,7 @@ function validateInput(body) {
   const { user, roomName, ...extra } = body;
   const moduleInfo = { ...defaultModuleInfo, method: "validateInput" };
   return new Promise((resolve, reject) => {
-    if (!user)
-      reject({
-        status: 400,
-        message: "유효하지 않는 입력값입니다.",
-        ...moduleInfo,
-      });
-    else if (!roomName)
+    if (!roomName)
       reject({
         status: 400,
         message: "방 이름을 입력하세요.",
@@ -76,18 +70,22 @@ function mapRoomList(context) {
 
 /* EXPORTS */
 module.exports = async function (req, res) {
-  const { user, roomName } = req.body;
-  logger.info(`[Chat][createRoom]-> creating ${roomName}`);
+  const user = req.user;
+  const { roomName } = req.body;
+
+  logger.info(`[Chat][createRoom]${user.userId}-${roomName}`);
   try {
     await validateInput(req.body);
     const room = await insertRoom(roomName, user);
     const roomId = Object(room._id).toString();
     await mapRoomList({ userId: user.userId, roomId });
 
-    logger.info(`[Chat][createRoom]-> creating ${roomName} done`);
+    logger.info(`[Chat][createRoom]${user.userId}-${roomName} DONE`);
     res.send(room);
   } catch (error) {
     errorHandler(error);
-    res.status(error.status).send(error.message);
+    res
+      .status(error.status || 500)
+      .send(error.message || "Internal Server Error");
   }
 };

@@ -42,7 +42,7 @@ function generate_refresh(context) {
 function validate_refresh(refreshToken) {
   return new Promise((resolve, reject) => {
     jwt.verify(refreshToken, JWT_SECRET, (error, decoded) => {
-      if (error) reject({ status: 404, message: "세션 만료" });
+      if (error) reject({ status: 403, message: "세션 만료" });
       else {
         resolve(decoded);
       }
@@ -55,8 +55,11 @@ function validate(req, res, next) {
   jwt.verify(access_token, JWT_SECRET, (error, decoded) => {
     if (error) {
       logger.info(`[JWT][validate]-> access token 만료`);
-      res.status(404).send("access token 만료");
-    } else next();
+      res.status(403).send("access token 만료");
+    } else {
+      req.user = decoded;
+      next();
+    }
   });
 }
 

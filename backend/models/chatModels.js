@@ -148,11 +148,11 @@ let Model = function () {
     });
   };
 
-  this.checkInvite = (userId, targetId, roomId, callback) => {
+  this.checkInvite = (senderId, userId, roomId, callback) => {
     _mysql((conn) => {
       conn.query(
         "SELECT _id FROM tbl_invite_room WHERE userId=? AND targetId=? AND roomId=?",
-        [userId, targetId, roomId],
+        [senderId, userId, roomId],
         (err, result) => {
           if (err) callback(err, null);
           else callback(null, result);
@@ -192,12 +192,12 @@ let Model = function () {
       );
     });
   };
-  this.updateInvite = (userId, targetId, roomId, callback) => {
+  this.updateInvite = (senderId, userId, roomId, callback) => {
     _mysql((conn) => {
       conn.query(
         "UPDATE tbl_invite_room SET curStatus='N' WHERE userId=? AND targetId=? AND roomId=?",
-        [userId, targetId, roomId],
-        (err, result) => {
+        [senderId, userId, roomId],
+        (err) => {
           if (err) callback(err);
           else callback(null);
         }
@@ -206,11 +206,11 @@ let Model = function () {
     });
   };
 
-  this.deleteInvite = (userId, targetId, roomId, callback) => {
+  this.deleteInvite = (senderId, userId, roomId, callback) => {
     _mysql((conn) => {
       conn.query(
         "DELETE FROM tbl_invite_room WHERE userId=? AND targetId=? AND roomId=?",
-        [userId, targetId, roomId],
+        [senderId, userId, roomId],
         (err) => {
           if (err) callback(err);
           else callback(null);

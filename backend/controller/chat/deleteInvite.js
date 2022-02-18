@@ -10,18 +10,12 @@ const defaultModuleInfo = {
 /* METHODS */
 function validateInput(body) {
   const moduleInfo = { ...defaultModuleInfo, method: "validateInput" };
-  const { userId, targetId, roomId, ...extra } = body;
+  const { senderId, roomId, ...extra } = body;
   return new Promise((resolve, reject) => {
-    if (!userId)
+    if (!senderId)
       reject({
         status: 400,
-        message: "userId가 설정되지 않았습니다.",
-        ...moduleInfo,
-      });
-    else if (!targetId)
-      reject({
-        status: 400,
-        message: "targetId가 설정되지 않았습니다.",
+        message: "senderId 설정되지 않았습니다.",
         ...moduleInfo,
       });
     else if (!roomId)
@@ -40,10 +34,10 @@ function validateInput(body) {
   });
 }
 
-function validateReq(userId, targetId, roomId) {
+function validateReq(senderId, userId, roomId) {
   const moduleInfo = { ...defaultModuleInfo, method: "validateReq" };
   return new Promise((resolve, reject) => {
-    chatModel.checkInvite(userId, targetId, roomId, (err, result) => {
+    chatModel.checkInvite(senderId, userId, roomId, (err, result) => {
       if (err)
         reject({
           status: 500,
@@ -64,10 +58,10 @@ function validateReq(userId, targetId, roomId) {
   });
 }
 
-function delInvite(userId, targetId, roomId) {
+function delInvite(senderId, userId, roomId) {
   const moduleInfo = { ...defaultModuleInfo, method: "delInvite" };
   return new Promise((resolve, reject) => {
-    chatModel.deleteInvite(userId, targetId, roomId, (err) => {
+    chatModel.deleteInvite(senderId, userId, roomId, (err) => {
       if (err)
         reject({
           status: 500,
@@ -81,15 +75,16 @@ function delInvite(userId, targetId, roomId) {
 }
 
 module.exports = async function (req, res) {
-  const { userId, targetId, roomId } = req.body;
-  logger.info(`[Chat][deleteInvite]-> ${userId}->${targetId}: ${roomId}`);
+  const { userId } = req.user;
+  const { senderId, roomId } = req.body;
+  logger.info(`[Chat][deleteInvite]-> ${senderId}->${userId}: ${roomId}`);
   try {
     await validateInput(req.body);
-    await validateReq(userId, targetId, roomId);
-    await delInvite(userId, targetId, roomId);
+    await validateReq(senderId, userId, roomId);
+    await delInvite(senderId, userId, roomId);
 
     logger.info(
-      `[Chat][deleteInvite]-> ${userId}->${targetId}: ${roomId} DONE!`
+      `[Chat][deleteInvite]-> ${senderId}->${userId}: ${roomId} DONE!`
     );
     res.end();
   } catch (error) {

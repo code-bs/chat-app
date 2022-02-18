@@ -8,25 +8,6 @@ const defaultModuleInfo = {
 };
 
 /* METHODS */
-function validateInput(params) {
-  const { userId, ...extra } = params;
-  const moduleInfo = { ...defaultModuleInfo, method: "validateInput" };
-  return new Promise((resolve, reject) => {
-    if (!userId)
-      reject({
-        status: 400,
-        message: "userId가 설정되지 않았습니다.",
-        ...moduleInfo,
-      });
-    else if (!!Object.keys(extra).length)
-      reject({
-        status: 400,
-        message: "유효하지 않는 입력값입니다.",
-        ...moduleInfo,
-      });
-    else resolve();
-  });
-}
 function getInvites(userId) {
   const moduleInfo = { ...defaultModuleInfo, method: "getInvites" };
   return new Promise((resolve, reject) => {
@@ -65,10 +46,9 @@ function getRoomInfo(roomId) {
 
 /* EXPORTS */
 module.exports = async function (req, res) {
-  const { userId } = req.params;
-  logger.info(`[chat][getInvites]-> ${userId}: get invites`);
+  const { userId } = req.user;
+  logger.info(`[chat][getInvites]${userId}`);
   try {
-    await validateInput(req.params);
     const roomIds = await getInvites(userId);
     let roomInfos = [];
     for (let i = 0; i < roomIds.length; i++) {
@@ -82,10 +62,12 @@ module.exports = async function (req, res) {
         curStatus,
       });
     }
-    logger.info(`[chat][getInvites]-> ${userId}: get invites done`);
+    logger.info(`[chat][getInvites]${userId} DONE`);
     res.send(roomInfos);
   } catch (error) {
     errorHandler(error);
-    res.status(error.status).send(error.message);
+    res
+      .status(error.status || 500)
+      .send(error.message || "Internal Server Error");
   }
 };

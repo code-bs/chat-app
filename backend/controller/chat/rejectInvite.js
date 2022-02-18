@@ -10,18 +10,12 @@ const defaultModuleInfo = {
 /* METHODS */
 function validateInput(body) {
   const moduleInfo = { ...defaultModuleInfo, method: "validateInput" };
-  const { userId, targetId, roomId, ...extra } = body;
+  const { senderId, roomId, ...extra } = body;
   return new Promise((resolve, reject) => {
-    if (!userId)
+    if (!senderId)
       reject({
         status: 400,
-        message: "userId가 설정되지 않았습니다.",
-        ...moduleInfo,
-      });
-    else if (!targetId)
-      reject({
-        status: 400,
-        message: "targetId가 설정되지 않았습니다.",
+        message: "senderId가 설정되지 않았습니다.",
         ...moduleInfo,
       });
     else if (!roomId)
@@ -40,10 +34,10 @@ function validateInput(body) {
   });
 }
 
-function validateReq(userId, targetId, roomId) {
+function validateReq(senderId, userId, roomId) {
   const moduleInfo = { ...defaultModuleInfo, method: "validateReq" };
   return new Promise((resolve, reject) => {
-    chatModel.checkInvite(userId, targetId, roomId, (err, result) => {
+    chatModel.checkInvite(senderId, userId, roomId, (err, result) => {
       if (err)
         reject({
           status: 500,
@@ -64,10 +58,10 @@ function validateReq(userId, targetId, roomId) {
   });
 }
 
-function changeReqStatus(userId, targetId, roomId) {
+function changeReqStatus(senderId, userId, roomId) {
   const moduleInfo = { ...defaultModuleInfo, method: "changeReqStatus" };
   return new Promise((resolve, reject) => {
-    chatModel.updateInvite(userId, targetId, roomId, (err) => {
+    chatModel.updateInvite(senderId, userId, roomId, (err) => {
       if (err)
         reject({
           status: 500,
@@ -82,16 +76,15 @@ function changeReqStatus(userId, targetId, roomId) {
 
 /* EXPORTS */
 module.exports = async function (req, res) {
-  const { userId, targetId, roomId } = req.body;
-  logger.info(`[User][rejectInvite]-> ${userId}->${targetId}:${roomId}`);
+  const { userId } = req.user;
+  const { senderId, roomId } = req.body;
+  logger.info(`[User][rejectInvite]${senderId}->${userId}:${roomId}`);
   try {
     await validateInput(req.body);
-    await validateReq(userId, targetId, roomId);
-    await changeReqStatus(userId, targetId, roomId);
+    await validateReq(senderId, userId, roomId);
+    await changeReqStatus(senderId, userId, roomId);
 
-    logger.info(
-      `[User][rejectInvite]-> ${userId}->${targetId}:${roomId} DONE!`
-    );
+    logger.info(`[User][rejectInvite]${senderId}->${userId}:${roomId} DONE`);
     res.end();
   } catch (error) {
     errorHandler(error);

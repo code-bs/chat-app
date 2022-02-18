@@ -9,10 +9,10 @@ const defaultModuleInfo = {
 
 /* METHODS */
 function validateInput(body) {
-  const { user, roomId, ...extra } = body;
+  const { senderId, roomId, ...extra } = body;
   const moduleInfo = { ...defaultModuleInfo, method: "validateInput" };
   return new Promise((resolve, reject) => {
-    if (!user)
+    if (!senderId)
       reject({
         status: 400,
         message: "userId가 설정되지 않았습니다.",
@@ -34,10 +34,10 @@ function validateInput(body) {
   });
 }
 
-function checkInviteValid(userId, roomId) {
+function checkInviteValid(senderId, userId, roomId) {
   const moduleInfo = { ...defaultModuleInfo, method: "checkInviteValid" };
   return new Promise((resolve, reject) => {
-    chatModel.checkInvite(userId, targetId, roomId, (error, result) => {
+    chatModel.checkInvite(senderId, userId, roomId, (error, result) => {
       if (error) reject(error);
       else {
         if (result.length < 1)
@@ -78,9 +78,9 @@ function joinRoom(user, roomId) {
   });
 }
 
-function deleteInvite(userId, roomId) {
+function deleteInvite(senderId, userId, roomId) {
   return new Promise((resolve, reject) => {
-    chatModel.deleteInvite(userId, roomId, (error) => {
+    chatModel.deleteInvite(senderId, userId, roomId, (error) => {
       if (error)
         reject({
           status: 500,
@@ -95,7 +95,8 @@ function deleteInvite(userId, roomId) {
 
 /* EXPORTS */
 module.exports = async function (req, res) {
-  const { senderId, user, roomId } = req.body;
+  const user = req.user;
+  const { senderId, roomId } = req.body;
   logger.info(
     `[chat][joinRoom]-> ${user.userId} accepting invitation ${roomId}`
   );

@@ -9,31 +9,8 @@ servers:
     description: Local
 
 paths:
-  /chat/room/{userId}:
-    get:
-      summary: 유저가 입장해 있는 방 모두 반환
-      tags: [Chat]
-      parameters:
-        - in: header
-          name: access_token
-          schema:
-            type: string
-          description: JWT 토큰
-        - in: path
-          name: userId
-          schema:
-            type: string
-          required: true
-          description: 로그인 아이디
-      responses:
-        "200":
-          description: 모든 방 목록
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/room"
+###### TAG CHAT ######
+# 1. CREATE ROOM
   /chat/room:
     post:
       summary: 새로운 방 생성
@@ -45,17 +22,45 @@ paths:
             type: string
           description: JWT 토큰
       requestBody:
-        description: Request Body 정의
         required: true
         content:
           application/json:
             schema:
               type: object
               properties:
-                user:
-                  $ref: "#/components/schemas/user"
                 roomName:
                   type: string
+      responses:
+        "200":
+          description: 생성된 방 정보 (Object)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/room"
+        "400":
+          description: roomName 을 지정하지 않았거나, 4~20 자가 아닐 경우
+        "500":
+          description: 서버 내부 오류
+# 2. GET ROOMLIST
+    get:
+      summary: 회원이 입장해 있는 방 리스트 받기
+      tags: [Chat]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+      responses:
+        "200":
+          description: 모든 방 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/room"
+
       responses:
         "200":
           description: 생성한 방 정보
@@ -63,6 +68,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/room"
+# 3. LEAVE ROOM
     delete:
       summary: 방에서 나가기
       tags: [Chat]
@@ -73,52 +79,21 @@ paths:
             type: string
           description: JWT 토큰
       requestBody:
-        required:
         content:
           application/json:
             schema:
               type: object
               properties:
-                userId:
-                  type: string
-                  description: 유저 로그인 아이디
                 roomId:
                   type: string
                   description: 방 고유 아이디
       responses:
         "200":
           description: 성공
-  /chat/room/enter/{roomId}:
-    get:
-      summary: 방 고유 번호가 roomId 인 방에 입장
-      tags: [Chat]
-      parameters:
-        - in: header
-          name: access_token
-          schema:
-            type: string
-          description: JWT 토큰
-        - in: path
-          name: roomId
-          schema:
-            type: string
-          required: true
-          description: 방 고유 번호
-      responses:
-        200:
-          description: 입장한 방 id와 채팅 기록 배열
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  users:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/user"
-                  chatHistory:
-                    $ref: "#/components/schemas/chatHistory"
-  /chat/room/invites/{userId}:
+        "400":
+          description: roomId 가 누락되었을 경우
+# 4. GET ALL INVITATIONS GOT
+  /chat/invitation/got:
     get:
       summary: 받은 채팅방 초대 목록 가져오기
       tags: [Chat]
@@ -128,12 +103,6 @@ paths:
           schema:
             type: string
           description: JWT 토큰
-        - in: path
-          name: userId
-          schema:
-            type: string
-          required: true
-          description: 로그인 아이디
       responses:
         200:
           description: 초대 받은 방 목록
@@ -148,7 +117,39 @@ paths:
                       $ref: "#/components/schemas/user"
                     room:
                       $ref: "#/components/schemas/room"
-  /chat/room/join:
+                    curStatus:
+                      type: string
+                      description: 현재 상태 (N - 거절됨,  ND - 확인중)
+# 5. GET ALL INVITATIONS SENT
+  /chat/invitation/sent:
+    get:
+      summary: 보낸 채팅방 초대 목록 가져오기
+      tags: [Chat]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+      responses:
+        200:
+          description: 보낸 방 초대 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    target:
+                      $ref: "#/components/schemas/user"
+                    room:
+                      $ref: "#/components/schemas/room"
+                    curStatus:
+                      type: string
+                      description: 현재 상태 (N - 거절됨,  ND - 확인중)
+# 6. ACCEPT INVITATION (JOIN ROOM)
+  /chat/invitation:
     post:
       summary: 방 초대 승락
       tags: [Chat]
@@ -165,14 +166,65 @@ paths:
             schema:
               type: object
               properties:
-                user:
-                  $ref: "#/components/schemas/user"
+                senderId:
+                  type: string
+                  description: 보낸 사람 로그인 아이디
                 roomId:
                   type: string
-                  description: 방 고유 아이디
+                  description: 초대받은 방 아이디
       responses:
         200:
           description: 입장 성공
+# 7. REJECT INVITATION
+    put:
+      summary: 방 초대 거절
+      tags: [Chat]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                senderId:
+                  type: string
+                  description: 보낸 사람 로그인 아이디
+                roomId:
+                  type: string
+                  description: 초대받은 방 아이디
+      responses:
+        200:
+          description: 성공
+# 8. DELETE INVITATION
+    delete:
+      summary: 초대 삭제
+      tags: [Chat]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                senderId:
+                  type: string
+                  description: 보낸 사람 로그인 아이디
+                roomId:
+                  type: string
+                  description: 초대 받은 방 아이디
+      responses:
+        200:
+          description: 성공
   /auth/login:
     post:
       summary: 로그인

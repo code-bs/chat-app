@@ -12,13 +12,7 @@ function validateInput(body) {
   const { userId, roomId, ...extra } = body;
   const moduleInfo = { ...defaultModuleInfo, method: "validateInput" };
   return new Promise((resolve, reject) => {
-    if (!userId)
-      reject({
-        status: 400,
-        message: "userId가 설정되지 않았습니다.",
-        ...moduleInfo,
-      });
-    else if (!roomId)
+    if (!roomId)
       reject({
         status: 400,
         message: "roomId가 설정되지 않았습니다.",
@@ -87,15 +81,20 @@ function delUserInRoom(userId, roomId) {
 
 /* EXPORTS */
 module.exports = async function (req, res) {
-  const { userId, roomId } = req.body;
+  const { userId } = req.user;
+  const { roomId } = req.body;
+  logger.info(`[Chat][leaveRoom]${userId} leaves ${roomId}`);
   try {
     await validateInput(req.body);
     await validateRequest(userId, roomId);
     await delUserInRoom(userId, roomId);
 
+    logger.info(`[Chat][leaveRoom]${userId} left ${roomId}`);
     res.end();
   } catch (error) {
     errorHandler(error);
-    res.status(error.status).send(error.message);
+    res
+      .status(error.status || 500)
+      .send(error.message || "Internal Server Error");
   }
 };
