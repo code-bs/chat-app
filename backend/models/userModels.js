@@ -152,7 +152,7 @@ let Model = function () {
     _mysql((conn) => {
       conn.query(
         "INSERT INTO tbl_invite_friend (userId, targetId, curStatus) VALUES(?, ?, 'ND')",
-        [targetId, userId],
+        [userId, targetId],
         (err) => {
           if (err) done(err);
           else done(null);
@@ -178,7 +178,7 @@ let Model = function () {
   this.getFriendReqs = (userId, done) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT m.userId, m.nickname, m.avatarUrl, m.statusMessage, f.curStatus FROM tbl_invite_friend as f INNER JOIN tbl_member as m ON f.targetId=m.userId WHERE f.userId=?",
+        "SELECT m.userId, m.nickname, m.avatarUrl, m.statusMessage, f.curStatus FROM tbl_invite_friend as f INNER JOIN tbl_member as m ON f.userId=m.userId WHERE f.targetId=?",
         [userId],
         (err, result) => {
           if (err) done(err, null);
@@ -192,7 +192,7 @@ let Model = function () {
   this.getFriendSentReqs = (userId, done) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT m.userId, m.nickname, m.avatarUrl, m.statusMessage, f.curStatus FROM tbl_invite_friend as f INNER JOIN tbl_member as m ON f.userId=m.userId WHERE f.targetId=?",
+        "SELECT m.userId, m.nickname, m.avatarUrl, m.statusMessage, f.curStatus FROM tbl_invite_friend as f INNER JOIN tbl_member as m ON f.targetId=m.userId WHERE f.userId=?",
         [userId],
         (err, result) => {
           if (err) done(err, null);
@@ -216,11 +216,11 @@ let Model = function () {
     });
   };
 
-  this.rejectInvite = (userId, friendId, done) => {
+  this.rejectInvite = (senderId, userId, done) => {
     _mysql((conn) => {
       conn.query(
         "UPDATE tbl_invite_friend SET curStatus='N' WHERE userId=? AND targetId=?",
-        [userId, friendId],
+        [senderId, userId],
         (err) => {
           if (err) done(err);
           else done(null);
@@ -230,11 +230,11 @@ let Model = function () {
     });
   };
 
-  this.deleteInvite = (userId, friendId, done) => {
+  this.deleteInvite = (senderId, userId, done) => {
     _mysql((conn) => {
       conn.query(
         "DELETE FROM tbl_invite_friend WHERE userId=? AND targetId=?",
-        [userId, friendId],
+        [senderId, userId],
         (err) => {
           if (err) done(err);
           else done(null);

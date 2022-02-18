@@ -1,21 +1,21 @@
 const addFriend = require("./addFriend");
-const searchUser = require("./searchUser");
-const getUser = require("./getUser");
+const searchUsers = require("./searchUsers");
 const friendList = require("./friendList");
 const getReceivedReq = require("./getReceivedReq");
 const getSentReq = require("./getSentReq");
 const updateProfile = require("./updateProfile");
 const rejectRequest = require("./rejectRequest");
 const deleteRequest = require("./deleteRequest");
+const deleteFriend = require("./deleteFriend");
 
 module.exports = {
   addFriend,
-  searchUser,
-  getUser,
+  searchUsers,
   friendList,
   getReceivedReq,
   updateProfile,
   rejectRequest,
   deleteRequest,
   getSentReq,
+  deleteFriend,
 };

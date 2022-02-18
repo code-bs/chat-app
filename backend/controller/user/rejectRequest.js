@@ -9,16 +9,10 @@ const defaultModuleInfo = {
 
 /* METHODS */
 function validateInput(body) {
-  const { userId, targetId, ...extra } = body;
+  const { senderId, ...extra } = body;
   const moduleInfo = { ...defaultModuleInfo, method: "validateInput" };
   return new Promise((resolve, reject) => {
-    if (!userId)
-      reject({
-        status: 400,
-        message: "userId가 설정되지 않았습니다.",
-        ...moduleInfo,
-      });
-    else if (!targetId)
+    if (!senderId)
       reject({
         status: 400,
         message: "targetId가 설정되지 않았습니다.",
@@ -33,10 +27,10 @@ function validateInput(body) {
   });
 }
 
-function validateReq(userId, targetId) {
+function validateReq(senderId, userId) {
   const moduleInfo = { ...defaultModuleInfo, method: "validateReq" };
   return new Promise((resolve, reject) => {
-    userModel.checkInvite(userId, targetId, (err, result) => {
+    userModel.checkInvite(senderId, userId, (err, result) => {
       if (err)
         reject({
           status: 500,
@@ -55,10 +49,10 @@ function validateReq(userId, targetId) {
   });
 }
 
-function changeReqStatus(userId, targetId) {
+function changeReqStatus(senderId, userId) {
   const moduleInfo = { ...defaultModuleInfo, method: "changeReqStatus" };
   return new Promise((resolve, reject) => {
-    userModel.rejectInvite(userId, targetId, (err) => {
+    userModel.rejectInvite(senderId, userId, (err) => {
       if (err)
         reject({
           status: 500,
@@ -73,16 +67,19 @@ function changeReqStatus(userId, targetId) {
 
 /* EXPORTS */
 module.exports = async function (req, res) {
-  const { userId, targetId } = req.body;
-  logger.info(`[User][rejectRequest]-> ${userId}->${targetId}`);
+  const { userId } = req.user;
+  const { senderId } = req.body;
+  logger.info(`[User][rejectRequest] ${senderId}->${userId}`);
   try {
     await validateInput(req.body);
-    await validateReq(userId, targetId);
-    await changeReqStatus(userId, targetId);
-    logger.info(`[User][rejectRequest]-> ${userId}->${targetId} DONE!`);
+    await validateReq(senderId, userId);
+    await changeReqStatus(senderId, userId);
+    logger.info(`[User][rejectRequest] ${senderId}->${userId} DONE`);
     res.end();
   } catch (error) {
     errorHandler(error);
-    res.status(error.status || 500).send(error.message);
+    res
+      .status(error.status || 500)
+      .send(error.message || "Internal Server Error");
   }
 };

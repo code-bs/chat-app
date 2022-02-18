@@ -1,10 +1,15 @@
 /* IMPORTS */
-const logger = require("../../config/logger");
 const userModel = require("../../models/userModels")();
+const logger = require("../../config/logger");
+const errorHandler = require("../common/errorHandler");
+const defaultModuleInfo = {
+  module: "user",
+  service: "getReceivedReq",
+};
 
 /* METHODS */
 function getFriendReqs(userId) {
-  logger.info(`[user][checkRequest]-> get from mysql db`);
+  const moduleInfo = { ...defaultModuleInfo, method: "getFriendReqs" };
   return new Promise((resolve, reject) => {
     userModel.getFriendReqs(userId, (error, result) => {
       if (error) reject(error);
@@ -15,20 +20,17 @@ function getFriendReqs(userId) {
 
 /* EXPORTS */
 module.exports = async function (req, res) {
-  const { userId } = req.params;
-  logger.info(`[user][checkRequest]-> get friend req list`);
+  const { userId } = req.user;
+  logger.info(`[user][checkRequest] ${userId}`);
   try {
     const reqList = await getFriendReqs(userId);
 
-    logger.info(`[user][checkRequest]-> get friend req list done`);
+    logger.info(`[user][checkRequest] ${userId} DONE`);
     res.send(reqList);
   } catch (error) {
-    if (!error.status) {
-      logger.error(`[user][checkRequest]-> ${error}`);
-      res.status(500).send("알 수 없는 오류가 발생하였습니다.");
-    } else {
-      logger.info(`[user][checkRequest]-> ${error.status}:${error.message}`);
-      res.status(error.status).send(error.message);
-    }
+    errorHandler(error);
+    res
+      .status(error.status || 500)
+      .send(error.message || "Internal Server Error");
   }
 };

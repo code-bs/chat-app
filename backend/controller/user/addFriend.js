@@ -67,17 +67,18 @@ function deleteInvite(userId, friendId) {
 }
 
 module.exports = async function (req, res) {
-  const { userId, friendId } = req.body;
-  logger.info(`[User][addFriend]-> new friend`);
+  const { userId } = req.user;
+  const { senderId } = req.body;
+  logger.info(`[User][addFriend] ${senderId}`);
   try {
-    await checkValidReq(userId, friendId);
-    await findUser(friendId);
-    await isFriend(userId, friendId);
-    await insertFriend(userId, friendId);
-    await insertFriend(friendId, userId);
-    await deleteInvite(userId, friendId);
+    await checkValidReq(senderId, userId);
+    await findUser(senderId);
+    await isFriend(userId, senderId);
+    await insertFriend(userId, senderId);
+    await insertFriend(senderId, userId);
+    await deleteInvite(userId, senderId);
 
-    logger.info(`[User][addFriend]-> add friend done`);
+    logger.info(`[User][addFriend] ${senderId} DONE`);
     res.send();
   } catch (error) {
     if (!error.status) {

@@ -8,26 +8,6 @@ const defaultModuleInfo = {
 };
 
 /* METHODS */
-function validateInput(params) {
-  const { userId, ...extra } = params;
-  const moduleInfo = { ...defaultModuleInfo, method: "validateInput" };
-  return new Promise((resolve, reject) => {
-    if (!userId) {
-      reject({
-        status: 400,
-        message: "userId가 설정되지 않았습니다.",
-        ...moduleInfo,
-      });
-    } else if (!!Object.keys(extra).length) {
-      reject({
-        status: 400,
-        message: "유효하지 않는 입력값입니다.",
-        ...moduleInfo,
-      });
-    } else resolve();
-  });
-}
-
 function getSentRequests(userId) {
   const moduleInfo = { ...defaultModuleInfo, method: "getSentRequests" };
   return new Promise((resolve, reject) => {
@@ -48,10 +28,9 @@ function getSentRequests(userId) {
 
 /* EXPORTS */
 module.exports = async function (req, res) {
-  const { userId } = req.params;
-  logger.info(`[User][getSentReq]-> ${userId} getting sent friend requests`);
+  const { userId } = req.user;
+  logger.info(`[User][getSentReq] ${userId}`);
   try {
-    await validateInput(req.params);
     const results = await getSentRequests(userId);
 
     logger.info(`[User][getSentReq]-> ${userId}: DONE!!`);

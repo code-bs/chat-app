@@ -66,7 +66,7 @@ module.exports = function (socket_port) {
 
       socket.on("friend", (info, done) => {
         const { sender, targetId } = info;
-        userModel.checkInvite(targetId, sender.userId, (err, result) => {
+        userModel.checkInvite(sender.userId, targetId, (err, result) => {
           if (err) done("Internal Server Error");
           else if (result.length > 0) done("이미 보낸 요청입니다.");
           else {

@@ -10,7 +10,7 @@ servers:
 
 paths:
 ###### TAG CHAT ######
-# 1. CREATE ROOM
+# 1. 방 만들기
   /chat/room:
     post:
       summary: 새로운 방 생성
@@ -41,7 +41,7 @@ paths:
           description: roomName 을 지정하지 않았거나, 4~20 자가 아닐 경우
         "500":
           description: 서버 내부 오류
-# 2. GET ROOMLIST
+# 2. 방 리스트 가져오기
     get:
       summary: 회원이 입장해 있는 방 리스트 받기
       tags: [Chat]
@@ -68,7 +68,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/room"
-# 3. LEAVE ROOM
+# 3. 방에서 나가기
     delete:
       summary: 방에서 나가기
       tags: [Chat]
@@ -92,7 +92,7 @@ paths:
           description: 성공
         "400":
           description: roomId 가 누락되었을 경우
-# 4. GET ALL INVITATIONS GOT
+# 4. 받은 초대 목록 가져오기
   /chat/invitation/got:
     get:
       summary: 받은 채팅방 초대 목록 가져오기
@@ -120,7 +120,7 @@ paths:
                     curStatus:
                       type: string
                       description: 현재 상태 (N - 거절됨,  ND - 확인중)
-# 5. GET ALL INVITATIONS SENT
+# 5. 보낸 초대 목록 가져오기
   /chat/invitation/sent:
     get:
       summary: 보낸 채팅방 초대 목록 가져오기
@@ -148,7 +148,7 @@ paths:
                     curStatus:
                       type: string
                       description: 현재 상태 (N - 거절됨,  ND - 확인중)
-# 6. ACCEPT INVITATION (JOIN ROOM)
+# 6. 초대 승락
   /chat/invitation:
     post:
       summary: 방 초대 승락
@@ -175,7 +175,7 @@ paths:
       responses:
         200:
           description: 입장 성공
-# 7. REJECT INVITATION
+# 7. 초대 거절
     put:
       summary: 방 초대 거절
       tags: [Chat]
@@ -200,7 +200,7 @@ paths:
       responses:
         200:
           description: 성공
-# 8. DELETE INVITATION
+# 8. 초대 삭제
     delete:
       summary: 초대 삭제
       tags: [Chat]
@@ -225,6 +225,29 @@ paths:
       responses:
         200:
           description: 성공
+###### TAG AUTH ######
+# 1. 회원가입
+  /auth:
+    post:
+      summary: 회원가입
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newuser"
+      responses:
+        200:
+          description: 회원 가입 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+# 2. 로그인
   /auth/login:
     post:
       summary: 로그인
@@ -254,6 +277,7 @@ paths:
                     $ref: "#/components/schemas/user"
                   accessToken:
                     type: string
+# 3. 로그아웃
   /auth/logout:
     get:
       summary: 로그아웃
@@ -261,26 +285,7 @@ paths:
       responses:
         200:
           description: 로그아웃 성공
-  /auth:
-    post:
-      summary: 회원가입
-      tags: [Auth]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/newuser"
-      responses:
-        200:
-          description: 회원 가입 성공
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  userId:
-                    type: string
+# 4. TOKEN 재 발급
   /auth/refresh_token:
     get:
       summary: token 재 발급
@@ -296,29 +301,8 @@ paths:
                   accessToken:
                     type: string
                     description: brand new token
-  /user/{userId}:
-    get:
-      summary: 유저 검색
-      tags: [User]
-      parameters:
-        - in: header
-          name: access_token
-          schema:
-            type: string
-          description: JWT 토큰
-        - in: path
-          name: userId
-          schema:
-            type: string
-          required: true
-          description: 검색하는 유저 아이디
-      responses:
-        200:
-          description: 유저 검색 결과
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/user"
+###### TAG USER ######
+# 1. 부분 문자열로 검색된 유저 정보 목록 가져오기
   /user:
     get:
       summary: userId (부분 문자열)을 포함한 유저 정보 리스트 조회
@@ -344,6 +328,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/user"
+# 2. 프로필 수정
     put:
       summary: 프로필 변경
       tags: [User]
@@ -358,68 +343,11 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                userId:
-                  type: string
-                  description: 본인 로그인 아이디
-                profile:
-                  $ref: "#/components/schemas/profile"
+              $ref: "#/components/schemas/profile"
       responses:
         200:
           description: 변경 성공
-  /user/friend:
-    post:
-      summary: 친구 추가 (친구 요청 수락)
-      tags: [User]
-      parameters:
-        - in: header
-          name: access_token
-          schema:
-            type: string
-          description: JWT 토큰
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userId:
-                  type: string
-                  description: 본인 로그인 아이디
-                friendId:
-                  type: string
-                  description: 추가하고자 하는 유저 로그인 아이디
-      responses:
-        200:
-          description: 친구 추가 성공
-  /user/friend/{userId}:
-    get:
-      summary: 친구 목록
-      tags: [User]
-      parameters:
-        - in: header
-          name: access_token
-          schema:
-            type: string
-          description: JWT 토큰
-        - in: path
-          name: userId
-          schema:
-            type: string
-          required: true
-          description: 유저 로그인 아이디
-      responses:
-        200:
-          description: 친구 목록
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/user"
-  /user/friend_req/received/{userId}:
+  /user/request/got:
     get:
       summary: 받은 친구 요청 목록
       tags: [User]
@@ -429,12 +357,6 @@ paths:
           schema:
             type: string
           description: JWT 토큰
-        - in: path
-          name: userId
-          schema:
-            type: string
-          required: true
-          description: 유저 로그인 아이디
       responses:
         200:
           description:
@@ -444,7 +366,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/user"
-  /user/friend_req/sent/{userId}:
+  /user/request/sent:
     get:
       summary: 보낸 친구 요청 목록
       tags: [User]
@@ -454,12 +376,6 @@ paths:
           schema:
             type: string
           description: JWT 토큰
-        - in: path
-          name: userId
-          schema:
-            type: string
-          required: true
-          description: 유저 로그인 아이디
       responses:
         200:
           description:
@@ -469,7 +385,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/user"
-  /user/friend_req:
+  /user/request:
     put:
       summary: 친구 요청 거절
       tags: [User]
@@ -486,10 +402,7 @@ paths:
             schema:
               type: object
               properties:
-                userId:
-                  type: string
-                  description: 로그인 해 있는 유저 아이디
-                targetId:
+                senderId:
                   type: string
                   description: 요청을 보낸 유저 아이디
     delete:
@@ -508,12 +421,50 @@ paths:
             schema:
               type: object
               properties:
-                userId:
-                  type: string
-                  description: 로그인 해 있는 유저 아이디
-                targetId:
+                senderId:
                   type: string
                   description: 요청을 보낸 유저 아이디
+  /user/friend:
+    get:
+      summary: 친구 목록 가져오기
+      tags: [User]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+      responses:
+        200:
+          description: 친구 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/user"
+    post:
+      summary: 친구 추가 (친구 요청 수락)
+      tags: [User]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                senderId:
+                  type: string
+                  description: 요청 보낸 사람 로그인 아이디
+      responses:
+        200:
+          description: 친구 추가 성공
 components:
   schemas:
     room:
