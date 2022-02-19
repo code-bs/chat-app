@@ -7,11 +7,9 @@ import {
   joinChatRoomAsync,
 } from './actions';
 import {
-  GetChatRoomListParams,
   GetChatRoomListResponse,
   CreateChatRoomParams,
   CreateChatRoomResponse,
-  GetRoomInviteParams,
   GetRoomInviteResponse,
   JoinChatRoomParams,
   ChatRoomInfo,
@@ -19,9 +17,9 @@ import {
 import { createInitialState, createPatialReducer } from '../utils';
 
 const initialState = {
-  chatRoomList: createInitialState<GetChatRoomListParams, GetChatRoomListResponse>(),
+  chatRoomList: createInitialState<any, GetChatRoomListResponse>(),
   createChatRoom: createInitialState<CreateChatRoomParams, CreateChatRoomResponse>(),
-  roomInvite: createInitialState<GetRoomInviteParams, GetRoomInviteResponse>(),
+  roomInvite: createInitialState<any, GetRoomInviteResponse>(),
   joinChatRoom: createInitialState<JoinChatRoomParams, any>(),
 };
 

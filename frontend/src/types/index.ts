@@ -3,7 +3,6 @@ export type CreateChatRoomResponse = ChatRoomInfo;
 
 export type CreateChatRoomParams = {
   roomName: string;
-  userId: string;
 };
 
 export type ChatRoomInfo = {
@@ -48,15 +47,7 @@ export type SignupResponse = {
   userId: string;
 };
 
-export type GetChatRoomListParams = {
-  userId: string;
-};
-
 export type FindUserParams = {
-  userId: string;
-};
-
-export type GetRoomInviteParams = {
   userId: string;
 };
 
@@ -107,6 +98,6 @@ export type InviteChatRoomParams = {
 };
 
 export type JoinChatRoomParams = {
-  userId: string;
+  senderId: string;
   roomId: string;
 };

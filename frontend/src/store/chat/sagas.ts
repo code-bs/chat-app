@@ -9,11 +9,9 @@ import {
 } from './actions';
 import { ChatApi } from '../../apis';
 import {
-  GetChatRoomListParams,
   GetChatRoomListResponse,
   CreateChatRoomParams,
   CreateChatRoomResponse,
-  GetRoomInviteParams,
   GetRoomInviteResponse,
   Message,
   JoinChatRoomParams,
@@ -21,7 +19,7 @@ import {
 function* chatSaga() {
   yield takeLatest(
     getChatRoomListAsync.REQUEST,
-    createSaga<GetChatRoomListParams, GetChatRoomListResponse>(getChatRoomListAsync, ChatApi.getChatRoomList),
+    createSaga<any, GetChatRoomListResponse>(getChatRoomListAsync, ChatApi.getChatRoomList),
   );
   yield takeLatest(
     createChatRoomAsync.REQUEST,
@@ -29,7 +27,7 @@ function* chatSaga() {
   );
   yield takeLatest(
     getRoomInviteAsync.REQUEST,
-    createSaga<GetRoomInviteParams, GetRoomInviteResponse>(getRoomInviteAsync, ChatApi.getRoomInvite),
+    createSaga<any, GetRoomInviteResponse>(getRoomInviteAsync, ChatApi.getRoomInvite),
   );
   yield takeLatest(
     joinChatRoomAsync.REQUEST,
