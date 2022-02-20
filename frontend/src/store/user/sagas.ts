@@ -3,11 +3,9 @@ import { UserApi } from '../../apis';
 import { createSaga } from '../utils';
 import { getFriendListAsync, findUserAsync, getFriendRequestAsync, addFriendAsync } from './actions';
 import {
-  GetFriendListParams,
   GetFriendListResponse,
   FindUserParams,
   FindUserResponse,
-  GetFriendRequestParams,
   GetFriendRequestResponse,
   AddFriendParams,
 } from '../../types';
@@ -15,7 +13,7 @@ import {
 function* userSaga() {
   yield takeLatest(
     getFriendListAsync.REQUEST,
-    createSaga<GetFriendListParams, GetFriendListResponse>(getFriendListAsync, UserApi.getFriendList),
+    createSaga<any, GetFriendListResponse>(getFriendListAsync, UserApi.getFriendList),
   );
   yield takeLatest(
     findUserAsync.REQUEST,
@@ -23,7 +21,7 @@ function* userSaga() {
   );
   yield takeLatest(
     getFriendRequestAsync.REQUEST,
-    createSaga<GetFriendRequestParams, GetFriendRequestResponse>(getFriendRequestAsync, UserApi.getFriendRequest),
+    createSaga<any, GetFriendRequestResponse>(getFriendRequestAsync, UserApi.getFriendRequest),
   );
   yield takeLatest(addFriendAsync.REQUEST, createSaga<AddFriendParams, any>(addFriendAsync, UserApi.addFriend));
 }

@@ -1,11 +1,9 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { getFriendListAsync, findUserAsync, getFriendRequestAsync, addFriendAsync } from './actions';
 import {
-  GetFriendListParams,
   GetFriendListResponse,
   FindUserParams,
   FindUserResponse,
-  GetFriendRequestParams,
   GetFriendRequestResponse,
   AddFriendParams,
   User,
@@ -13,9 +11,9 @@ import {
 import { createInitialState, createPatialReducer } from '../utils';
 
 const initialState = {
-  friendList: createInitialState<GetFriendListParams, GetFriendListResponse>(),
+  friendList: createInitialState<any, GetFriendListResponse>(),
   findUser: createInitialState<FindUserParams, FindUserResponse>(),
-  friendRequest: createInitialState<GetFriendRequestParams, GetFriendRequestResponse>(),
+  friendRequest: createInitialState<any, GetFriendRequestResponse>(),
   addFriend: createInitialState<AddFriendParams, any>(),
 };
 
@@ -26,12 +24,12 @@ const userReducer = createReducer(initialState, builder => {
   createPatialReducer<UserState>(builder, 'findUser', findUserAsync);
   createPatialReducer<UserState>(builder, 'friendRequest', getFriendRequestAsync);
   createPatialReducer<UserState>(builder, 'addFriend', addFriendAsync, state => {
-    const { friendId } = state.addFriend.payload as AddFriendParams;
+    const { senderId } = state.addFriend.payload as AddFriendParams;
     const nextFriendRequest = state.friendRequest.data as FindUserResponse;
     const nextFriendList = state.friendList.data as GetFriendListResponse;
-    const target = nextFriendRequest.find(({ userId }) => userId === friendId) as User;
+    const target = nextFriendRequest.find(({ userId }) => userId === senderId) as User;
     state.friendList.data = [...nextFriendList, target];
-    state.friendRequest.data = nextFriendRequest.filter(({ userId }) => friendId !== userId);
+    state.friendRequest.data = nextFriendRequest.filter(({ userId }) => senderId !== userId);
   });
 });
 export default userReducer;

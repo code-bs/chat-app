@@ -53,21 +53,12 @@ export type GetRoomInviteResponse = ChatRoomInfo[];
 
 export type FindUserResponse = User[];
 
-export type GetFriendListParams = {
-  userId: string;
-};
-
 export type GetFriendListResponse = User[];
-
-export type GetFriendRequestParams = {
-  userId: string;
-};
 
 export type GetFriendRequestResponse = User[];
 
 export type AddFriendParams = {
-  userId: string;
-  friendId: string;
+  senderId: string;
 };
 
 export type Message = {
