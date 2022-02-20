@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Form, Input, Divider, Button, Space, message } from 'antd';
-import { UserOutlined, LockOutlined, SmileOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, SmileOutlined, CommentOutlined, PictureOutlined } from '@ant-design/icons';
 import style from './index.module.scss';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { signupAsync } from '../../store/auth/actions';
@@ -11,6 +11,8 @@ type FormValues = {
   nickname: string;
   password: string;
   confirm: string;
+  statusMessage: string;
+  avatarUrl: string;
 };
 
 const Signup = () => {
@@ -59,6 +61,12 @@ const Signup = () => {
             }),
           ]}>
           <Input.Password prefix={<LockOutlined />} />
+        </Form.Item>
+        <Form.Item label="Status Message" name="statusMessage">
+          <Input prefix={<CommentOutlined />} showCount maxLength={50} />
+        </Form.Item>
+        <Form.Item label="Profile Image" name="avatarUrl">
+          <Input prefix={<PictureOutlined />} />
         </Form.Item>
         <Divider />
         <Form.Item wrapperCol={{ offset: 8, span: 8 }} style={{ marginBottom: 0 }}>
