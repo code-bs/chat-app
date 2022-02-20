@@ -37,10 +37,8 @@ export type SigninResponse = {
   accessToken: string;
 };
 
-export type SignupParams = {
-  userId: string;
+export type SignupParams = User & {
   password: string;
-  nickname: string;
 };
 
 export type SignupResponse = {

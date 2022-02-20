@@ -8,8 +8,8 @@ const signin = async ({ userId, password }: SigninParams): Promise<SigninRespons
   return data;
 };
 
-const signup = async ({ userId, password, nickname }: SignupParams): Promise<SignupResponse> => {
-  const { data } = await endpoint.post('/auth', { userId, password, nickname });
+const signup = async (signupParams: SignupParams): Promise<SignupResponse> => {
+  const { data } = await endpoint.post('/auth', signupParams);
   return data;
 };
 
