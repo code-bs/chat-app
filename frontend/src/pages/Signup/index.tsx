@@ -29,8 +29,8 @@ const Signup = () => {
   }, [error]);
   const dispatch = useAppDispatch();
   const onClickSubmit = async (values: FormValues) => {
-    const { userId, password, nickname } = values;
-    await dispatch(signupAsync.request({ userId, password, nickname }));
+    const { confirm, ...rest } = values;
+    await dispatch(signupAsync.request(rest));
   };
   return (
     <Card className={style.container}>
