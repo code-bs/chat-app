@@ -20,7 +20,7 @@ const getFriendList = async (): Promise<GetFriendListResponse> => {
 };
 
 const getFriendRequest = async (): Promise<GetFriendRequestResponse> => {
-  const { data } = await endpoint.get(`/user/friend/got`);
+  const { data } = await endpoint.get(`/user/request/got`);
   console.log(data);
   return data;
 };
