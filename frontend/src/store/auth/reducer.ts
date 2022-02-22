@@ -9,6 +9,7 @@ import {
   ChangeProfileParams,
 } from '../../types';
 import { createInitialState, createPatialReducer } from '../utils';
+import { sendMessage } from '../socket';
 
 const initialState = {
   signin: createInitialState<SigninParams, SigninResponse>(),
@@ -21,13 +22,17 @@ const initialState = {
 export type AuthState = typeof initialState;
 
 const authReducer = createReducer(initialState, builder => {
-  createPatialReducer<AuthState>(builder, 'signin', signinAsync);
+  createPatialReducer<AuthState>(builder, 'signin', signinAsync, (state, action) => {
+    const { userId } = action.payload;
+    sendMessage('login', { userId });
+  });
   createPatialReducer<AuthState>(builder, 'signup', signupAsync);
   createPatialReducer<AuthState>(builder, 'signout', signoutAsync, state => {
     state.signin.data = null;
   });
   createPatialReducer<AuthState>(builder, 'getRefreshToken', getRefreshTokenAsync, (state, action) => {
     state.signin.data = action.payload;
+    sendMessage('login', { userId: action.payload.user.userId });
   });
   createPatialReducer<AuthState>(builder, 'changeProfile', changeProfileAsync, state => {
     const data = state.signin.data as SigninResponse;
