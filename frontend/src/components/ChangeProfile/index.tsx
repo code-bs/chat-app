@@ -3,6 +3,8 @@ import { Modal, Button, Input, Avatar } from 'antd';
 import { useAppSelector } from '../../store/hooks';
 import { SigninResponse, User } from '../../types';
 import { UserOutlined, SmileOutlined, CommentOutlined, PictureOutlined } from '@ant-design/icons';
+import { useAppDispatch } from '../../store/hooks';
+import { changeProfileAsync } from '../../store/auth/actions';
 import style from './index.module.scss';
 
 type ChangeProfileProps = {
@@ -18,11 +20,15 @@ const ChangeProfile = ({ isModalVisible, closeModal }: ChangeProfileProps) => {
   };
   const { userId, nickname, avatarUrl, statusMessage } = userInfo;
   const [imgSrc, setImgSrc] = useState<string>(avatarUrl);
+  const dispatch = useAppDispatch();
   return (
     <Modal
       title="회원정보 수정"
       visible={isModalVisible}
-      onOk={() => {}}
+      onOk={() => {
+        dispatch(changeProfileAsync.request({ nickname, avatarUrl, statusMessage }));
+        closeModal();
+      }}
       onCancel={() => {
         closeModal();
       }}>
