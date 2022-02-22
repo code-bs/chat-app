@@ -90,3 +90,9 @@ export type JoinChatRoomParams = {
   senderId: string;
   roomId: string;
 };
+
+export type ChangeProfileParams = {
+  nickname: string;
+  avatarUrl: string;
+  statusMessage: string;
+};
