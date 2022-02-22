@@ -1,8 +1,15 @@
 import { takeLatest } from 'redux-saga/effects';
 import { createSaga } from '../utils';
-import { signinAsync, signupAsync, signoutAsync, getRefreshTokenAsync } from './actions';
-import { AuthApi } from '../../apis';
-import { SigninParams, SigninResponse, SignupParams, SignupResponse, GetRefreshTokenResponse } from '../../types';
+import { signinAsync, signupAsync, signoutAsync, getRefreshTokenAsync, changeProfileAsync } from './actions';
+import { AuthApi, UserApi } from '../../apis';
+import {
+  SigninParams,
+  SigninResponse,
+  SignupParams,
+  SignupResponse,
+  GetRefreshTokenResponse,
+  ChangeProfileParams,
+} from '../../types';
 import { history } from '../../router/history';
 function* authSaga() {
   yield takeLatest(
@@ -36,6 +43,10 @@ function* authSaga() {
         history.push('/chat');
       },
     }),
+  );
+  yield takeLatest(
+    changeProfileAsync.REQUEST,
+    createSaga<ChangeProfileParams, void>(changeProfileAsync, UserApi.changeProfile),
   );
 }
 export default authSaga;

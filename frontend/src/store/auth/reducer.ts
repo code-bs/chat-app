@@ -1,6 +1,13 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { signinAsync, signupAsync, signoutAsync, getRefreshTokenAsync } from './actions';
-import { SigninParams, SigninResponse, SignupParams, SignupResponse, GetRefreshTokenResponse } from '../../types';
+import { signinAsync, signupAsync, signoutAsync, getRefreshTokenAsync, changeProfileAsync } from './actions';
+import {
+  SigninParams,
+  SigninResponse,
+  SignupParams,
+  SignupResponse,
+  GetRefreshTokenResponse,
+  ChangeProfileParams,
+} from '../../types';
 import { createInitialState, createPatialReducer } from '../utils';
 
 const initialState = {
@@ -8,6 +15,7 @@ const initialState = {
   signup: createInitialState<SignupParams, SignupResponse>(),
   signout: createInitialState<any, any>(),
   getRefreshToken: createInitialState<any, GetRefreshTokenResponse>(),
+  changeProfile: createInitialState<ChangeProfileParams, void>(),
 };
 
 export type AuthState = typeof initialState;
@@ -20,6 +28,17 @@ const authReducer = createReducer(initialState, builder => {
   });
   createPatialReducer<AuthState>(builder, 'getRefreshToken', getRefreshTokenAsync, (state, action) => {
     state.signin.data = action.payload;
+  });
+  createPatialReducer<AuthState>(builder, 'changeProfile', changeProfileAsync, state => {
+    const data = state.signin.data as SigninResponse;
+    const { user } = data;
+    state.signin.data = {
+      ...data,
+      user: {
+        ...user,
+        ...state.changeProfile.payload,
+      },
+    };
   });
 });
 export default authReducer;
