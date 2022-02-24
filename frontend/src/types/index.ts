@@ -81,7 +81,7 @@ export type SendFriendRequestParams = {
 };
 
 export type InviteChatRoomParams = {
-  userId: string;
+  sender: User;
   targetId: string;
   roomId: string;
 };
