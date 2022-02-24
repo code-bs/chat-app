@@ -15,9 +15,8 @@ type SendFriendRequestProps = {
 const SendFriendRequest = ({ isModalVisible, closeModal }: SendFriendRequestProps) => {
   const [input, setInput] = useState<string>('');
   const dispatch = useAppDispatch();
-  const {
-    user: { userId },
-  } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
+  const { user } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
+  const { userId } = user;
   const { findUser } = useAppSelector(state => state.user);
   const friends = useAppSelector(state => state.user.friendList.data) || [];
   const exception = [userId, ...friends.map(user => user.userId)];
@@ -42,7 +41,7 @@ const SendFriendRequest = ({ isModalVisible, closeModal }: SendFriendRequestProp
   const sendFriendRequest = ({ nickname, targetId }: { targetId: string; nickname: string }) => {
     sendMessage<SendFriendRequestParams>('friend', {
       targetId,
-      userId,
+      sender: user,
     });
     notification.open({
       message: '친구추가 요청',

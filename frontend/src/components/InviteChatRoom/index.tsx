@@ -13,14 +13,12 @@ type InviteChatRoomProps = {
 
 const InviteChatRoom = ({ isModalVisible, closeModal }: InviteChatRoomProps) => {
   const friends = useAppSelector(state => state.user.friendList.data) || [];
-  const {
-    user: { userId },
-  } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
+  const { user } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
   const { roomId } = useParams();
   const inviteChatRoom = ({ nickname, targetId }: { targetId: string; nickname: string }) => {
     sendMessage<InviteChatRoomParams>('invite', {
       targetId,
-      userId: userId,
+      sender: user,
       roomId: roomId as string,
     });
     notification.open({

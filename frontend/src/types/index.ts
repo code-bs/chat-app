@@ -76,7 +76,7 @@ export type GetRefreshTokenResponse = {
 };
 
 export type SendFriendRequestParams = {
-  userId: string;
+  sender: User;
   targetId: string;
 };
 
