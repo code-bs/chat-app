@@ -4,8 +4,6 @@ const controller = require("../../controller/user/index");
 
 router.get("/", controller.searchUsers);
 
-router.put("/", controller.updateProfile);
-
 router.get("/request/got", controller.getReceivedReq);
 
 router.get("/request/sent", controller.getSentReq);
