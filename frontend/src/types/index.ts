@@ -10,7 +10,7 @@ export type ChatRoomInfo = {
   roomId: string;
   roomName: string;
   regDate: string;
-  masterUserId: string;
+  users: User[];
   chatHistory: ChatLog[];
 };
 
@@ -49,7 +49,11 @@ export type FindUserParams = {
   userId: string;
 };
 
-export type GetRoomInviteResponse = ChatRoomInfo[];
+export type GetRoomInviteResponse = {
+  room: ChatRoomInfo;
+  sender: User;
+  curStatus: string;
+}[];
 
 export type FindUserResponse = User[];
 
