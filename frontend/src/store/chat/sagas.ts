@@ -19,7 +19,7 @@ import {
 function* chatSaga() {
   yield takeLatest(
     getChatRoomListAsync.REQUEST,
-    createSaga<any, GetChatRoomListResponse>(getChatRoomListAsync, ChatApi.getChatRoomList),
+    createSaga<void, GetChatRoomListResponse>(getChatRoomListAsync, ChatApi.getChatRoomList),
   );
   yield takeLatest(
     createChatRoomAsync.REQUEST,
@@ -27,7 +27,7 @@ function* chatSaga() {
   );
   yield takeLatest(
     getRoomInviteAsync.REQUEST,
-    createSaga<any, GetRoomInviteResponse>(getRoomInviteAsync, ChatApi.getRoomInvite),
+    createSaga<void, GetRoomInviteResponse>(getRoomInviteAsync, ChatApi.getRoomInvite),
   );
   yield takeLatest(
     joinChatRoomAsync.REQUEST,

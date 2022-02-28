@@ -11,19 +11,19 @@ import {
 import { createInitialState, createPatialReducer } from '../utils';
 
 const initialState = {
-  friendList: createInitialState<any, GetFriendListResponse>(),
+  friendList: createInitialState<void, GetFriendListResponse>(),
   findUser: createInitialState<FindUserParams, FindUserResponse>(),
-  friendRequest: createInitialState<any, GetFriendRequestResponse>(),
-  addFriend: createInitialState<AddFriendParams, any>(),
+  friendRequest: createInitialState<void, GetFriendRequestResponse>(),
+  addFriend: createInitialState<AddFriendParams, void>(),
 };
 
 export type UserState = typeof initialState;
 
 const userReducer = createReducer(initialState, builder => {
-  createPatialReducer<UserState>(builder, 'friendList', getFriendListAsync);
-  createPatialReducer<UserState>(builder, 'findUser', findUserAsync);
-  createPatialReducer<UserState>(builder, 'friendRequest', getFriendRequestAsync);
-  createPatialReducer<UserState>(builder, 'addFriend', addFriendAsync, state => {
+  createPatialReducer<UserState, void, GetFriendListResponse>(builder, 'friendList', getFriendListAsync);
+  createPatialReducer<UserState, FindUserParams, FindUserResponse>(builder, 'findUser', findUserAsync);
+  createPatialReducer<UserState, void, GetFriendRequestResponse>(builder, 'friendRequest', getFriendRequestAsync);
+  createPatialReducer<UserState, AddFriendParams, void>(builder, 'addFriend', addFriendAsync, state => {
     const { senderId } = state.addFriend.payload as AddFriendParams;
     const nextFriendRequest = state.friendRequest.data as FindUserResponse;
     const nextFriendList = state.friendList.data as GetFriendListResponse;

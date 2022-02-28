@@ -14,27 +14,32 @@ import { sendMessage } from '../socket';
 const initialState = {
   signin: createInitialState<SigninParams, SigninResponse>(),
   signup: createInitialState<SignupParams, SignupResponse>(),
-  signout: createInitialState<any, any>(),
-  getRefreshToken: createInitialState<any, GetRefreshTokenResponse>(),
+  signout: createInitialState<void, void>(),
+  getRefreshToken: createInitialState<void, GetRefreshTokenResponse>(),
   changeProfile: createInitialState<ChangeProfileParams, void>(),
 };
 
 export type AuthState = typeof initialState;
 
 const authReducer = createReducer(initialState, builder => {
-  createPatialReducer<AuthState>(builder, 'signin', signinAsync, (state, action) => {
+  createPatialReducer<AuthState, SigninParams, SigninResponse>(builder, 'signin', signinAsync, (state, action) => {
     const { userId } = action.payload;
     sendMessage('login', { userId });
   });
-  createPatialReducer<AuthState>(builder, 'signup', signupAsync);
-  createPatialReducer<AuthState>(builder, 'signout', signoutAsync, state => {
+  createPatialReducer<AuthState, SignupParams, SignupResponse>(builder, 'signup', signupAsync);
+  createPatialReducer<AuthState, void, void>(builder, 'signout', signoutAsync, state => {
     state.signin.data = null;
   });
-  createPatialReducer<AuthState>(builder, 'getRefreshToken', getRefreshTokenAsync, (state, action) => {
-    state.signin.data = action.payload;
-    sendMessage('login', { userId: action.payload.user.userId });
-  });
-  createPatialReducer<AuthState>(builder, 'changeProfile', changeProfileAsync, state => {
+  createPatialReducer<AuthState, void, GetRefreshTokenResponse>(
+    builder,
+    'getRefreshToken',
+    getRefreshTokenAsync,
+    (state, action) => {
+      state.signin.data = action.payload;
+      sendMessage('login', { userId: action.payload.user.userId });
+    },
+  );
+  createPatialReducer<AuthState, ChangeProfileParams, void>(builder, 'changeProfile', changeProfileAsync, state => {
     const data = state.signin.data as SigninResponse;
     const { user } = data;
     state.signin.data = {

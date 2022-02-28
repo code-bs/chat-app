@@ -1,7 +1,14 @@
 import { createFetchAction } from '../utils';
-
-export const signinAsync = createFetchAction('signin');
-export const signupAsync = createFetchAction('signup');
-export const signoutAsync = createFetchAction('signout');
-export const getRefreshTokenAsync = createFetchAction('getRefreshToken');
-export const changeProfileAsync = createFetchAction('changeProfile');
+import {
+  SigninParams,
+  SigninResponse,
+  SignupParams,
+  SignupResponse,
+  GetRefreshTokenResponse,
+  ChangeProfileParams,
+} from '../../types';
+export const signinAsync = createFetchAction<SigninParams, SigninResponse>('signin');
+export const signupAsync = createFetchAction<SignupParams, SignupResponse>('signup');
+export const signoutAsync = createFetchAction<void, void>('signout');
+export const getRefreshTokenAsync = createFetchAction<void, GetRefreshTokenResponse>('getRefreshToken');
+export const changeProfileAsync = createFetchAction<ChangeProfileParams, void>('changeProfile');
