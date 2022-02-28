@@ -11,7 +11,7 @@ const RequireAuth = () => {
     signin: { data },
   } = auth;
   useEffect(() => {
-    if (!data) dispatch(getRefreshTokenAsync.request({}));
+    if (!data) dispatch(getRefreshTokenAsync.request());
   }, [dispatch, data]);
 
   if (!data) {

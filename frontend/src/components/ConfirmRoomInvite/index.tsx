@@ -28,10 +28,12 @@ const ConfirmRoomInvite = ({ isModalVisible, closeModal }: ConfirmRoomInviteProp
         itemLayout="horizontal"
         dataSource={data || []}
         style={{ padding: '16px 24px' }}
-        renderItem={({ _id, roomName }) => (
+        renderItem={({ room: { _id, roomName }, sender: { userId } }) => (
           <List.Item
             actions={[
-              <Button type="primary" onClick={() => dispatch(joinChatRoomAsync.request({ userId, roomId: _id }))}>
+              <Button
+                type="primary"
+                onClick={() => dispatch(joinChatRoomAsync.request({ roomId: _id, senderId: userId }))}>
                 수락
               </Button>,
               <Button type="primary" danger>

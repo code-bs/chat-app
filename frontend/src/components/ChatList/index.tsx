@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, Button } from 'antd';
+import { Menu, Button, notification } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate, useMatch } from 'react-router-dom';
 import { Confirm } from '..';
@@ -55,7 +55,10 @@ const ChatList = () => {
           setConfirmVisible(false);
         }}
         onSubmit={value => {
-          dispatch(createChatRoomAsync.request({ userId, roomName: value }));
+          if (!value) {
+            return;
+          }
+          dispatch(createChatRoomAsync.request({ roomName: value }));
           setConfirmVisible(false);
         }}
         title="채팅방 생성"

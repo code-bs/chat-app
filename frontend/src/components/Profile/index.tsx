@@ -49,7 +49,7 @@ const Profile = () => {
           setConfirmVisible(false);
         }}
         onSubmit={() => {
-          dispatch(signoutAsync.request({}));
+          dispatch(signoutAsync.request());
           setConfirmVisible(false);
         }}
         title="로그아웃"
