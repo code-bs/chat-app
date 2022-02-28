@@ -1,7 +1,6 @@
 import React from 'react';
 import { Modal, Button, List } from 'antd';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { SigninResponse } from '../../types';
 import { joinChatRoomAsync } from '../../store/chat/actions';
 
 type ConfirmRoomInviteProps = {
@@ -10,9 +9,6 @@ type ConfirmRoomInviteProps = {
 };
 
 const ConfirmRoomInvite = ({ isModalVisible, closeModal }: ConfirmRoomInviteProps) => {
-  const {
-    user: { userId },
-  } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
   const { data } = useAppSelector(state => state.chat.roomInvite);
   const dispatch = useAppDispatch();
   return (

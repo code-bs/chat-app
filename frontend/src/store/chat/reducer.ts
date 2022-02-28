@@ -12,7 +12,6 @@ import {
   CreateChatRoomResponse,
   GetRoomInviteResponse,
   JoinChatRoomParams,
-  ChatRoomInfo,
 } from '../../types';
 import { createInitialState, createPatialReducer } from '../utils';
 

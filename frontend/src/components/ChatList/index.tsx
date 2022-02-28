@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, Button, notification } from 'antd';
+import { Menu, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate, useMatch } from 'react-router-dom';
 import { Confirm } from '..';
@@ -15,7 +15,6 @@ const ChatList = () => {
   const navigate = useNavigate();
   const rooms = chat.chatRoomList.data || [];
   const { signin } = auth;
-  const userId = signin.data?.user.userId as string;
 
   const [confirmVisible, setConfirmVisible] = useState<boolean>(false);
   const dispatch = useAppDispatch();
