@@ -4,6 +4,7 @@ import {
   createAction,
   ActionReducerMapBuilder,
   Draft,
+  PayloadActionCreator,
 } from '@reduxjs/toolkit';
 import { eventChannel, EventChannel } from 'redux-saga';
 import { call, put, take } from 'redux-saga/effects';
@@ -24,13 +25,13 @@ export type AsyncEntity<P, R> = {
   payload: P | null;
 };
 
-export type IFetchActionGroup = {
+export type IFetchActionGroup<Params, Payload> = {
   TYPE: string;
   REQUEST: string;
   SUCCESS: string;
   FAILURE: string;
-  request: ActionCreatorWithPayload<any>;
-  success: ActionCreatorWithPayload<any>;
+  request: PayloadActionCreator<Params>;
+  success: PayloadActionCreator<Payload>;
   failure: ActionCreatorWithPayload<string>;
 };
 
@@ -39,7 +40,7 @@ type OnFinishCallback = {
   onFailure?: () => void;
 };
 
-export const createFetchAction = <Params, Payload>(type: string): IFetchActionGroup => {
+export const createFetchAction = <Params, Payload>(type: string): IFetchActionGroup<Params, Payload> => {
   const REQUEST = `${type}/REQUEST`;
   const SUCCESS = `${type}/SUCCESS`;
   const FAILURE = `${type}/FAILURE`;
@@ -49,13 +50,17 @@ export const createFetchAction = <Params, Payload>(type: string): IFetchActionGr
     REQUEST,
     SUCCESS,
     FAILURE,
-    request: createAction<Params | undefined>(REQUEST),
+    request: createAction<Params>(REQUEST),
     success: createAction<Payload>(SUCCESS),
     failure: createAction<string>(FAILURE),
   };
 };
 
-export const createSaga = <Params, Payload>(actions: IFetchActionGroup, req: any, onFinish?: OnFinishCallback) => {
+export const createSaga = <Params, Payload>(
+  actions: IFetchActionGroup<Params, Payload>,
+  req: any,
+  onFinish?: OnFinishCallback,
+) => {
   return function* (action: PayloadAction<Params>) {
     const payload = action.payload;
     try {
@@ -78,10 +83,10 @@ export const createInitialState = <P, R>(): AsyncEntity<P, R> => ({
   payload: null,
 });
 
-export const createPatialReducer = <State extends { [key: string]: AsyncEntity<any, any> }>(
+export const createPatialReducer = <State extends { [key: string]: AsyncEntity<any, any> }, Params, Payload>(
   builder: ActionReducerMapBuilder<State>,
   entity: string,
-  actions: IFetchActionGroup,
+  actions: IFetchActionGroup<Params, Payload>,
   onSuccess?: (
     state: Draft<State>,
     action: {
