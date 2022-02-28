@@ -4,7 +4,6 @@ const logger = require("../../config/logger");
 
 /* METHODS */
 function checkValidReq(userId, friendId) {
-  logger.info(`[User][addFriend]-> check invite list`);
   return new Promise((resolve, reject) => {
     userModel.checkInvite(userId, friendId, (error, result) => {
       if (error) reject(error);
@@ -17,11 +16,9 @@ function checkValidReq(userId, friendId) {
 }
 
 function findUser(friendId) {
-  logger.info(`[User][addFriend]-> check friend exists`);
   return new Promise((resolve, reject) => {
     userModel.searchId(friendId, (error, result) => {
       if (error) reject(error);
-
       if (result.length < 1)
         reject({ status: 400, message: "존재하지 않는 사용자 입니다." });
       else {
@@ -32,7 +29,6 @@ function findUser(friendId) {
 }
 
 function isFriend(userId, friendId) {
-  logger.info(`[User][addFriend]-> isFriend`);
   return new Promise((resolve, reject) => {
     userModel.isFriend(userId, friendId, (error, result) => {
       if (error) reject(error);
@@ -47,7 +43,6 @@ function isFriend(userId, friendId) {
 }
 
 function insertFriend(userId, friendId) {
-  logger.info(`[User][addFriend]-> adding friend`);
   return new Promise((resolve, reject) => {
     userModel.addFriend(userId, friendId, (error) => {
       if (error) reject(error);
@@ -56,10 +51,9 @@ function insertFriend(userId, friendId) {
   });
 }
 
-function deleteInvite(userId, friendId) {
-  logger.info(`[User][addFriend]-> delete invitation in mysql`);
+function deleteInvite(senderId, userId) {
   return new Promise((resolve, reject) => {
-    userModel.deleteInvite(userId, friendId, (error) => {
+    userModel.deleteInvite(senderId, userId, (error) => {
       if (error) reject(error);
       else resolve();
     });
@@ -76,7 +70,7 @@ module.exports = async function (req, res) {
     await isFriend(userId, senderId);
     await insertFriend(userId, senderId);
     await insertFriend(senderId, userId);
-    await deleteInvite(userId, senderId);
+    await deleteInvite(senderId, userId);
 
     logger.info(`[User][addFriend] ${senderId} DONE`);
     res.send();

@@ -50,6 +50,24 @@ function verifyToken(refreshToken) {
   });
 }
 
+function getUserInfo(userId) {
+  const moduleInfo = { ...defaultModuleInfo, method: "getUserInfo" };
+  return new Promise((resolve, reject) => {
+    authModel.getUser(userId, (err, result) => {
+      if (err)
+        reject({
+          status: 500,
+          message: "알 수 없는 오류가 발생하였습니다.",
+          errMsg: err,
+          ...moduleInfo,
+        });
+      else if (result.length < 1)
+        reject({ status: 400, message: "존재하지 않는 userId", ...moduleInfo });
+      else resolve(result[0]);
+    });
+  });
+}
+
 function generateToken(payload) {
   const moduleInfo = { ...defaultModuleInfo, method: "generateToken" };
   return new Promise((resolve, reject) => {
@@ -69,6 +87,25 @@ function generateToken(payload) {
   });
 }
 
+function generateRefresh(payload) {
+  const moduleInfo = { ...defaultModuleInfo, method: "generateRefresh" };
+  return new Promise((resolve, reject) => {
+    jwt
+      .generate_refresh(payload)
+      .then((token) => {
+        resolve(token);
+      })
+      .catch((error) => {
+        reject({
+          ...moduleInfo,
+          status: 500,
+          message: "알 수 없는 오류가 발생하였습니다.",
+          errorMsg: error,
+        });
+      });
+  });
+}
+
 /* EXPORTS */
 module.exports = async function (req, res) {
   const { refreshToken } = req.cookies;
@@ -76,21 +113,35 @@ module.exports = async function (req, res) {
   try {
     await checkBlacklist(refreshToken);
     const payload = await verifyToken(refreshToken);
-    const { userId, nickname, avatarUrl, statusMessage } = payload;
+    const { userId } = payload;
+    const {
+      userId: id,
+      nickname,
+      avatarUrl,
+      statusMessage,
+    } = await getUserInfo(userId);
     const accessToken = await generateToken({
-      userId,
+      userId: id,
+      nickname,
+      avatarUrl,
+      statusMessage,
+    });
+    const newRefresh = await generateRefresh({
+      userId: id,
       nickname,
       avatarUrl,
       statusMessage,
     });
 
     logger.info(`[auth][refreshToken]-> done`);
-    res.send({
+    res.cookie("refreshToken", newRefresh).send({
       accessToken,
-      user: { userId, nickname, avatarUrl, statusMessage },
+      user: { userId: id, nickname, avatarUrl, statusMessage },
     });
   } catch (error) {
     errorHandler(error);
-    res.status(error.status).send(error.message);
+    res
+      .status(error.status || 500)
+      .send(error.message || "Internal Server Error");
   }
 };
