@@ -1,14 +1,14 @@
 import endpoint from './endpoint';
 import {
-  FindUserParams,
+  SearchUserParams,
   AcceptFriendRequestParams,
-  FindUserResponse,
+  SearchUserResponse,
   GetFriendRequestResponse,
   GetFriendListResponse,
   ChangeProfileParams,
 } from '../types';
 
-const findUser = async ({ userId }: FindUserParams): Promise<FindUserResponse> => {
+const searchUser = async ({ userId }: SearchUserParams): Promise<SearchUserResponse> => {
   const { data } = await endpoint.get(`/user`, { params: { userId } });
   console.log(data);
   return data;
@@ -34,4 +34,4 @@ const acceptFriendRequest = async ({ senderId }: AcceptFriendRequestParams): Pro
   await endpoint.post('/user/friend', { senderId });
 };
 
-export { findUser, getFriendList, getFriendRequest, acceptFriendRequest, changeProfile };
+export { searchUser, getFriendList, getFriendRequest, acceptFriendRequest, changeProfile };

@@ -45,7 +45,7 @@ export type SignupResponse = {
   userId: string;
 };
 
-export type FindUserParams = {
+export type SearchUserParams = {
   userId: string;
 };
 
@@ -55,7 +55,7 @@ export type GetRoomInviteResponse = {
   curStatus: string;
 }[];
 
-export type FindUserResponse = User[];
+export type SearchUserResponse = User[];
 
 export type GetFriendListResponse = User[];
 

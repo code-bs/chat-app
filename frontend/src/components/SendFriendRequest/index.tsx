@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, useMemo } from 'react';
 import { Modal, Input, Button, Popconfirm, notification } from 'antd';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { findUserAsync } from '../../store/user/actions';
+import { searchUserAsync } from '../../store/user/actions';
 import { debounce } from '../../utils';
 import { sendMessage } from '../../store/socket';
 import { UserSummaryList } from '..';
@@ -17,16 +17,16 @@ const SendFriendRequest = ({ isModalVisible, closeModal }: SendFriendRequestProp
   const dispatch = useAppDispatch();
   const { user } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
   const { userId } = user;
-  const { findUser } = useAppSelector(state => state.user);
+  const { searchUser } = useAppSelector(state => state.user);
   const friends = useAppSelector(state => state.user.friendList.data) || [];
   const exception = [userId, ...friends.map(user => user.userId)];
 
-  const { data: searchResults } = findUser;
+  const { data: searchResults } = searchUser;
   const data = (searchResults || []).filter(({ userId }) => !exception.some(id => id === userId));
   const debouncedDispatch = useMemo(
     () =>
       debounce((value: string) => {
-        dispatch(findUserAsync.request({ userId: value }));
+        dispatch(searchUserAsync.request({ userId: value }));
         console.log(value);
       }, 300),
     [dispatch],
