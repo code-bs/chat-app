@@ -1,13 +1,13 @@
 import { takeLatest } from 'redux-saga/effects';
 import { UserApi } from '../../apis';
 import { createSaga } from '../utils';
-import { getFriendListAsync, findUserAsync, getFriendRequestAsync, addFriendAsync } from './actions';
+import { getFriendListAsync, findUserAsync, getFriendRequestAsync, acceptFriendRequestAsync } from './actions';
 import {
   GetFriendListResponse,
   FindUserParams,
   FindUserResponse,
   GetFriendRequestResponse,
-  AddFriendParams,
+  AcceptFriendRequestParams,
 } from '../../types';
 
 function* userSaga() {
@@ -23,7 +23,10 @@ function* userSaga() {
     getFriendRequestAsync.REQUEST,
     createSaga<void, GetFriendRequestResponse>(getFriendRequestAsync, UserApi.getFriendRequest),
   );
-  yield takeLatest(addFriendAsync.REQUEST, createSaga<AddFriendParams, void>(addFriendAsync, UserApi.addFriend));
+  yield takeLatest(
+    acceptFriendRequestAsync.REQUEST,
+    createSaga<AcceptFriendRequestParams, void>(acceptFriendRequestAsync, UserApi.acceptFriendRequest),
+  );
 }
 
 export default userSaga;

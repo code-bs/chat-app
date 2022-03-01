@@ -4,10 +4,10 @@ import {
   FindUserParams,
   FindUserResponse,
   GetFriendRequestResponse,
-  AddFriendParams,
+  AcceptFriendRequestParams,
 } from '../../types';
 
 export const getFriendListAsync = createFetchAction<void, GetFriendListResponse>('getFriendList');
 export const findUserAsync = createFetchAction<FindUserParams, FindUserResponse>('findUser');
 export const getFriendRequestAsync = createFetchAction<void, GetFriendRequestResponse>('getFriendRequest');
-export const addFriendAsync = createFetchAction<AddFriendParams, void>('addFriend');
+export const acceptFriendRequestAsync = createFetchAction<AcceptFriendRequestParams, void>('acceptFriendRequest');

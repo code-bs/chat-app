@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Button } from 'antd';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { addFriendAsync } from '../../store/user/actions';
+import { acceptFriendRequestAsync } from '../../store/user/actions';
 import { UserSummaryList } from '..';
 
 type ConfirmFriendRequestProps = {
@@ -13,7 +13,7 @@ const ConfirmFriendRequest = ({ isModalVisible, closeModal }: ConfirmFriendReque
   const friendRequest = useAppSelector(state => state.user.friendRequest.data);
   const dispatch = useAppDispatch();
   const addFriendRequest = (senderId: string) => {
-    dispatch(addFriendAsync.request({ senderId }));
+    dispatch(acceptFriendRequestAsync.request({ senderId }));
   };
   return (
     <Modal

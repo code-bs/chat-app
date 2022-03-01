@@ -61,7 +61,7 @@ export type GetFriendListResponse = User[];
 
 export type GetFriendRequestResponse = User[];
 
-export type AddFriendParams = {
+export type AcceptFriendRequestParams = {
   senderId: string;
 };
 
