@@ -65,6 +65,10 @@ export type AcceptFriendRequestParams = {
   senderId: string;
 };
 
+export type DenyFriendRequestParams = {
+  senderId: string;
+};
+
 export type Message = {
   roomId: string;
   message: string;

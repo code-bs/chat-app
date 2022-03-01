@@ -6,6 +6,7 @@ import {
   GetFriendRequestResponse,
   GetFriendListResponse,
   ChangeProfileParams,
+  DenyFriendRequestParams,
 } from '../types';
 
 const searchUser = async ({ userId }: SearchUserParams): Promise<SearchUserResponse> => {
@@ -34,4 +35,8 @@ const acceptFriendRequest = async ({ senderId }: AcceptFriendRequestParams): Pro
   await endpoint.post('/user/friend', { senderId });
 };
 
-export { searchUser, getFriendList, getFriendRequest, acceptFriendRequest, changeProfile };
+const denyFriendRequest = async ({ senderId }: DenyFriendRequestParams): Promise<void> => {
+  await endpoint.put('/user/request', { senderId });
+};
+
+export { searchUser, getFriendList, getFriendRequest, acceptFriendRequest, changeProfile, denyFriendRequest };
