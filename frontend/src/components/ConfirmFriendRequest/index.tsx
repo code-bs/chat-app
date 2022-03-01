@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Button } from 'antd';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { acceptFriendRequestAsync } from '../../store/user/actions';
+import { acceptFriendRequestAsync, denyFriendRequestAsync } from '../../store/user/actions';
 import { UserSummaryList } from '..';
 
 type ConfirmFriendRequestProps = {
@@ -12,8 +12,11 @@ type ConfirmFriendRequestProps = {
 const ConfirmFriendRequest = ({ isModalVisible, closeModal }: ConfirmFriendRequestProps) => {
   const friendRequest = useAppSelector(state => state.user.friendRequest.data);
   const dispatch = useAppDispatch();
-  const addFriendRequest = (senderId: string) => {
+  const acceptFriendRequest = (senderId: string) => {
     dispatch(acceptFriendRequestAsync.request({ senderId }));
+  };
+  const denyFriendRequest = (senderId: string) => {
+    dispatch(denyFriendRequestAsync.request({ senderId }));
   };
   return (
     <Modal
@@ -28,10 +31,10 @@ const ConfirmFriendRequest = ({ isModalVisible, closeModal }: ConfirmFriendReque
         data={friendRequest}
         createActions={({ userId }) => {
           return [
-            <Button type="primary" onClick={() => addFriendRequest(userId)}>
+            <Button type="primary" onClick={() => acceptFriendRequest(userId)}>
               수락
             </Button>,
-            <Button type="primary" danger>
+            <Button type="primary" danger onClick={() => denyFriendRequest(userId)}>
               거절
             </Button>,
           ];
