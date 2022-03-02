@@ -11,7 +11,6 @@ import {
 
 const searchUser = async ({ userId }: SearchUserParams): Promise<SearchUserResponse> => {
   const { data } = await endpoint.get(`/user`, { params: { userId } });
-  console.log(data);
   return data;
 };
 
@@ -21,13 +20,11 @@ const changeProfile = async (userInfo: ChangeProfileParams): Promise<void> => {
 
 const getFriendList = async (): Promise<GetFriendListResponse> => {
   const { data } = await endpoint.get(`/user/friend`);
-  console.log(data);
   return data;
 };
 
 const getFriendRequest = async (): Promise<GetFriendRequestResponse> => {
   const { data } = await endpoint.get(`/user/request/got`);
-  console.log(data);
   return data;
 };
 
