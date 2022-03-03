@@ -99,6 +99,11 @@ export type JoinChatRoomParams = {
   roomId: string;
 };
 
+export type DenyRoomInviteParams = {
+  senderId: string;
+  roomId: string;
+};
+
 export type ChangeProfileParams = {
   nickname: string;
   avatarUrl: string;
