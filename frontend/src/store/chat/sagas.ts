@@ -6,6 +6,7 @@ import {
   recieveMessage,
   getRoomInviteAsync,
   joinChatRoomAsync,
+  denyRoomInviteAsync,
 } from './actions';
 import { ChatApi } from '../../apis';
 import {
@@ -15,6 +16,7 @@ import {
   GetRoomInviteResponse,
   Message,
   JoinChatRoomParams,
+  DenyRoomInviteParams,
 } from '../../types';
 function* chatSaga() {
   yield takeLatest(
@@ -32,6 +34,10 @@ function* chatSaga() {
   yield takeLatest(
     joinChatRoomAsync.REQUEST,
     createSaga<JoinChatRoomParams, any>(joinChatRoomAsync, ChatApi.joinChatRoom),
+  );
+  yield takeLatest(
+    denyRoomInviteAsync.REQUEST,
+    createSaga<DenyRoomInviteParams, any>(denyRoomInviteAsync, ChatApi.denyRoomInvite),
   );
   yield fork(createSocketSaga<Message>(recieveMessage, 'receiveMessage'));
 }

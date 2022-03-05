@@ -5,6 +5,7 @@ import {
   recieveMessage,
   getRoomInviteAsync,
   joinChatRoomAsync,
+  denyRoomInviteAsync,
 } from './actions';
 import {
   GetChatRoomListResponse,
@@ -12,6 +13,7 @@ import {
   CreateChatRoomResponse,
   GetRoomInviteResponse,
   JoinChatRoomParams,
+  DenyRoomInviteParams,
 } from '../../types';
 import { createInitialState, createPatialReducer } from '../utils';
 
@@ -20,6 +22,7 @@ const initialState = {
   createChatRoom: createInitialState<CreateChatRoomParams, CreateChatRoomResponse>(),
   roomInvite: createInitialState<void, GetRoomInviteResponse>(),
   joinChatRoom: createInitialState<JoinChatRoomParams, void>(),
+  denyRoomInvite: createInitialState<DenyRoomInviteParams, void>(),
 };
 
 export type ChatState = typeof initialState;
@@ -49,6 +52,11 @@ const chatReducer = createReducer(initialState, builder => {
     if (target) {
       state.chatRoomList.data?.push(target.room);
     }
+  });
+  createPatialReducer<ChatState, DenyRoomInviteParams, void>(builder, 'denyRoomInvite', denyRoomInviteAsync, state => {
+    const { roomId } = state.denyRoomInvite.payload as DenyRoomInviteParams;
+    const roomInvite = state.roomInvite.data as GetRoomInviteResponse;
+    state.roomInvite.data = roomInvite.filter(({ room }) => room._id !== roomId);
   });
 });
 export default chatReducer;

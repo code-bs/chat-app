@@ -7,9 +7,11 @@ import {
   GetRoomInviteResponse,
   JoinChatRoomParams,
   Message,
+  DenyRoomInviteParams,
 } from '../../types';
 export const getChatRoomListAsync = createFetchAction<void, GetChatRoomListResponse>('getChatRoomList');
 export const createChatRoomAsync = createFetchAction<CreateChatRoomParams, CreateChatRoomResponse>('createChatRoom');
 export const recieveMessage = createAction<Message>('recieveMessage');
 export const getRoomInviteAsync = createFetchAction<void, GetRoomInviteResponse>('getRoomInvite');
 export const joinChatRoomAsync = createFetchAction<JoinChatRoomParams, void>('joinChatRoom');
+export const denyRoomInviteAsync = createFetchAction<DenyRoomInviteParams, void>('denyRoomInvite');
