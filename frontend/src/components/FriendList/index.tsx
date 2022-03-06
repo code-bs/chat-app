@@ -25,6 +25,7 @@ const FriendList = ({ closeFriendList }: FriendListProps) => {
         title="친구"
         extra={[
           <Button
+            key="closeModal"
             shape="circle"
             icon={<UserAddOutlined />}
             size="large"
