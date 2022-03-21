@@ -5,7 +5,9 @@ dotenv.config();
 const socket = io(`ws://${process.env.REACT_APP_SOCKET_END_POINT}`);
 
 export const sendMessage = <T>(eventType: string, message: T) => {
-  socket.emit(eventType, message);
+  socket.emit(eventType, message, (err: any) => {
+    console.log(err);
+  });
 };
 
 socket.on('connect', () => {

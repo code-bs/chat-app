@@ -16,7 +16,7 @@ const InviteChatRoom = ({ isModalVisible, closeModal }: InviteChatRoomProps) => 
   const { user } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
   const { roomId } = useParams();
   const inviteChatRoom = ({ nickname, targetId }: { targetId: string; nickname: string }) => {
-    sendMessage<InviteChatRoomParams>('invite', {
+    sendMessage<InviteChatRoomParams>('room', {
       targetId,
       sender: user,
       roomId: roomId as string,

@@ -16,6 +16,7 @@ import {
   DenyRoomInviteParams,
 } from '../../types';
 import { createInitialState, createPatialReducer } from '../utils';
+import { sendMessage } from '../socket';
 
 const initialState = {
   chatRoomList: createInitialState<void, GetChatRoomListResponse>(),
@@ -28,7 +29,19 @@ const initialState = {
 export type ChatState = typeof initialState;
 
 const chatReducer = createReducer(initialState, builder => {
-  createPatialReducer<ChatState, void, GetChatRoomListResponse>(builder, 'chatRoomList', getChatRoomListAsync);
+  createPatialReducer<ChatState, void, GetChatRoomListResponse>(
+    builder,
+    'chatRoomList',
+    getChatRoomListAsync,
+    (state, action) => {
+      const chatRoomList = action.payload as GetChatRoomListResponse;
+      chatRoomList.forEach(({ _id }) => {
+        console.log(_id);
+        sendMessage('enterRoom', _id);
+      });
+      state.chatRoomList.data = chatRoomList;
+    },
+  );
   createPatialReducer<ChatState, CreateChatRoomParams, CreateChatRoomResponse>(
     builder,
     'createChatRoom',

@@ -22,7 +22,7 @@ const ChatRoom = () => {
   const selectedRoom = rooms.find(room => room._id === roomId);
   const submitMessage = () => {
     if (text.length === 0) return;
-    sendMessage<Message>('sendMessage', {
+    sendMessage<Message>('message', {
       roomId: roomId as string,
       userId,
       nickname,

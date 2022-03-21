@@ -33,12 +33,12 @@ function* chatSaga() {
   );
   yield takeLatest(
     joinChatRoomAsync.REQUEST,
-    createSaga<JoinChatRoomParams, any>(joinChatRoomAsync, ChatApi.joinChatRoom),
+    createSaga<JoinChatRoomParams, void>(joinChatRoomAsync, ChatApi.joinChatRoom),
   );
   yield takeLatest(
     denyRoomInviteAsync.REQUEST,
-    createSaga<DenyRoomInviteParams, any>(denyRoomInviteAsync, ChatApi.denyRoomInvite),
+    createSaga<DenyRoomInviteParams, void>(denyRoomInviteAsync, ChatApi.denyRoomInvite),
   );
-  yield fork(createSocketSaga<Message>(recieveMessage, 'receiveMessage'));
+  yield fork(createSocketSaga<Message>(recieveMessage, 'newMessage'));
 }
 export default chatSaga;

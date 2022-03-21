@@ -27,7 +27,7 @@ const getRoomInvite = async (): Promise<GetRoomInviteResponse> => {
 };
 
 const joinChatRoom = async ({ senderId, roomId }: JoinChatRoomParams): Promise<void> => {
-  await endpoint.post('/chat/room/join', { senderId, roomId });
+  await endpoint.post('/chat/invitation', { senderId, roomId });
 };
 
 const denyRoomInvite = async ({ senderId, roomId }: DenyRoomInviteParams): Promise<void> => {
