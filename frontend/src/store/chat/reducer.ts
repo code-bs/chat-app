@@ -16,7 +16,7 @@ import {
   DenyRoomInviteParams,
 } from '../../types';
 import { createInitialState, createPatialReducer } from '../utils';
-import { sendMessage } from '../socket';
+import { emitEvent } from '../socket';
 
 const initialState = {
   chatRoomList: createInitialState<void, GetChatRoomListResponse>(),
@@ -37,7 +37,7 @@ const chatReducer = createReducer(initialState, builder => {
       const chatRoomList = action.payload as GetChatRoomListResponse;
       chatRoomList.forEach(({ _id }) => {
         console.log(_id);
-        sendMessage('enterRoom', _id);
+        emitEvent('enterRoom', _id);
       });
       state.chatRoomList.data = chatRoomList;
     },

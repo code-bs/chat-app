@@ -3,7 +3,7 @@ import { Modal, Input, Button, Popconfirm, notification } from 'antd';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { searchUserAsync } from '../../store/user/actions';
 import { debounce } from '../../utils';
-import { sendMessage } from '../../store/socket';
+import { emitEvent } from '../../store/socket';
 import { UserSummaryList } from '..';
 import { SendFriendRequestParams, SigninResponse } from '../../types';
 
@@ -39,7 +39,7 @@ const SendFriendRequest = ({ isModalVisible, closeModal }: SendFriendRequestProp
   };
 
   const sendFriendRequest = ({ nickname, targetId }: { targetId: string; nickname: string }) => {
-    sendMessage<SendFriendRequestParams>('friend', {
+    emitEvent<SendFriendRequestParams>('friend', {
       targetId,
       sender: user,
     });

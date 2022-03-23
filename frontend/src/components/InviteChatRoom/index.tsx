@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, Button, Popconfirm, notification } from 'antd';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
-import { sendMessage } from '../../store/socket';
+import { emitEvent } from '../../store/socket';
 import { UserSummaryList } from '..';
 import { InviteChatRoomParams, SigninResponse } from '../../types';
 
@@ -16,7 +16,7 @@ const InviteChatRoom = ({ isModalVisible, closeModal }: InviteChatRoomProps) => 
   const { user } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
   const { roomId } = useParams();
   const inviteChatRoom = ({ nickname, targetId }: { targetId: string; nickname: string }) => {
-    sendMessage<InviteChatRoomParams>('room', {
+    emitEvent<InviteChatRoomParams>('room', {
       targetId,
       sender: user,
       roomId: roomId as string,
