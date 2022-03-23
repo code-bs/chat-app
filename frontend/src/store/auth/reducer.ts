@@ -24,7 +24,7 @@ export type AuthState = typeof initialState;
 const authReducer = createReducer(initialState, builder => {
   createPatialReducer<AuthState, SigninParams, SigninResponse>(builder, 'signin', signinAsync, (state, action) => {
     const { userId } = action.payload;
-    sendMessage('login', { userId });
+    sendMessage('login', userId);
   });
   createPatialReducer<AuthState, SignupParams, SignupResponse>(builder, 'signup', signupAsync);
   createPatialReducer<AuthState, void, void>(builder, 'signout', signoutAsync, state => {
@@ -36,7 +36,7 @@ const authReducer = createReducer(initialState, builder => {
     getRefreshTokenAsync,
     (state, action) => {
       state.signin.data = action.payload;
-      sendMessage('login', { userId: action.payload.user.userId });
+      sendMessage('login', action.payload.user.userId);
     },
   );
   createPatialReducer<AuthState, ChangeProfileParams, void>(builder, 'changeProfile', changeProfileAsync, state => {
