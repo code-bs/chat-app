@@ -53,9 +53,10 @@ const chatReducer = createReducer(initialState, builder => {
   createPatialReducer<ChatState, void, GetRoomInviteResponse>(builder, 'roomInvite', getRoomInviteAsync);
   builder.addCase(recieveMessage, (state, action) => {
     const { roomId, message, userId } = action.payload;
-    const index = state.chatRoomList.data?.findIndex(room => room._id === roomId) || -1;
-    if (index >= 0 && state.chatRoomList.data)
-      state.chatRoomList.data[index].chatHistory.push({ message, userId, regDate: new Date().toString() });
+    const chatRoomList = state.chatRoomList.data as GetChatRoomListResponse;
+    const index = chatRoomList.findIndex(room => room._id === roomId);
+    chatRoomList[index].chatHistory.push({ message, userId, regDate: new Date().toString() });
+    state.chatRoomList.data = chatRoomList;
   });
   createPatialReducer<ChatState, JoinChatRoomParams, void>(builder, 'joinChatRoom', joinChatRoomAsync, state => {
     const { roomId } = state.joinChatRoom.payload as JoinChatRoomParams;
