@@ -3,11 +3,11 @@ import { useParams } from 'react-router-dom';
 import { Layout, Button, Input } from 'antd';
 import { CloseCircleFilled, MenuOutlined } from '@ant-design/icons';
 import { SpeechBubble } from '..';
-import { Message, SigninResponse } from '../../types';
-import { emitEvent } from '../../store/socket';
+import { SigninResponse } from '../../types';
 import style from './index.module.scss';
-import { useAppSelector } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { RoomInfoDrawer } from '..';
+import { sendMessage } from '../../store/chat/actions';
 const { Header, Content } = Layout;
 
 const ChatRoom = () => {
@@ -19,17 +19,20 @@ const ChatRoom = () => {
   const {
     user: { avatarUrl, nickname, statusMessage, userId },
   } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
+  const dispatch = useAppDispatch();
   const selectedRoom = rooms.find(room => room._id === roomId);
   const submitMessage = () => {
     if (text.length === 0) return;
-    emitEvent<Message>('message', {
-      roomId: roomId as string,
-      userId,
-      nickname,
-      avatarUrl,
-      statusMessage,
-      message: text,
-    });
+    dispatch(
+      sendMessage({
+        roomId: roomId as string,
+        userId,
+        nickname,
+        avatarUrl,
+        statusMessage,
+        message: text,
+      }),
+    );
     setText('');
   };
   if (!selectedRoom) {

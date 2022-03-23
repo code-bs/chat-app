@@ -2,6 +2,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import {
   getChatRoomListAsync,
   createChatRoomAsync,
+  sendMessage,
   recieveMessage,
   getRoomInviteAsync,
   joinChatRoomAsync,
@@ -14,6 +15,7 @@ import {
   GetRoomInviteResponse,
   JoinChatRoomParams,
   DenyRoomInviteParams,
+  Message,
 } from '../../types';
 import { createInitialState, createPatialReducer } from '../utils';
 import { emitEvent } from '../socket';
@@ -57,6 +59,21 @@ const chatReducer = createReducer(initialState, builder => {
     const index = chatRoomList.findIndex(room => room._id === roomId);
     chatRoomList[index].chatHistory.push({ message, userId, regDate: new Date().toString() });
     state.chatRoomList.data = chatRoomList;
+  });
+  builder.addCase(sendMessage, (state, action) => {
+    const { roomId, userId, nickname, avatarUrl, statusMessage, message } = action.payload;
+    const chatRoomList = state.chatRoomList.data as GetChatRoomListResponse;
+    const index = chatRoomList.findIndex(room => room._id === roomId);
+    chatRoomList[index].chatHistory.push({ message, userId, regDate: new Date().toString() });
+    state.chatRoomList.data = chatRoomList;
+    emitEvent<Message>('message', {
+      roomId,
+      userId,
+      nickname,
+      avatarUrl,
+      statusMessage,
+      message,
+    });
   });
   createPatialReducer<ChatState, JoinChatRoomParams, void>(builder, 'joinChatRoom', joinChatRoomAsync, state => {
     const { roomId } = state.joinChatRoom.payload as JoinChatRoomParams;
