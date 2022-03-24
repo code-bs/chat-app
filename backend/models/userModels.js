@@ -187,7 +187,7 @@ let Model = function () {
   this.checkInvite = (userId, friendId, done) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT * FROM tbl_invite_friend WHERE userId=? AND targetId=?",
+        "SELECT * FROM tbl_invite_friend WHERE userId=? AND targetId=? AND curStatus='ND'",
         [userId, friendId],
         (err, result) => {
           if (err) done(err, null);
@@ -200,7 +200,7 @@ let Model = function () {
   this.getFriendReqs = (userId, done) => {
     _mysql((conn) => {
       conn.query(
-        "SELECT m.userId, m.nickname, m.avatarUrl, m.statusMessage, f.curStatus FROM tbl_invite_friend as f INNER JOIN tbl_member as m ON f.userId=m.userId WHERE f.targetId=?",
+        "SELECT m.userId, m.nickname, m.avatarUrl, m.statusMessage, f.curStatus FROM tbl_invite_friend as f INNER JOIN tbl_member as m ON f.userId=m.userId WHERE f.targetId=? AND f.curStatus='ND'",
         [userId],
         (err, result) => {
           if (err) done(err, null);
