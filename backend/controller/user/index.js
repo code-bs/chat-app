@@ -6,6 +6,7 @@ const getSentReq = require("./getSentReq");
 const rejectRequest = require("./rejectRequest");
 const deleteRequest = require("./deleteRequest");
 const deleteFriend = require("./deleteFriend");
+const getUserInfo = require("./getUserInfo");
 
 module.exports = {
   addFriend,
@@ -16,4 +17,5 @@ module.exports = {
   deleteRequest,
   getSentReq,
   deleteFriend,
+  getUserInfo,
 };

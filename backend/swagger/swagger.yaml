@@ -347,6 +347,29 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/user"
+  /user/{targetId}:
+    get:
+      summary: 로그인 아이디가 targetId 인 유저 정보 조회
+      tags: [User]
+      parameters:
+        - in: header
+          name: access_token
+          schema:
+            type: string
+          description: JWT 토큰
+        - in: path
+          name: targetId
+          schema:
+            type: string
+          required: true
+          description: 조회 대상 로그인 아이디
+      responses:
+        200:
+          description: 대상 유저 정보
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
   /user/request/got:
     get:
       summary: 받은 친구 요청 목록

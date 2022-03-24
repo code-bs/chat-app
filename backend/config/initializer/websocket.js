@@ -40,8 +40,7 @@ module.exports = function (socket_port) {
       });
 
       socket.on("message", (info, done) => {
-        const { roomId, userId, nickname, message, avatarUrl, statusMessage } =
-          info;
+        const { roomId, userId, message } = info;
         chatModel.createNewChatHistory(info, (err) => {
           if (err) done("Internal Server Error");
         });
@@ -49,9 +48,6 @@ module.exports = function (socket_port) {
           roomId,
           message,
           userId,
-          nickname,
-          avatarUrl,
-          statusMessage,
         });
         done(null);
       });

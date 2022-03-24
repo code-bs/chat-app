@@ -4,6 +4,8 @@ const controller = require("../../controller/user/index");
 
 router.get("/", controller.searchUsers);
 
+router.get("/:targetId", controller.getUserInfo);
+
 router.get("/request/got", controller.getReceivedReq);
 
 router.get("/request/sent", controller.getSentReq);
