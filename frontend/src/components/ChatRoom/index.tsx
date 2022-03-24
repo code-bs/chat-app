@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Layout, Button, Input } from 'antd';
 import { CloseCircleFilled, MenuOutlined } from '@ant-design/icons';
@@ -16,11 +16,17 @@ const ChatRoom = () => {
   const [roomInfoVisible, setRoomInfoVisible] = useState<boolean>(false);
 
   const rooms = useAppSelector(state => state.chat.chatRoomList.data) || [];
+  const messageListRef = useRef<HTMLUListElement>(null);
   const {
     user: { avatarUrl, nickname, statusMessage, userId },
   } = useAppSelector(state => state.auth.signin.data) as SigninResponse;
   const dispatch = useAppDispatch();
   const selectedRoom = rooms.find(room => room._id === roomId);
+  useEffect(() => {
+    if (messageListRef.current) {
+      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+    }
+  }, [selectedRoom]);
   const submitMessage = () => {
     if (text.length === 0) return;
     dispatch(
@@ -55,7 +61,7 @@ const ChatRoom = () => {
         />
       </Header>
       <Content className={style.content}>
-        <ul className={style.messages}>
+        <ul className={style.messages} ref={messageListRef}>
           {selectedRoom.chatHistory.map(chatLog => {
             return <SpeechBubble chatLog={chatLog} key={`${chatLog.regDate}`} />;
           })}
