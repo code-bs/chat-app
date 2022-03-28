@@ -1,3 +1,5 @@
+const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
+
 export const formatTime = (dateStr: string) => {
   const date = new Date(dateStr);
   let hour = date.getHours();
@@ -6,6 +8,11 @@ export const formatTime = (dateStr: string) => {
   else if (hour > 12) hour -= 12;
   const min = date.getMinutes();
   return `${pre} ${hour < 10 ? `0${hour}` : hour}:${min < 10 ? `0${min}` : min}`;
+};
+
+export const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return `${date.getFullYear()}년 ${date.getMonth()}월 ${date.getDate()}일(${dayOfWeek[date.getDay()]})`;
 };
 
 export const getCookie = function (name: string) {

@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Layout, Button, Input } from 'antd';
+import { Layout, Button, Input, Divider } from 'antd';
 import { CloseCircleFilled, MenuOutlined } from '@ant-design/icons';
 import { SpeechBubble } from '..';
-import { SigninResponse } from '../../types';
+import { ChatLog, SigninResponse } from '../../types';
 import style from './index.module.scss';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { RoomInfoDrawer } from '..';
 import { sendMessage } from '../../store/chat/actions';
+import { formatDate } from '../../utils';
 const { Header, Content } = Layout;
 
 const ChatRoom = () => {
@@ -49,6 +50,17 @@ const ChatRoom = () => {
       </Layout>
     );
   }
+  const histories = selectedRoom.chatHistory.reduce((acc: ChatLog[][], cur: ChatLog) => {
+    if (
+      acc.length === 0 ||
+      new Date(acc[acc.length - 1][0].regDate).toDateString() !== new Date(cur.regDate).toDateString()
+    ) {
+      acc.push([cur]);
+    } else {
+      acc[acc.length - 1].push(cur);
+    }
+    return acc;
+  }, []);
   return (
     <Layout className={style.container}>
       <Header className={style.header}>
@@ -62,8 +74,15 @@ const ChatRoom = () => {
       </Header>
       <Content className={style.content}>
         <ul className={style.messages} ref={messageListRef}>
-          {selectedRoom.chatHistory.map(chatLog => {
-            return <SpeechBubble chatLog={chatLog} key={`${chatLog.regDate}`} />;
+          {histories.map(history => {
+            return (
+              <>
+                <Divider plain>{formatDate(history[0].regDate)}</Divider>
+                {history.map(chatLog => (
+                  <SpeechBubble chatLog={chatLog} key={`${chatLog.regDate}`} />
+                ))}
+              </>
+            );
           })}
         </ul>
         <div className={style.userInput}>
