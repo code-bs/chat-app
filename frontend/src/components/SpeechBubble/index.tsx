@@ -5,12 +5,13 @@ import style from './index.module.scss';
 
 type SpeechBubbleProps = {
   chatLog: ChatLog;
+  fromMe: boolean;
 };
 
-const SpeechBubble = ({ chatLog }: SpeechBubbleProps) => {
+const SpeechBubble = ({ chatLog, fromMe }: SpeechBubbleProps) => {
   const { message, regDate } = chatLog;
   return (
-    <div className={style.container}>
+    <div className={`${style.container} ${fromMe ? style.fromMe : ''}`}>
       <span className={style.time}>{formatTime(regDate)}</span>
       <div className={style.speechBubble}>
         <p>{message}</p>

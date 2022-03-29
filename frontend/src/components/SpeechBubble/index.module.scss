@@ -1,9 +1,19 @@
 .container {
   display: flex;
-  justify-content: right;
+  justify-content: left;
   padding-right: 30px;
   align-items: flex-end;
   padding: 1rem 1.5rem 0 0;
+}
+.fromMe {
+  justify-content: right;
+  .speechBubble {
+    background-color: #00aabb;
+  }
+  .speechBubble:after {
+    border-left: 10px solid #00aabb;
+    border-top: 10px solid #00aabb;
+  }
 }
 
 .time {
@@ -13,7 +23,7 @@
 
 .speechBubble {
   position: relative;
-  background: #00aabb;
+  background: #808080;
   border-radius: 0.4em;
   padding: 0.5rem 1rem;
   display: inline-block;
@@ -30,9 +40,9 @@
   width: 0px;
   height: 0px;
   position: absolute;
-  border-left: 10px solid #00aabb;
+  border-left: 10px solid #808080;
   border-right: 10px solid transparent;
-  border-top: 10px solid #00aabb;
+  border-top: 10px solid #808080;
   border-bottom: 10px solid transparent;
   right: -20px;
   top: 6px;

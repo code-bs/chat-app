@@ -79,7 +79,7 @@ const ChatRoom = () => {
               <>
                 <Divider plain>{formatDate(history[0].regDate)}</Divider>
                 {history.map(chatLog => (
-                  <SpeechBubble chatLog={chatLog} key={`${chatLog.regDate}`} />
+                  <SpeechBubble chatLog={chatLog} key={`${chatLog.regDate}`} fromMe={chatLog.userId === userId} />
                 ))}
               </>
             );
