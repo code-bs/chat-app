@@ -1,12 +1,12 @@
 .container {
   display: flex;
-  justify-content: left;
+  justify-content: flex-start;
   padding-right: 30px;
   align-items: flex-end;
   padding: 1rem 1.5rem 0 0;
 }
 .fromMe {
-  justify-content: right;
+  justify-content: flex-end;
   .speechBubble {
     background-color: #00aabb;
   }
